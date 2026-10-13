@@ -93,6 +93,7 @@ class CreateRecoverPasswordServiceTest {
         then(recoverPasswordRepository).should().save(recoveryCaptor.capture());
         RecoverPassword savedRecovery = recoveryCaptor.getValue();
 
+        assertEquals(account.getEmail(), result.email());
         assertEquals("recover-token", result.recoverToken());
         assertEquals(account, savedRecovery.getAccount());
         assertEquals("recover-token-hash", savedRecovery.getRecoverTokenHash());

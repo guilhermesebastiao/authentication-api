@@ -9,6 +9,7 @@ import br.com.guisebastiao.authenticationapi.domain.exception.RecoverPasswordAlr
 import br.com.guisebastiao.authenticationapi.domain.exception.RecoverPasswordExpiredException;
 import br.com.guisebastiao.authenticationapi.domain.exception.RecoverPasswordNotFoundException;
 import br.com.guisebastiao.authenticationapi.domain.exception.IncorrectOtpException;
+import br.com.guisebastiao.authenticationapi.domain.model.Account;
 import br.com.guisebastiao.authenticationapi.domain.model.RecoverPassword;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -53,7 +54,10 @@ class ValidateRecoverPasswordServiceTest {
         Instant now = Instant.now();
         Instant resendAvailableAt = now.plusSeconds(60);
         Instant expiresAt = now.plusSeconds(900);
+        Account account = new Account();
+        account.setEmail("user@example.com");
         RecoverPassword recoverPassword = new RecoverPassword();
+        recoverPassword.setAccount(account);
         recoverPassword.setOtpCodeHash(otpCodeHash);
         recoverPassword.setResendAvailableAt(resendAvailableAt);
         recoverPassword.setExpiresAt(expiresAt);
@@ -72,6 +76,7 @@ class ValidateRecoverPasswordServiceTest {
 
         RecoverPasswordResult result = service.execute(command);
 
+        assertEquals(account.getEmail(), result.email());
         assertEquals(command.recoverToken(), result.recoverToken());
         assertEquals(resendAvailableAt, result.resendAvailableAt());
         assertEquals(expiresAt, result.expiresAt());

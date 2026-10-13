@@ -177,6 +177,14 @@ public class UseCaseConfig {
     }
 
     @Bean
+    public GetRecoverPasswordService getRecoverPasswordService(
+            RecoverPasswordRepositoryPort recoverPasswordRepository,
+            SecureHasherPort secureHasher
+    ) {
+        return new GetRecoverPasswordService(recoverPasswordRepository, secureHasher);
+    }
+
+    @Bean
     public GetSessionsService getSessionsService(
             SessionRepositoryPort sessionRepository,
             SecureHasherPort secureHasher

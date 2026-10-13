@@ -26,6 +26,7 @@ public class RecoverPasswordController implements RecoverPasswordApi {
     private final ResendRecoverPasswordEmailUseCase resendRecoverPasswordEmailUseCase;
     private final ValidateRecoverPasswordUseCase validateRecoverPasswordUseCase;
     private final CreateRecoverPasswordUseCase createRecoverPasswordUseCase;
+    private final GetRecoverPasswordUseCase getRecoverPasswordUseCase;
     private final ResetPasswordUseCase resetPasswordUseCase;
     private final RecoverPasswordMapper mapper;
 
@@ -41,6 +42,18 @@ public class RecoverPasswordController implements RecoverPasswordApi {
         RecoverPasswordResult data = createRecoverPasswordUseCase.execute(command);
 
         return ApiBody.of(mapper.toResponse(data));
+    }
+
+    @Override
+    @GetMapping("/{recoverToken}")
+    @ResponseStatus(HttpStatus.OK)
+    public ApiBody<RecoverPasswordResponse> getRecoverPassword(
+            HttpServletRequest request,
+            @PathVariable("recoverToken") String recoverToken
+    ) {
+        RecoverPasswordResult result = getRecoverPasswordUseCase.execute(recoverToken);
+
+        return ApiBody.of(mapper.toResponse(result));
     }
 
     @Override

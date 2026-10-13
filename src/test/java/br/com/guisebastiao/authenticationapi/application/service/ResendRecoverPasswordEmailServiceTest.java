@@ -84,6 +84,7 @@ class ResendRecoverPasswordEmailServiceTest {
         RecoverPasswordResult result = service.execute(recoverToken);
         Instant afterExecution = Instant.now();
 
+        assertEquals(account.getEmail(), result.email());
         assertEquals(recoverToken, result.recoverToken());
         assertEquals("new-otp-code-hash", recoverPassword.getOtpCodeHash());
         assertNotNull(recoverPassword.getResendAvailableAt());

@@ -57,13 +57,20 @@ public class ResendRecoverPasswordEmailService implements ResendRecoverPasswordE
 
         RecoverPassword saved = recoverPasswordRepository.save(recoverPassword);
 
+        String email = saved.getAccount().getEmail();
+
         sendRecoverPasswordEmailUseCase.execute(
-                saved.getAccount().getEmail(),
+                email,
                 otpCode,
                 saved.getExpiresAt()
         );
 
-        return new RecoverPasswordResult(recoverToken, resendAvailableAt, saved.getExpiresAt());
+        return new RecoverPasswordResult(
+                email,
+                recoverToken,
+                resendAvailableAt,
+                saved.getExpiresAt()
+        );
     }
 
     private void validateRecoverPassword(RecoverPassword recoverPassword) {

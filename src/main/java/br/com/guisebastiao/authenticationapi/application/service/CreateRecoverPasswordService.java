@@ -60,6 +60,7 @@ public class CreateRecoverPasswordService implements CreateRecoverPasswordUseCas
         recoverPasswordRepository.save(recoverPassword);
 
         return new RecoverPasswordResult(
+                recoverPassword.getAccount().getEmail(),
                 recoverToken,
                 recoverPassword.getResendAvailableAt(),
                 recoverPassword.getExpiresAt()

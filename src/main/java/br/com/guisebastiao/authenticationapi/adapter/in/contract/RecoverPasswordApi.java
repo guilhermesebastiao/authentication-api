@@ -87,6 +87,75 @@ public interface RecoverPasswordApi {
     );
 
     @Operation(
+            summary = "Get recover password",
+            description = "Get recover password using recover token."
+    )
+    @ApiResponses({
+            @ApiResponse(
+                    responseCode = "200",
+                    description = "Account recover returned successfully",
+                    content = @Content(
+                            mediaType = "application/json",
+                            schema = @Schema(
+                                    implementation = SuccessRecovery.class
+                            )
+                    )
+            ),
+            @ApiResponse(
+                    responseCode = "404",
+                    description = "Recover password not found",
+                    content = @Content(
+                            mediaType = "application/json",
+                            schema = @Schema(
+                                    implementation = RecoverPasswordNotFoundError.class
+                            )
+                    )
+            ),
+            @ApiResponse(
+                    responseCode = "409",
+                    description = "Recover password is already used",
+                    content = @Content(
+                            mediaType = "application/json",
+                            schema = @Schema(
+                                    implementation = RecoverPasswordAlreadyUsedError.class
+                            )
+                    )
+            ),
+            @ApiResponse(
+                    responseCode = "410",
+                    description = "Recover password token has expired",
+                    content = @Content(
+                            mediaType = "application/json",
+                            schema = @Schema(
+                                    implementation = RecoverPasswordExpiredError.class
+                            )
+                    )
+            ),
+            @ApiResponse(
+                    responseCode = "429",
+                    description = "Too many requests",
+                    content = @Content(
+                            schema = @Schema(
+                                    implementation = RateLimitExceededError.class
+                            )
+                    )
+            ),
+            @ApiResponse(
+                    responseCode = "500",
+                    description = "Internal server error",
+                    content = @Content(
+                            schema = @Schema(
+                                    implementation = InternalServerError.class
+                            )
+                    )
+            )
+    })
+    ApiBody<RecoverPasswordResponse> getRecoverPassword(
+            HttpServletRequest request,
+            String recoverToken
+    );
+
+    @Operation(
             summary = "Validate password recovery OTP",
             description = "Validates the OTP associated with a password recovery token."
     )
@@ -280,14 +349,23 @@ public interface RecoverPasswordApi {
                     )
             ),
             @ApiResponse(
-                    responseCode = "410",
-                    description = "Recovery token expired or not verified",
+                    responseCode = "401",
+                    description = "Recovery token has not been verified",
                     content = @Content(
                             mediaType = "application/json",
-                            schema = @Schema(oneOf = {
-                                    RecoverPasswordExpiredError.class,
-                                    RecoverPasswordNotVerifiedError.class
-                            })
+                            schema = @Schema(
+                                    implementation = RecoverPasswordNotVerifiedError.class
+                            )
+                    )
+            ),
+            @ApiResponse(
+                    responseCode = "410",
+                    description = "Recovery token expired",
+                    content = @Content(
+                            mediaType = "application/json",
+                            schema = @Schema(
+                                    implementation = RecoverPasswordExpiredError.class
+                            )
                     )
             ),
             @ApiResponse(
