@@ -133,6 +133,7 @@ class SignInServiceTest {
         account.setStatus(AccountStatus.PENDING);
 
         AccountActivationResult activationResult = new AccountActivationResult(
+                command.email(),
                 "activation-token",
                 Instant.parse("2026-10-04T12:15:00Z"),
                 Instant.parse("2026-10-04T12:01:00Z")

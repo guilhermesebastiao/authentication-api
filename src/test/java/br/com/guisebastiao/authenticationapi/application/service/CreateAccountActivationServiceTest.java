@@ -96,6 +96,7 @@ class CreateAccountActivationServiceTest {
                 .isBefore(afterExecution.plus(90, ChronoUnit.SECONDS)));
 
         assertEquals("activation-token", result.activationToken());
+        assertEquals(account.getEmail(), result.email());
         assertEquals(savedActivation.getExpiresAt(), result.expiresAt());
         assertEquals(savedActivation.getResendAvailableAt(), result.resendAvailableAt());
 

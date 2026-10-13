@@ -81,6 +81,7 @@ class ResendAccountActivationEmailServiceTest {
         Instant afterExecution = Instant.now();
 
         assertEquals(activationToken, result.activationToken());
+        assertEquals(account.getEmail(), result.email());
         assertEquals("new-otp-code-hash", accountActivation.getOtpCodeHash());
         assertNotNull(accountActivation.getResendAvailableAt());
         assertTrue(accountActivation.getResendAvailableAt().isAfter(beforeExecution.plusSeconds(30)));

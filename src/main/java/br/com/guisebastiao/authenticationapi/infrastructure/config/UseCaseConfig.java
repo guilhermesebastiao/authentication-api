@@ -156,6 +156,14 @@ public class UseCaseConfig {
     }
 
     @Bean
+    public GetAccountActivationService getAccountActivationService(
+            AccountActivationRepositoryPort accountActivationRepository,
+            SecureHasherPort secureHasher
+    ) {
+        return new GetAccountActivationService(accountActivationRepository, secureHasher);
+    }
+
+    @Bean
     public GetCurrentAccountService getCurrentAccountService() {
         return new GetCurrentAccountService();
     }

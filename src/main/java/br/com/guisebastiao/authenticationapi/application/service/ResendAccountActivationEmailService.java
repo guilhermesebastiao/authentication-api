@@ -61,13 +61,16 @@ public class ResendAccountActivationEmailService implements ResendAccountActivat
 
         AccountActivation accountActivation = accountActivationRepository.save(accountActivationExists);
 
+        String email = accountActivation.getAccount().getEmail();
+
         sendAccountActivationEmailUseCase.execute(
-                accountActivation.getAccount().getEmail(),
+                email,
                 otpCode,
                 accountActivation.getExpiresAt()
         );
 
         return new AccountActivationResult(
+                email,
                 activationToken,
                 accountActivation.getExpiresAt(),
                 resendAvailableAt

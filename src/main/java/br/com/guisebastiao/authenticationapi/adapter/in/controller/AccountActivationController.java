@@ -8,6 +8,7 @@ import br.com.guisebastiao.authenticationapi.adapter.in.dto.response.AccountActi
 import br.com.guisebastiao.authenticationapi.adapter.in.mapper.AccountActivationMapper;
 import br.com.guisebastiao.authenticationapi.application.command.AccountActivationCommand;
 import br.com.guisebastiao.authenticationapi.application.port.in.AccountActivateUseCase;
+import br.com.guisebastiao.authenticationapi.application.port.in.GetAccountActivationUseCase;
 import br.com.guisebastiao.authenticationapi.application.port.in.ResendAccountActivationEmailUseCase;
 import br.com.guisebastiao.authenticationapi.application.result.AccountActivationResult;
 import jakarta.servlet.http.HttpServletRequest;
@@ -21,6 +22,7 @@ import org.springframework.web.bind.annotation.*;
 @RequiredArgsConstructor
 public class AccountActivationController implements AccountActivationApi {
     private final ResendAccountActivationEmailUseCase resendAccountActivationEmailUseCase;
+    private final GetAccountActivationUseCase getAccountActivationUseCase;
     private final AccountActivateUseCase accountActivateUseCase;
     private final AccountActivationMapper mapper;
 
@@ -36,6 +38,18 @@ public class AccountActivationController implements AccountActivationApi {
         accountActivateUseCase.execute(command);
 
         return ApiBody.of();
+    }
+
+    @Override
+    @GetMapping("/{activationToken}")
+    @ResponseStatus(HttpStatus.OK)
+    public ApiBody<AccountActivationResponse> getAccountActivation(
+            HttpServletRequest request,
+            @PathVariable String activationToken
+    ) {
+        AccountActivationResult data = getAccountActivationUseCase.execute(activationToken);
+
+        return ApiBody.of(mapper.toResponse(data));
     }
 
     @Override

@@ -68,6 +68,6 @@ public class CreateAccountActivationService implements CreateAccountActivationUs
 
         sendAccountActivationEmailUseCase.execute(account.getEmail(), otpCode, expiresAt);
 
-        return new AccountActivationResult(activationToken, expiresAt, resendAvailableAt);
+        return new AccountActivationResult(account.getEmail(), activationToken, expiresAt, resendAvailableAt);
     }
 }

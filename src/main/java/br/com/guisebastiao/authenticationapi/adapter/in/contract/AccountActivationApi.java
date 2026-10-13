@@ -23,6 +23,8 @@ public interface AccountActivationApi {
 
     class SuccessResend extends BaseSuccess<AccountActivationResponse> {}
 
+    class SuccessAccountActivation extends BaseSuccess<AccountActivationResponse> {}
+
     @Operation(
             summary = "Activate account",
             description = "Activates a pending account using a valid activation token."
@@ -109,6 +111,75 @@ public interface AccountActivationApi {
     ApiBody<Void> activate(
             HttpServletRequest request,
             AccountActivateRequest dto
+    );
+
+    @Operation(
+            summary = "Get activate account",
+            description = "Get activate account using activation token."
+    )
+    @ApiResponses({
+            @ApiResponse(
+                    responseCode = "200",
+                    description = "Account activation returned successfully",
+                    content = @Content(
+                            mediaType = "application/json",
+                            schema = @Schema(
+                                    implementation = SuccessAccountActivation.class
+                            )
+                    )
+            ),
+            @ApiResponse(
+                    responseCode = "404",
+                    description = "Account activation not found",
+                    content = @Content(
+                            mediaType = "application/json",
+                            schema = @Schema(
+                                    implementation = AccountActivationNotFoundError.class
+                            )
+                    )
+            ),
+            @ApiResponse(
+                    responseCode = "409",
+                    description = "Account is already activated",
+                    content = @Content(
+                            mediaType = "application/json",
+                            schema = @Schema(
+                                    implementation = AccountAlreadyActivatedError.class
+                            )
+                    )
+            ),
+            @ApiResponse(
+                    responseCode = "410",
+                    description = "Account activation token has expired",
+                    content = @Content(
+                            mediaType = "application/json",
+                            schema = @Schema(
+                                    implementation = AccountActivationExpiredError.class
+                            )
+                    )
+            ),
+            @ApiResponse(
+                    responseCode = "429",
+                    description = "Too many requests",
+                    content = @Content(
+                            schema = @Schema(
+                                    implementation = RateLimitExceededError.class
+                            )
+                    )
+            ),
+            @ApiResponse(
+                    responseCode = "500",
+                    description = "Internal server error",
+                    content = @Content(
+                            schema = @Schema(
+                                    implementation = InternalServerError.class
+                            )
+                    )
+            )
+    })
+    ApiBody<AccountActivationResponse> getAccountActivation(
+            HttpServletRequest request,
+            String activationToken
     );
 
     @Operation(
