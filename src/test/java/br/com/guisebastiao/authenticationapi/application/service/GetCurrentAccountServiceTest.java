@@ -38,13 +38,17 @@ class GetCurrentAccountServiceTest {
     @DisplayName("Should return an empty role set when the account has no roles")
     void givenAccountWithoutRoles_whenGetCurrentAccount_thenEmptyRolesAreReturned() {
         UUID accountId = UUID.randomUUID();
+        String accountEmail = "email@email.com";
+
         Account account = new Account();
         account.setId(accountId);
+        account.setEmail(accountEmail);
         account.setRoles(Set.of());
 
         AccountResult result = service.execute(account);
 
         assertEquals(accountId, result.id());
+        assertEquals(accountEmail, result.email());
         assertEquals(Set.of(), result.roles());
     }
 }

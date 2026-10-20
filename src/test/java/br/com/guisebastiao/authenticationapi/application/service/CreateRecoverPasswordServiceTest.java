@@ -25,6 +25,7 @@ import java.time.temporal.ChronoUnit;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -95,6 +96,7 @@ class CreateRecoverPasswordServiceTest {
 
         assertEquals(account.getEmail(), result.email());
         assertEquals("recover-token", result.recoverToken());
+        assertFalse(result.isVerified());
         assertEquals(account, savedRecovery.getAccount());
         assertEquals("recover-token-hash", savedRecovery.getRecoverTokenHash());
         assertEquals("otp-code-hash", savedRecovery.getOtpCodeHash());

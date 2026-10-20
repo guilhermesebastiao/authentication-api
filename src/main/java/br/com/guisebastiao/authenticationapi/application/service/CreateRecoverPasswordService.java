@@ -63,7 +63,8 @@ public class CreateRecoverPasswordService implements CreateRecoverPasswordUseCas
                 recoverPassword.getAccount().getEmail(),
                 recoverToken,
                 recoverPassword.getResendAvailableAt(),
-                recoverPassword.getExpiresAt()
+                recoverPassword.getExpiresAt(),
+                false
         );
     }
 

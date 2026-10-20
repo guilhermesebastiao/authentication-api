@@ -23,6 +23,7 @@ import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.mockito.ArgumentMatchers.any;
@@ -80,6 +81,7 @@ class ValidateRecoverPasswordServiceTest {
         assertEquals(command.recoverToken(), result.recoverToken());
         assertEquals(resendAvailableAt, result.resendAvailableAt());
         assertEquals(expiresAt, result.expiresAt());
+        assertTrue(result.isVerified());
         assertNotNull(recoverPassword.getVerifiedAt());
 
         then(secureHasher).should().hash(command.recoverToken());

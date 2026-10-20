@@ -48,11 +48,14 @@ public class ValidateRecoverPasswordService implements ValidateRecoverPasswordUs
 
         RecoverPassword saved = recoverPasswordRepository.save(recoverPassword);
 
+        boolean isVerified = saved.getVerifiedAt() != null;
+
         return new RecoverPasswordResult(
                 saved.getAccount().getEmail(),
                 command.recoverToken(),
                 saved.getResendAvailableAt(),
-                saved.getExpiresAt()
+                saved.getExpiresAt(),
+                isVerified
         );
     }
 

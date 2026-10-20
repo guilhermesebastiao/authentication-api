@@ -19,6 +19,8 @@ import java.time.Instant;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.BDDMockito.then;
@@ -57,10 +59,32 @@ class GetRecoverPasswordServiceTest {
 
         assertEquals(account.getEmail(), result.email());
         assertEquals(recoverToken, result.recoverToken());
+        assertFalse(result.isVerified());
         assertEquals(resendAvailableAt, result.resendAvailableAt());
         assertEquals(expiresAt, result.expiresAt());
         then(secureHasher).should().hash(recoverToken);
         then(recoverPasswordRepository).should().findByRecoverTokenHash(recoverTokenHash);
+    }
+
+    @Test
+    @DisplayName("Should return whether the password recovery is verified")
+    void givenVerifiedRecovery_whenGetRecoverPassword_thenIsVerifiedIsTrue() {
+        String recoverToken = "verified-recover-token";
+        String recoverTokenHash = "verified-recover-token-hash";
+        Account account = new Account();
+        account.setEmail("user@example.com");
+        RecoverPassword recoverPassword = new RecoverPassword();
+        recoverPassword.setAccount(account);
+        recoverPassword.setExpiresAt(Instant.now().plusSeconds(600));
+        recoverPassword.setVerifiedAt(Instant.now());
+
+        given(secureHasher.hash(recoverToken)).willReturn(recoverTokenHash);
+        given(recoverPasswordRepository.findByRecoverTokenHash(recoverTokenHash))
+                .willReturn(Optional.of(recoverPassword));
+
+        RecoverPasswordResult result = service.execute(recoverToken);
+
+        assertTrue(result.isVerified());
     }
 
     @Test

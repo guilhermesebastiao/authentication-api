@@ -16,6 +16,6 @@ public class GetCurrentAccountService implements GetCurrentAccountUseCase {
                 .map(role -> role.getName().replace("ROLE_", ""))
                 .collect(Collectors.toSet());
 
-        return new AccountResult(account.getId(),  roles);
+        return new AccountResult(account.getId(), account.getEmail(),  roles);
     }
 }

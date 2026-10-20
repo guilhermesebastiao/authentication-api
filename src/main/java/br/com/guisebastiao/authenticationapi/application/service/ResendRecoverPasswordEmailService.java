@@ -69,7 +69,8 @@ public class ResendRecoverPasswordEmailService implements ResendRecoverPasswordE
                 email,
                 recoverToken,
                 resendAvailableAt,
-                saved.getExpiresAt()
+                saved.getExpiresAt(),
+                false
         );
     }
 

@@ -7,6 +7,7 @@ public record RecoverPasswordResult(
         String email,
         String recoverToken,
         Instant resendAvailableAt,
-        Instant expiresAt
+        Instant expiresAt,
+        boolean isVerified
 ) {
 }

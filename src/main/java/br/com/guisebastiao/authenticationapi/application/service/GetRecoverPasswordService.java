@@ -33,11 +33,14 @@ public class GetRecoverPasswordService implements GetRecoverPasswordUseCase {
 
         validateRecoverPassword(recoverPassword, Instant.now());
 
+        boolean isVerified = recoverPassword.getVerifiedAt() != null;
+
         return new RecoverPasswordResult(
                 recoverPassword.getAccount().getEmail(),
                 recoverToken,
                 recoverPassword.getResendAvailableAt(),
-                recoverPassword.getExpiresAt()
+                recoverPassword.getExpiresAt(),
+                isVerified
         );
     }
 
