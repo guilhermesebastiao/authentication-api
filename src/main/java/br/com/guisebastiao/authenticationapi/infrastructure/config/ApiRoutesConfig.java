@@ -11,6 +11,7 @@ public final class ApiRoutesConfig {
             "/auth/refresh",
             "/password-recovery/**",
             "/account-activation/**",
+            "/actuator/**",
             "/v3/api-docs/**",
             "/swagger-ui/**",
             "/swagger-ui.html"

@@ -38,6 +38,9 @@ services:
         - action: rebuild
           path: ./pom.xml
 
+        - action: rebuild
+          path: ./Dockerfile.dev
+
     depends_on:
       postgres:
         condition: service_healthy
