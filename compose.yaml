@@ -17,6 +17,11 @@ services:
       - '${DB_PORT}:5432'
     volumes:
       - postgres-data:/var/lib/postgresql
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $$POSTGRES_USER -d $$POSTGRES_DB"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
     networks:
       - authentication-network
 
@@ -35,18 +40,11 @@ services:
       - '${MQ_MANAGEMENT_PORT}:15672'
     volumes:
       - rabbitmq-data:/var/lib/rabbitmq
-    networks:
-      - authentication-network
-
-  mailpit:
-    image: axllent/mailpit:v1.30
-    container_name: authentication-mailpit
-    restart: unless-stopped
-    ports:
-      - '${MAIL_PORT}:1025'
-      - '${MAIL_UI_PORT}:8025'
-    volumes:
-      - mailpit-data:/data
+    healthcheck:
+      test: ["CMD", "rabbitmq-diagnostics", "-q", "ping"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
     networks:
       - authentication-network
 
@@ -58,6 +56,11 @@ services:
       - '${REDIS_PORT}:6379'
     volumes:
       - redis-data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
     networks:
       - authentication-network
 
@@ -68,5 +71,4 @@ networks:
 volumes:
   postgres-data:
   rabbitmq-data:
-  mailpit-data:
   redis-data:

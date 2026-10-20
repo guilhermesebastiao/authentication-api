@@ -160,13 +160,29 @@ Os valores das chaves, senhas, tokens e demais credenciais devem ser definidos s
 ## Executando o projeto
 
 1. Crie e preencha o arquivo `.env` conforme a seção de configuração.
-2. Inicie os serviços auxiliares:
+2. Para desenvolvimento no Windows, inicie a API e os serviços auxiliares:
 
-```bash
-docker compose up -d
+```powershell
+.\dev.bat
 ```
 
-3. Inicie a aplicação com o profile padrão `dev`:
+Esse comando usa `compose.yaml` com `compose.dev.yaml`, inicia o Mailpit e
+habilita o modo de desenvolvimento com atualização automática do código.
+
+Em Linux/macOS, use:
+
+```bash
+docker compose -f compose.yaml -f compose.dev.yaml up -d --build --watch
+```
+
+3. Como alternativa, para executar a aplicação fora do container, inicie
+somente os serviços auxiliares:
+
+```bash
+docker compose -f compose.yaml -f compose.dev.yaml up -d
+```
+
+Depois inicie a aplicação com o profile padrão `dev`:
 
 ```bash
 ./mvnw spring-boot:run
@@ -180,10 +196,20 @@ No Windows PowerShell:
 
 A aplicação escuta em `0.0.0.0:8080`.
 
+Para produção no Windows, configure o `.env` com um servidor SMTP acessível
+pela rede e execute:
+
+```powershell
+.\prod.bat
+```
+
+O ambiente de produção não inicia o Mailpit; `MAIL_HOST`, `MAIL_PORT`,
+`MAIL_USER` e `MAIL_PASS` devem apontar para o SMTP de produção.
+
 Para interromper os serviços auxiliares:
 
 ```bash
-docker compose down
+docker compose -f compose.yaml -f compose.dev.yaml down
 ```
 
 ## Testes

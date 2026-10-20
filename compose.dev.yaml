@@ -1,0 +1,67 @@
+services:
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile.dev
+
+    image: authentication-api:dev
+    container_name: authentication-api-dev
+    restart: "no"
+
+    env_file:
+      - ./.env
+
+    environment:
+      SPRING_PROFILES_ACTIVE: dev
+
+      DB_URL: jdbc:postgresql://postgres:5432/${DB_NAME}
+      DB_PORT: 5432
+
+      MQ_HOST: rabbitmq
+      MQ_PORT: 5672
+
+      REDIS_HOST: redis
+      REDIS_PORT: 6379
+
+      MAIL_HOST: mailpit
+      MAIL_PORT: 1025
+
+    ports:
+      - "127.0.0.1:8080:8080"
+
+    develop:
+      watch:
+        - action: sync+restart
+          path: ./src
+          target: /app/src
+
+        - action: rebuild
+          path: ./pom.xml
+
+    depends_on:
+      postgres:
+        condition: service_healthy
+      rabbitmq:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+      mailpit:
+        condition: service_started
+
+    networks:
+      - authentication-network
+
+  mailpit:
+    image: axllent/mailpit:v1.30
+    container_name: authentication-mailpit
+    restart: unless-stopped
+    ports:
+      - '${MAIL_PORT}:1025'
+      - '${MAIL_UI_PORT}:8025'
+    volumes:
+      - mailpit-data:/data
+    networks:
+      - authentication-network
+
+volumes:
+  mailpit-data:

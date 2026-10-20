@@ -42,6 +42,7 @@
 
     <properties>
         <java.version>26</java.version>
+        <lombok.version>1.18.48</lombok.version>
         <org.mapstruct.version>1.6.3</org.mapstruct.version>
         <org.lombok.mapstruct.binding>0.2.0</org.lombok.mapstruct.binding>
         <nimbus-jose-jwt.version>10.9.1</nimbus-jose-jwt.version>
@@ -141,6 +142,7 @@
         <dependency>
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
+            <version>${lombok.version}</version>
             <optional>true</optional>
         </dependency>
         <dependency>

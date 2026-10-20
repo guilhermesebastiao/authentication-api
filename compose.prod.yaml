@@ -1,0 +1,38 @@
+services:
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile.prod
+
+    image: authentication-api:prod
+    container_name: authentication-api-prod
+    restart: unless-stopped
+
+    env_file:
+      - ./.env
+
+    environment:
+      SPRING_PROFILES_ACTIVE: prod
+
+      DB_URL: jdbc:postgresql://postgres:5432/${DB_NAME}
+      DB_PORT: 5432
+
+      MQ_HOST: rabbitmq
+      MQ_PORT: 5672
+
+      REDIS_HOST: redis
+      REDIS_PORT: 6379
+
+    ports:
+      - "127.0.0.1:8080:8080"
+
+    depends_on:
+      postgres:
+        condition: service_healthy
+      rabbitmq:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+
+    networks:
+      - authentication-network
