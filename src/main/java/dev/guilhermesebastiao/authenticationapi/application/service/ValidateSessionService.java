@@ -1,8 +1,6 @@
 package dev.guilhermesebastiao.authenticationapi.application.service;
 
 import dev.guilhermesebastiao.authenticationapi.application.port.in.ValidateSessionUseCase;
-import br.com.guisebastiao.authenticationapi.application.port.out.*;
-import br.com.guisebastiao.authenticationapi.domain.exception.*;
 import dev.guilhermesebastiao.authenticationapi.application.port.out.SecureHasherPort;
 import dev.guilhermesebastiao.authenticationapi.application.port.out.SessionRepositoryPort;
 import dev.guilhermesebastiao.authenticationapi.domain.exception.SessionExpiredException;

@@ -1,7 +1,7 @@
 package dev.guilhermesebastiao.authenticationapi.application.service;
 
-import dev.guilhermesebastiao.authenticationapi.application.command.ChangePasswordCommand;
-import dev.guilhermesebastiao.authenticationapi.application.port.in.SignOutAllUseCase;
+import dev.guilhermesebastiao.authenticationapi.application.dto.input.ChangePasswordInput;
+import dev.guilhermesebastiao.authenticationapi.application.port.in.RevokeAllSessionsUseCase;
 import dev.guilhermesebastiao.authenticationapi.application.port.out.AccountRepositoryPort;
 import dev.guilhermesebastiao.authenticationapi.application.port.out.PasswordEncoderPort;
 import dev.guilhermesebastiao.authenticationapi.domain.exception.AccountInvalidCredentialsException;
@@ -27,7 +27,7 @@ class ChangePasswordServiceTest {
     private AccountRepositoryPort accountRepository;
 
     @Mock
-    private SignOutAllUseCase signOutAllUseCase;
+    private RevokeAllSessionsUseCase revokeAllSessionsUseCase;
 
     @Mock
     private PasswordEncoderPort passwordEncoder;
@@ -40,7 +40,7 @@ class ChangePasswordServiceTest {
     void givenValidCurrentAndNewPasswords_whenChangePassword_thenAccountIsUpdatedAndSessionsAreRevoked() {
         Account account = new Account();
         account.setPasswordHash("current-password-hash");
-        ChangePasswordCommand command = new ChangePasswordCommand("current-password", "new-password", "new-password");
+        ChangePasswordInput command = new ChangePasswordInput("current-password", "new-password", "new-password");
 
         given(passwordEncoder.matches(command.currentPassword(), account.getPasswordHash()))
                 .willReturn(true);
@@ -53,7 +53,7 @@ class ChangePasswordServiceTest {
 
         assertEquals("new-password-hash", account.getPasswordHash());
         then(accountRepository).should().save(account);
-        then(signOutAllUseCase).should().execute(account);
+        then(revokeAllSessionsUseCase).should().execute(account);
     }
 
     @Test
@@ -61,7 +61,7 @@ class ChangePasswordServiceTest {
     void givenInvalidCurrentPassword_whenChangePassword_thenInvalidCredentialsExceptionIsThrown() {
         Account account = new Account();
         account.setPasswordHash("current-password-hash");
-        ChangePasswordCommand command = new ChangePasswordCommand("wrong-password", "new-password", "new-password");
+        ChangePasswordInput command = new ChangePasswordInput("wrong-password", "new-password", "new-password");
 
         given(passwordEncoder.matches(command.currentPassword(), account.getPasswordHash()))
                 .willReturn(false);
@@ -71,7 +71,7 @@ class ChangePasswordServiceTest {
         then(passwordEncoder).should().matches(command.currentPassword(), account.getPasswordHash());
         then(passwordEncoder).should(never()).matches(command.newPassword(), account.getPasswordHash());
         then(accountRepository).should(never()).save(account);
-        then(signOutAllUseCase).shouldHaveNoInteractions();
+        then(revokeAllSessionsUseCase).shouldHaveNoInteractions();
     }
 
     @Test
@@ -79,7 +79,7 @@ class ChangePasswordServiceTest {
     void givenNewPasswordEqualToCurrentPassword_whenChangePassword_thenSamePasswordExceptionIsThrown() {
         Account account = new Account();
         account.setPasswordHash("current-password-hash");
-        ChangePasswordCommand command = new ChangePasswordCommand("current-password", "same-password", "same-password");
+        ChangePasswordInput command = new ChangePasswordInput("current-password", "same-password", "same-password");
 
         given(passwordEncoder.matches(command.currentPassword(), account.getPasswordHash()))
                 .willReturn(true);
@@ -90,6 +90,6 @@ class ChangePasswordServiceTest {
 
         then(passwordEncoder).should(never()).hash(command.newPassword());
         then(accountRepository).should(never()).save(account);
-        then(signOutAllUseCase).shouldHaveNoInteractions();
+        then(revokeAllSessionsUseCase).shouldHaveNoInteractions();
     }
 }

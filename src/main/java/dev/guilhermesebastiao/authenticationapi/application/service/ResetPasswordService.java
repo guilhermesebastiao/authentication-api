@@ -1,78 +1,71 @@
 package dev.guilhermesebastiao.authenticationapi.application.service;
 
-import dev.guilhermesebastiao.authenticationapi.application.command.ResetPasswordCommand;
+import dev.guilhermesebastiao.authenticationapi.application.dto.input.ResetPasswordInput;
 import dev.guilhermesebastiao.authenticationapi.application.port.in.ResetPasswordUseCase;
-import dev.guilhermesebastiao.authenticationapi.application.port.in.SignOutAllUseCase;
+import dev.guilhermesebastiao.authenticationapi.application.port.in.RevokeAllSessionsUseCase;
 import dev.guilhermesebastiao.authenticationapi.application.port.out.AccountRepositoryPort;
 import dev.guilhermesebastiao.authenticationapi.application.port.out.PasswordEncoderPort;
-import dev.guilhermesebastiao.authenticationapi.application.port.out.RecoverPasswordRepositoryPort;
+import dev.guilhermesebastiao.authenticationapi.application.port.out.RecoveryPasswordRepositoryPort;
 import dev.guilhermesebastiao.authenticationapi.application.port.out.SecureHasherPort;
-import br.com.guisebastiao.authenticationapi.domain.exception.*;
-import dev.guilhermesebastiao.authenticationapi.domain.exception.RecoverPasswordAlreadyUsedException;
-import dev.guilhermesebastiao.authenticationapi.domain.exception.RecoverPasswordExpiredException;
-import dev.guilhermesebastiao.authenticationapi.domain.exception.RecoverPasswordNotFoundException;
-import dev.guilhermesebastiao.authenticationapi.domain.exception.RecoverPasswordNotVerifiedException;
+import dev.guilhermesebastiao.authenticationapi.domain.exception.*;
 import dev.guilhermesebastiao.authenticationapi.domain.model.Account;
-import dev.guilhermesebastiao.authenticationapi.domain.model.RecoverPassword;
+import dev.guilhermesebastiao.authenticationapi.domain.model.RecoveryPassword;
 
 import java.time.Instant;
 
 public class ResetPasswordService implements ResetPasswordUseCase {
-    private final RecoverPasswordRepositoryPort recoverPasswordRepository;
+    private final RecoveryPasswordRepositoryPort recoveryPasswordRepository;
     private final AccountRepositoryPort accountRepository;
     private final PasswordEncoderPort passwordEncoder;
-    private final SignOutAllUseCase signOutAllUseCase;
+    private final RevokeAllSessionsUseCase revokeAllSessionsUseCase;
     private final SecureHasherPort secureHasher;
 
     public ResetPasswordService(
-            RecoverPasswordRepositoryPort recoverPasswordRepository,
+            RecoveryPasswordRepositoryPort recoveryPasswordRepository,
             AccountRepositoryPort accountRepository,
-            SignOutAllUseCase signOutAllUseCase,
+            RevokeAllSessionsUseCase revokeAllSessionsUseCase,
             PasswordEncoderPort passwordEncoder,
             SecureHasherPort secureHasher
     ) {
-        this.recoverPasswordRepository = recoverPasswordRepository;
+        this.recoveryPasswordRepository = recoveryPasswordRepository;
         this.accountRepository = accountRepository;
-        this.signOutAllUseCase = signOutAllUseCase;
+        this.revokeAllSessionsUseCase = revokeAllSessionsUseCase;
         this.passwordEncoder = passwordEncoder;
         this.secureHasher = secureHasher;
     }
 
     @Override
-    public void execute(ResetPasswordCommand command) {
+    public void execute(ResetPasswordInput input) {
         Instant now = Instant.now();
 
-        String refreshTokenHash = secureHasher.hash(command.recoverToken());
+        String recoveryTokenHash = secureHasher.hash(input.recoveryToken());
 
-        RecoverPassword recoverPassword = recoverPasswordRepository.findByRecoverTokenHash(refreshTokenHash)
-                .orElseThrow(RecoverPasswordNotFoundException::new);
+        RecoveryPassword recoveryPassword = recoveryPasswordRepository
+                .findByRecoveryTokenHash(recoveryTokenHash)
+                .orElseThrow(RecoveryPasswordNotFoundException::new);
 
-        validateRecoverPassword(recoverPassword, now);
+        validateRecoverPassword(recoveryPassword, now);
 
-        Account account = recoverPassword.getAccount();
+        Account account = recoveryPassword.getForgotPassword().getAccount();
 
-        account.setPasswordHash(passwordEncoder.hash(command.newPassword()));
+        account.setPasswordHash(passwordEncoder.hash(input.newPassword()));
 
-        recoverPassword.setUsedAt(now);
+        recoveryPassword.setUsedAt(now);
 
         accountRepository.save(account);
 
-        signOutAllUseCase.execute(account);
+        revokeAllSessionsUseCase.execute(account);
 
-        recoverPasswordRepository.save(recoverPassword);
+        recoveryPasswordRepository.save(recoveryPassword);
     }
 
-    private void validateRecoverPassword(RecoverPassword recoverPassword, Instant now) {
-        if (!recoverPassword.getExpiresAt().isAfter(now)) {
-            throw new RecoverPasswordExpiredException();
+    private void validateRecoverPassword(RecoveryPassword recoveryPassword, Instant now) {
+        if (!recoveryPassword.getExpiresAt().isAfter(now)) {
+            throw new RecoveryPasswordExpiredException();
         }
 
-        if (recoverPassword.getUsedAt() != null) {
-            throw new RecoverPasswordAlreadyUsedException();
-        }
-
-        if (recoverPassword.getVerifiedAt() == null) {
-            throw new RecoverPasswordNotVerifiedException();
+        if (recoveryPassword.getUsedAt() != null) {
+            throw new RecoveryPasswordAlreadyUsedException();
         }
     }
 }

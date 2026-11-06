@@ -1,7 +1,5 @@
 package dev.guilhermesebastiao.authenticationapi.infrastructure.transaction;
 
-import br.com.guisebastiao.authenticationapi.application.port.in.*;
-import br.com.guisebastiao.authenticationapi.application.service.*;
 import dev.guilhermesebastiao.authenticationapi.application.port.in.*;
 import dev.guilhermesebastiao.authenticationapi.application.service.*;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -54,33 +52,6 @@ public class TransactionConfiguration {
 
     @Bean
     @Primary
-    public CleanupAccountActivationUseCase transactionalCleanupAccountActivationUseCase(
-            CleanupAccountActivationService delegate,
-            @Qualifier("transactionTemplate") TransactionTemplate transactionTemplate
-    ) {
-        return transactional(CleanupAccountActivationUseCase.class, delegate, transactionTemplate);
-    }
-
-    @Bean
-    @Primary
-    public CleanupRecoverPasswordsUseCase transactionalCleanupRecoverPasswordsUseCase(
-            CleanupRecoverPasswordService delegate,
-            @Qualifier("transactionTemplate") TransactionTemplate transactionTemplate
-    ) {
-        return transactional(CleanupRecoverPasswordsUseCase.class, delegate, transactionTemplate);
-    }
-
-    @Bean
-    @Primary
-    public CleanupSessionUseCase transactionalCleanupSessionUseCase(
-            CleanupSessionService delegate,
-            @Qualifier("transactionTemplate") TransactionTemplate transactionTemplate
-    ) {
-        return transactional(CleanupSessionUseCase.class, delegate, transactionTemplate);
-    }
-
-    @Bean
-    @Primary
     public CreateAccountActivationUseCase transactionalCreateAccountActivationUseCase(
             CreateAccountActivationService delegate,
             @Qualifier("transactionTemplate") TransactionTemplate transactionTemplate
@@ -99,11 +70,11 @@ public class TransactionConfiguration {
 
     @Bean
     @Primary
-    public CreateRecoverPasswordUseCase transactionalCreateRecoverPasswordUseCase(
-            CreateRecoverPasswordService delegate,
+    public ForgotPasswordUseCase transactionalCreateRecoverPasswordUseCase(
+            ForgotPasswordService delegate,
             @Qualifier("transactionTemplate") TransactionTemplate transactionTemplate
     ) {
-        return transactional(CreateRecoverPasswordUseCase.class, delegate, transactionTemplate);
+        return transactional(ForgotPasswordUseCase.class, delegate, transactionTemplate);
     }
 
     @Bean

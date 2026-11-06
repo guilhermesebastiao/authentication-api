@@ -3,17 +3,17 @@ package dev.guilhermesebastiao.authenticationapi.adapter.in.controller;
 import dev.guilhermesebastiao.authenticationapi.adapter.in.contract.SessionApi;
 import dev.guilhermesebastiao.authenticationapi.adapter.in.dto.common.ApiBody;
 import dev.guilhermesebastiao.authenticationapi.adapter.in.dto.common.ApiListBody;
-import dev.guilhermesebastiao.authenticationapi.adapter.in.dto.request.PaginationRequest;
+import dev.guilhermesebastiao.authenticationapi.adapter.in.dto.common.PaginationParams;
 import dev.guilhermesebastiao.authenticationapi.adapter.in.dto.request.RevokeSessionsRequest;
 import dev.guilhermesebastiao.authenticationapi.adapter.in.dto.response.SessionResponse;
 import dev.guilhermesebastiao.authenticationapi.adapter.in.mapper.SessionMapper;
-import dev.guilhermesebastiao.authenticationapi.adapter.out.security.SecurityAccount;
+import dev.guilhermesebastiao.authenticationapi.adapter.out.security.context.SecurityAccount;
 import dev.guilhermesebastiao.authenticationapi.application.port.in.GetCurrentSessionUseCase;
 import dev.guilhermesebastiao.authenticationapi.application.port.in.GetSessionsUseCase;
-import dev.guilhermesebastiao.authenticationapi.application.port.in.SessionSignOutUseCase;
-import dev.guilhermesebastiao.authenticationapi.application.port.in.SignOutAllUseCase;
-import dev.guilhermesebastiao.authenticationapi.application.result.PageResult;
-import dev.guilhermesebastiao.authenticationapi.application.result.SessionResult;
+import dev.guilhermesebastiao.authenticationapi.application.port.in.RevokeSessionsUseCase;
+import dev.guilhermesebastiao.authenticationapi.application.port.in.RevokeAllSessionsUseCase;
+import dev.guilhermesebastiao.authenticationapi.application.dto.common.PageResult;
+import dev.guilhermesebastiao.authenticationapi.application.dto.output.SessionOutput;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -27,9 +27,9 @@ import java.util.List;
 @RequiredArgsConstructor
 public class SessionController implements SessionApi {
     private final GetCurrentSessionUseCase getCurrentSessionUseCase;
-    private final SessionSignOutUseCase sessionSignOutUseCase;
+    private final RevokeSessionsUseCase revokeSessionsUseCase;
     private final GetSessionsUseCase  getSessionsUseCase;
-    private final SignOutAllUseCase signOutAllUseCase;
+    private final RevokeAllSessionsUseCase revokeAllSessionsUseCase;
     private final SessionMapper mapper;
 
 
@@ -39,9 +39,9 @@ public class SessionController implements SessionApi {
     public ApiBody<ApiListBody<SessionResponse>> findAllSessions(
             @AuthenticationPrincipal SecurityAccount securityAccount,
             @RequestHeader("X-Session") String sessionToken,
-            @Valid PaginationRequest pagination
+            @Valid PaginationParams pagination
     ) {
-        PageResult<SessionResult> result = getSessionsUseCase.execute(
+        PageResult<SessionOutput> result = getSessionsUseCase.execute(
                 securityAccount.account(),
                 sessionToken,
                 mapper.toPaging(pagination)
@@ -69,7 +69,7 @@ public class SessionController implements SessionApi {
             @AuthenticationPrincipal SecurityAccount securityAccount,
             @RequestHeader("X-Session") String sessionToken
     ) {
-        SessionResult data = getCurrentSessionUseCase.execute(securityAccount.account(), sessionToken);
+        SessionOutput data = getCurrentSessionUseCase.execute(securityAccount.account(), sessionToken);
 
         return ApiBody.of(mapper.toResponse(data));
     }
@@ -81,7 +81,7 @@ public class SessionController implements SessionApi {
             @AuthenticationPrincipal SecurityAccount securityAccount,
             @RequestBody @Valid RevokeSessionsRequest dto
     ) {
-        sessionSignOutUseCase.execute(securityAccount.account(), dto.sessionsIds());
+        revokeSessionsUseCase.execute(securityAccount.account(), dto.sessionsIds());
 
         return ApiBody.of();
     }
@@ -92,7 +92,7 @@ public class SessionController implements SessionApi {
     public ApiBody<Void> revokeAllSessions(
             @AuthenticationPrincipal SecurityAccount securityAccount
     ) {
-        signOutAllUseCase.execute(securityAccount.account());
+        revokeAllSessionsUseCase.execute(securityAccount.account());
 
         return ApiBody.of();
     }

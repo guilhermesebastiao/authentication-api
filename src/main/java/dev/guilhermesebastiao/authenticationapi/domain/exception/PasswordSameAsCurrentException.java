@@ -5,9 +5,11 @@ import dev.guilhermesebastiao.authenticationapi.domain.enums.DomainErrorCode;
 public class PasswordSameAsCurrentException extends DomainException {
     public PasswordSameAsCurrentException() {
         super(
-                DomainErrorCode.SAME_PASSWORD,
+                "Password Same As Current",
+                401,
                 "The new password matches the current password.",
-                401
+                "PasswordSameAsCurrentException: The new password matches the current password.",
+                DomainErrorCode.SAME_PASSWORD
         );
     }
 }

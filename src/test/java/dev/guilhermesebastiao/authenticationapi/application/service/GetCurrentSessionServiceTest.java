@@ -2,7 +2,7 @@ package dev.guilhermesebastiao.authenticationapi.application.service;
 
 import dev.guilhermesebastiao.authenticationapi.application.port.out.SecureHasherPort;
 import dev.guilhermesebastiao.authenticationapi.application.port.out.SessionRepositoryPort;
-import dev.guilhermesebastiao.authenticationapi.application.result.SessionResult;
+import dev.guilhermesebastiao.authenticationapi.application.dto.output.SessionOutput;
 import dev.guilhermesebastiao.authenticationapi.domain.enums.DeviceType;
 import dev.guilhermesebastiao.authenticationapi.domain.exception.SessionNotBelongToAccountException;
 import dev.guilhermesebastiao.authenticationapi.domain.exception.SessionNotFoundException;
@@ -62,7 +62,7 @@ class GetCurrentSessionServiceTest {
         given(sessionRepository.findBySessionTokenHash(currentSessionTokenHash))
                 .willReturn(Optional.of(session));
 
-        SessionResult result = service.execute(account, currentSessionToken);
+        SessionOutput result = service.execute(account, currentSessionToken);
 
         assertEquals(session.getId(), result.id());
         assertEquals(DeviceType.DESKTOP, result.type());

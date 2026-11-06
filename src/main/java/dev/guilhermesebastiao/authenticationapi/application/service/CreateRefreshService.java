@@ -4,7 +4,7 @@ import dev.guilhermesebastiao.authenticationapi.application.port.in.CreateRefres
 import dev.guilhermesebastiao.authenticationapi.application.port.out.RefreshRepositoryPort;
 import dev.guilhermesebastiao.authenticationapi.application.port.out.SecureHasherPort;
 import dev.guilhermesebastiao.authenticationapi.application.port.out.SecureRandomGeneratorPort;
-import dev.guilhermesebastiao.authenticationapi.application.result.CreateRefreshResult;
+import dev.guilhermesebastiao.authenticationapi.application.dto.output.CreateRefreshOutput;
 import dev.guilhermesebastiao.authenticationapi.domain.model.Refresh;
 import dev.guilhermesebastiao.authenticationapi.domain.model.Session;
 
@@ -26,14 +26,14 @@ public class CreateRefreshService implements CreateRefreshUseCase {
     }
 
     @Override
-    public CreateRefreshResult execute(Session session) {
+    public CreateRefreshOutput execute(Session session) {
         String refreshToken = secureRandomGenerator.generate(REFRESH_TOKEN_SIZE);
 
         Refresh refresh = createRefresh(session, refreshToken);
 
         Refresh savedRefresh = refreshRepository.save(refresh);
 
-        return new CreateRefreshResult(refreshToken, savedRefresh);
+        return new CreateRefreshOutput(refreshToken, savedRefresh);
     }
 
     private Refresh createRefresh(Session session, String token) {

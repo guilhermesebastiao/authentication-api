@@ -5,18 +5,16 @@ import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import org.hibernate.validator.constraints.Length;
 
-import static dev.guilhermesebastiao.authenticationapi.adapter.in.validation.ValidationErrorCode.*;
-
 public record SignInRequest(
 
-        @NotBlank(message = REQUIRED)
-        @Email(message = INVALID_EMAIL)
-        @Length(max = 255, message = INVALID_MAX_SIZE)
+        @NotBlank
+        @Email
+        @Length(max = 255)
         String email,
 
-        @NotBlank(message = REQUIRED)
-        @Length(min = 6, message = INVALID_MIN_SIZE)
-        @Length(max = 20, message = INVALID_MAX_SIZE)
+        @NotBlank
+        @Length(min = 6)
+        @Length(max = 20)
         @ValidPassword
         String password
 ) {

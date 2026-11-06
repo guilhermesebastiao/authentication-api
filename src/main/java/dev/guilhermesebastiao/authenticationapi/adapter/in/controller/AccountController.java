@@ -6,13 +6,13 @@ import dev.guilhermesebastiao.authenticationapi.adapter.in.dto.request.ChangePas
 import dev.guilhermesebastiao.authenticationapi.adapter.in.dto.request.DisableAccountRequest;
 import dev.guilhermesebastiao.authenticationapi.adapter.in.dto.response.AccountResponse;
 import dev.guilhermesebastiao.authenticationapi.adapter.in.mapper.AccountMapper;
-import dev.guilhermesebastiao.authenticationapi.adapter.out.security.SecurityAccount;
-import dev.guilhermesebastiao.authenticationapi.application.command.ChangePasswordCommand;
-import dev.guilhermesebastiao.authenticationapi.application.command.DisableAccountCommand;
+import dev.guilhermesebastiao.authenticationapi.adapter.out.security.context.SecurityAccount;
+import dev.guilhermesebastiao.authenticationapi.application.dto.input.ChangePasswordInput;
+import dev.guilhermesebastiao.authenticationapi.application.dto.input.DisableAccountInput;
 import dev.guilhermesebastiao.authenticationapi.application.port.in.ChangePasswordUseCase;
 import dev.guilhermesebastiao.authenticationapi.application.port.in.DisableAccountUseCase;
 import dev.guilhermesebastiao.authenticationapi.application.port.in.GetCurrentAccountUseCase;
-import dev.guilhermesebastiao.authenticationapi.application.result.AccountResult;
+import dev.guilhermesebastiao.authenticationapi.application.dto.output.AccountOutput;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -34,9 +34,9 @@ public class AccountController implements AccountApi {
     public ApiBody<AccountResponse> me(
             @AuthenticationPrincipal SecurityAccount securityAccount
     ) {
-        AccountResult data = getCurrentAccountUseCase.execute(securityAccount.account());
+        AccountOutput output = getCurrentAccountUseCase.execute(securityAccount.account());
 
-        return ApiBody.of(mapper.toResponse(data));
+        return ApiBody.of(mapper.toResponse(output));
     }
 
     @Override
@@ -46,9 +46,9 @@ public class AccountController implements AccountApi {
             @AuthenticationPrincipal SecurityAccount securityAccount,
             @RequestBody @Valid ChangePasswordRequest dto
     ) {
-        ChangePasswordCommand command = mapper.toCommand(dto);
+        ChangePasswordInput input = mapper.toInput(dto);
 
-        changePasswordUseCase.execute(securityAccount.account(), command);
+        changePasswordUseCase.execute(securityAccount.account(), input);
 
         return ApiBody.of();
     }
@@ -60,9 +60,9 @@ public class AccountController implements AccountApi {
             @AuthenticationPrincipal SecurityAccount securityAccount,
             @RequestBody @Valid DisableAccountRequest dto
     ) {
-        DisableAccountCommand command = mapper.toCommand(dto);
+        DisableAccountInput input = mapper.toInput(dto);
 
-        disableAccountUseCase.execute(securityAccount.account(), command);
+        disableAccountUseCase.execute(securityAccount.account(), input);
 
         return ApiBody.of();
     }

@@ -1,5 +1,6 @@
 package dev.guilhermesebastiao.authenticationapi.adapter.out.security;
 
+import dev.guilhermesebastiao.authenticationapi.adapter.out.security.context.SecurityAccount;
 import dev.guilhermesebastiao.authenticationapi.domain.enums.AccountStatus;
 import dev.guilhermesebastiao.authenticationapi.domain.model.Account;
 import dev.guilhermesebastiao.authenticationapi.domain.model.Role;

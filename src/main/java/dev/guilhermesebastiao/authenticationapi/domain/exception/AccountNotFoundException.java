@@ -5,9 +5,11 @@ import dev.guilhermesebastiao.authenticationapi.domain.enums.DomainErrorCode;
 public class AccountNotFoundException extends DomainException {
     public AccountNotFoundException() {
         super(
-                DomainErrorCode.ACCOUNT_NOT_FOUND,
+                "Account Not Found",
+                404,
                 "The account could not be found.",
-                404
+                "AccountNotFoundException: The account could not be found.",
+                DomainErrorCode.ACCOUNT_NOT_FOUND
         );
     }
 }

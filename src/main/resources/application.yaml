@@ -69,32 +69,11 @@ app:
     client-id: ${GOOGLE_CLIENT_ID}
     client-secret: ${GOOGLE_CLIENT_SECRET}
 
-  scheduler:
-    account-activation-cleanup-rate: ${ACCOUNT_ACTIVATION_CLEANUP_RATE}
-    recover-password-cleanup-rate: ${RECOVER_PASSWORD_CLEANUP_RATE}
-    session-cleanup-rate: ${SESSION_CLEANUP_RATE}
-
   rate-limit:
     global:
       capacity: ${RATE_LIMIT_GLOBAL_CAPACITY}
       refill-tokens: ${RATE_LIMIT_GLOBAL_REFILL_TOKENS}
       duration: ${RATE_LIMIT_GLOBAL_DURATION}
-
-    policies:
-      - path: /auth/**
-        capacity: ${RATE_LIMIT_AUTH_CAPACITY}
-        refill-tokens: ${RATE_LIMIT_AUTH_REFILL_TOKENS}
-        refill-duration: ${RATE_LIMIT_AUTH_DURATION}
-
-      - path: /recover-password/**
-        capacity: ${RATE_LIMIT_RECOVER_PASSWORD_CAPACITY}
-        refill-tokens: ${RATE_LIMIT_RECOVER_PASSWORD_REFILL_TOKENS}
-        refill-duration: ${RATE_LIMIT_RECOVER_PASSWORD_DURATION}
-
-      - path: /activation-account/**
-        capacity: ${RATE_LIMIT_ACTIVATION_ACCOUNT_CAPACITY}
-        refill-tokens: ${RATE_LIMIT_ACTIVATION_ACCOUNT_REFILL_TOKENS}
-        refill-duration: ${RATE_LIMIT_ACTIVATION_ACCOUNT_DURATION}
 
   secrets:
     issuer: authentication-api

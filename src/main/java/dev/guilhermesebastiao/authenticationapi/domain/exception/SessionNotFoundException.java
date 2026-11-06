@@ -5,9 +5,11 @@ import dev.guilhermesebastiao.authenticationapi.domain.enums.DomainErrorCode;
 public class SessionNotFoundException extends DomainException {
     public SessionNotFoundException() {
         super(
-                DomainErrorCode.SESSION_NOT_FOUND,
+                "Session Not Found",
+                404,
                 "The session could not be found.",
-                404
+                "SessionNotFoundException: The session could not be found.",
+                DomainErrorCode.SESSION_NOT_FOUND
         );
     }
 }

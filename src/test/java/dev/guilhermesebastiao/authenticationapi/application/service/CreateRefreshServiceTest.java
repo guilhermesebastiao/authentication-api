@@ -3,7 +3,7 @@ package dev.guilhermesebastiao.authenticationapi.application.service;
 import dev.guilhermesebastiao.authenticationapi.application.port.out.RefreshRepositoryPort;
 import dev.guilhermesebastiao.authenticationapi.application.port.out.SecureHasherPort;
 import dev.guilhermesebastiao.authenticationapi.application.port.out.SecureRandomGeneratorPort;
-import dev.guilhermesebastiao.authenticationapi.application.result.CreateRefreshResult;
+import dev.guilhermesebastiao.authenticationapi.application.dto.output.CreateRefreshOutput;
 import dev.guilhermesebastiao.authenticationapi.domain.model.Refresh;
 import dev.guilhermesebastiao.authenticationapi.domain.model.Session;
 import org.junit.jupiter.api.DisplayName;
@@ -50,7 +50,7 @@ class CreateRefreshServiceTest {
         given(refreshRepository.save(any(Refresh.class)))
                 .willAnswer(invocation -> invocation.getArgument(0));
 
-        CreateRefreshResult result = service.execute(session);
+        CreateRefreshOutput result = service.execute(session);
 
         assertEquals(refreshToken, result.refreshToken());
         assertSame(session, result.refresh().getSession());

@@ -5,9 +5,11 @@ import dev.guilhermesebastiao.authenticationapi.domain.enums.DomainErrorCode;
 public class AccountActivationResendNotAvailableException extends DomainException {
     public AccountActivationResendNotAvailableException() {
         super(
-                DomainErrorCode.RESEND_NOT_AVAILABLE,
+                "Account Activation Resend Not Available",
+                429,
                 "Account activation email resend is not currently available.",
-                429
+                "AccountActivationResendNotAvailableException: Account activation email resend is not currently available.",
+                DomainErrorCode.RESEND_NOT_AVAILABLE
         );
     }
 }

@@ -1,9 +1,10 @@
 package dev.guilhermesebastiao.authenticationapi.adapter.out.security;
 
+import dev.guilhermesebastiao.authenticationapi.adapter.out.security.adapter.JwtTokenAdapter;
 import dev.guilhermesebastiao.authenticationapi.domain.model.Account;
 import dev.guilhermesebastiao.authenticationapi.domain.model.Role;
 import dev.guilhermesebastiao.authenticationapi.infrastructure.properties.SecretsProperties;
-import dev.guilhermesebastiao.authenticationapi.application.result.JwtValidationResult;
+import dev.guilhermesebastiao.authenticationapi.application.dto.output.JwtValidationOutput;
 import dev.guilhermesebastiao.authenticationapi.domain.enums.JwtValidationStatus;
 import com.nimbusds.jose.JOSEException;
 import com.nimbusds.jose.JOSEObjectType;
@@ -113,7 +114,7 @@ class JwtTokenAdapterTest {
 
         String token = adapter.generate(account, sessionToken);
 
-        JwtValidationResult result = adapter.validate(token, sessionToken);
+        JwtValidationOutput result = adapter.validate(token, sessionToken);
 
         assertTrue(result.isValid());
         assertEquals(JwtValidationStatus.VALID, result.status());
@@ -136,7 +137,7 @@ class JwtTokenAdapterTest {
                 .encode("{\"alg\":\"RS256\",\"typ\":\"JWT\"}")
                 .toString();
 
-        JwtValidationResult result = adapter.validate(
+        JwtValidationOutput result = adapter.validate(
                 invalidAlgorithmHeader + "." + tokenParts[1] + "." + tokenParts[2],
                 "session-token"
         );
@@ -159,7 +160,7 @@ class JwtTokenAdapterTest {
         String[] tokenParts = adapter.generate(account, "session-token").split("\\.", -1);
         String invalidSignature = Base64URL.encode("invalid-signature").toString();
 
-        JwtValidationResult result = adapter.validate(
+        JwtValidationOutput result = adapter.validate(
                 tokenParts[0] + "." + tokenParts[1] + "." + invalidSignature,
                 "session-token"
         );
@@ -181,7 +182,7 @@ class JwtTokenAdapterTest {
         String token = adapter.generate(account, "session-token");
         given(properties.issuer()).willReturn("authentication-api");
 
-        JwtValidationResult result = adapter.validate(token, "session-token");
+        JwtValidationOutput result = adapter.validate(token, "session-token");
 
         assertFalse(result.isValid());
         assertEquals(JwtValidationStatus.INVALID_ISSUER, result.status());
@@ -209,7 +210,7 @@ class JwtTokenAdapterTest {
         given(properties.accessToken()).willReturn(secret);
         given(properties.issuer()).willReturn("authentication-api");
 
-        JwtValidationResult result = adapter.validate(signedJWT.serialize(), "session-token");
+        JwtValidationOutput result = adapter.validate(signedJWT.serialize(), "session-token");
 
         assertFalse(result.isValid());
         assertEquals(JwtValidationStatus.INVALID, result.status());
@@ -238,7 +239,7 @@ class JwtTokenAdapterTest {
         given(properties.accessToken()).willReturn(secret);
         given(properties.issuer()).willReturn("authentication-api");
 
-        JwtValidationResult result = adapter.validate(signedJWT.serialize(), "session-token");
+        JwtValidationOutput result = adapter.validate(signedJWT.serialize(), "session-token");
 
         assertFalse(result.isValid());
         assertEquals(JwtValidationStatus.EXPIRED, result.status());
@@ -255,7 +256,7 @@ class JwtTokenAdapterTest {
         given(properties.issuer()).willReturn("authentication-api");
         String token = adapter.generate(account, "stored-session");
 
-        JwtValidationResult result = adapter.validate(token, "different-session");
+        JwtValidationOutput result = adapter.validate(token, "different-session");
 
         assertFalse(result.isValid());
         assertEquals(JwtValidationStatus.INVALID_ISSUER, result.status());

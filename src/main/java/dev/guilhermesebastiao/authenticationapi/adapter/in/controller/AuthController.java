@@ -2,7 +2,6 @@ package dev.guilhermesebastiao.authenticationapi.adapter.in.controller;
 
 import dev.guilhermesebastiao.authenticationapi.adapter.in.contract.AuthApi;
 import dev.guilhermesebastiao.authenticationapi.adapter.in.dto.common.ApiBody;
-import br.com.guisebastiao.authenticationapi.adapter.in.dto.request.*;
 import dev.guilhermesebastiao.authenticationapi.adapter.in.dto.request.GoogleSignInRequest;
 import dev.guilhermesebastiao.authenticationapi.adapter.in.dto.request.RefreshTokenRequest;
 import dev.guilhermesebastiao.authenticationapi.adapter.in.dto.request.SignInRequest;
@@ -10,16 +9,13 @@ import dev.guilhermesebastiao.authenticationapi.adapter.in.dto.request.SignUpReq
 import dev.guilhermesebastiao.authenticationapi.adapter.in.dto.response.AccountActivationResponse;
 import dev.guilhermesebastiao.authenticationapi.adapter.in.dto.response.AuthResponse;
 import dev.guilhermesebastiao.authenticationapi.adapter.in.mapper.AuthMapper;
-import dev.guilhermesebastiao.authenticationapi.adapter.out.security.SecurityAccount;
-import br.com.guisebastiao.authenticationapi.application.command.*;
-import br.com.guisebastiao.authenticationapi.application.port.in.*;
-import dev.guilhermesebastiao.authenticationapi.application.command.CreateAccountCommand;
-import dev.guilhermesebastiao.authenticationapi.application.command.GoogleSignInCommand;
-import dev.guilhermesebastiao.authenticationapi.application.command.RefreshTokenCommand;
-import dev.guilhermesebastiao.authenticationapi.application.command.SignInCommand;
+import dev.guilhermesebastiao.authenticationapi.adapter.out.security.context.SecurityAccount;
+import dev.guilhermesebastiao.authenticationapi.application.dto.input.CreateAccountInput;
+import dev.guilhermesebastiao.authenticationapi.application.dto.input.RefreshTokenInput;
+import dev.guilhermesebastiao.authenticationapi.application.dto.input.SignInInput;
 import dev.guilhermesebastiao.authenticationapi.application.port.in.*;
-import dev.guilhermesebastiao.authenticationapi.application.result.AccountActivationResult;
-import dev.guilhermesebastiao.authenticationapi.application.result.AuthResult;
+import dev.guilhermesebastiao.authenticationapi.application.dto.output.AccountActivationOutput;
+import dev.guilhermesebastiao.authenticationapi.application.dto.output.AuthOutput;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -31,10 +27,10 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/auth")
 @RequiredArgsConstructor
 public class AuthController implements AuthApi {
+    private final RevokeSessionUseCase revokeSessionUseCase;
     private final CreateAccountUseCase createAccountUseCase;
     private final GoogleSignInUseCase googleSignInUseCase;
     private final RefreshTokenUseCase refreshTokenUseCase;
-    private final SignOutUseCase signOutUseCase;
     private final SignInUseCase signInUseCase;
     private final AuthMapper mapper;
 
@@ -45,15 +41,15 @@ public class AuthController implements AuthApi {
             HttpServletRequest request,
             @RequestBody @Valid SignInRequest dto
     ) {
-        SignInCommand command = mapper.toCommand(dto);
+        SignInInput input = mapper.toInput(dto);
 
-        AuthResult data = signInUseCase.execute(
-                command,
+        AuthOutput output = signInUseCase.execute(
+                input,
                 request.getHeader("User-Agent"),
                 request.getRemoteAddr()
         );
 
-        return ApiBody.of(mapper.toResponse(data));
+        return ApiBody.of(mapper.toResponse(output));
     }
 
     @Override
@@ -63,15 +59,13 @@ public class AuthController implements AuthApi {
             HttpServletRequest request,
             @RequestBody @Valid GoogleSignInRequest dto
     ) {
-        GoogleSignInCommand command = mapper.toCommand(dto);
-
-        AuthResult data = googleSignInUseCase.execute(
-                command,
+        AuthOutput output = googleSignInUseCase.execute(
+                dto.code(),
                 request.getHeader("User-Agent"),
                 request.getRemoteAddr()
         );
 
-        return ApiBody.of(mapper.toResponse(data));
+        return ApiBody.of(mapper.toResponse(output));
     }
 
     @Override
@@ -80,11 +74,11 @@ public class AuthController implements AuthApi {
     public ApiBody<AccountActivationResponse> signUp(
             @RequestBody @Valid SignUpRequest dto
     ) {
-        CreateAccountCommand command = mapper.toCommand(dto);
+        CreateAccountInput input = mapper.toInput(dto);
 
-        AccountActivationResult data = createAccountUseCase.execute(command);
+        AccountActivationOutput output = createAccountUseCase.execute(input);
 
-        return ApiBody.of(mapper.toResponse(data));
+        return ApiBody.of(mapper.toResponse(output));
     }
 
     @Override
@@ -94,7 +88,7 @@ public class AuthController implements AuthApi {
             HttpServletRequest request,
             @AuthenticationPrincipal SecurityAccount securityAccount
     ) {
-        signOutUseCase.execute(
+        revokeSessionUseCase.execute(
                 securityAccount.account(),
                 request.getHeader("X-Session")
         );
@@ -109,10 +103,10 @@ public class AuthController implements AuthApi {
             HttpServletRequest request,
             @RequestBody @Valid RefreshTokenRequest dto
     ) {
-        RefreshTokenCommand command = mapper.toCommand(dto);
+        RefreshTokenInput input = mapper.toInput(dto);
 
-        AuthResult data = refreshTokenUseCase.execute(command);
+        AuthOutput output = refreshTokenUseCase.execute(input);
 
-        return ApiBody.of(mapper.toResponse(data));
+        return ApiBody.of(mapper.toResponse(output));
     }
 }

@@ -3,7 +3,7 @@ package dev.guilhermesebastiao.authenticationapi.application.service;
 import dev.guilhermesebastiao.authenticationapi.application.port.in.GetCurrentSessionUseCase;
 import dev.guilhermesebastiao.authenticationapi.application.port.out.SecureHasherPort;
 import dev.guilhermesebastiao.authenticationapi.application.port.out.SessionRepositoryPort;
-import dev.guilhermesebastiao.authenticationapi.application.result.SessionResult;
+import dev.guilhermesebastiao.authenticationapi.application.dto.output.SessionOutput;
 import dev.guilhermesebastiao.authenticationapi.domain.exception.SessionNotBelongToAccountException;
 import dev.guilhermesebastiao.authenticationapi.domain.exception.SessionNotFoundException;
 import dev.guilhermesebastiao.authenticationapi.domain.model.Account;
@@ -22,7 +22,7 @@ public class GetCurrentSessionService implements GetCurrentSessionUseCase {
     }
 
     @Override
-    public SessionResult execute(Account account, String currentSession) {
+    public SessionOutput execute(Account account, String currentSession) {
         String sessionTokenHash = secureHasher.hash(currentSession);
 
         Session session = sessionRepository.findBySessionTokenHash(sessionTokenHash)
@@ -32,7 +32,7 @@ public class GetCurrentSessionService implements GetCurrentSessionUseCase {
             throw new SessionNotBelongToAccountException();
         }
 
-        return new SessionResult(
+        return new SessionOutput(
                 session.getId(),
                 session.getType(),
                 session.getLastSeenAt(),

@@ -1,7 +1,7 @@
 package dev.guilhermesebastiao.authenticationapi.adapter.out.persistence.adapter;
 
 import dev.guilhermesebastiao.authenticationapi.adapter.out.persistence.entity.AccountEntity;
-import dev.guilhermesebastiao.authenticationapi.adapter.out.persistence.mappers.JpaAccountMapper;
+import dev.guilhermesebastiao.authenticationapi.adapter.out.persistence.mapper.JpaAccountMapper;
 import dev.guilhermesebastiao.authenticationapi.adapter.out.persistence.repository.JpaAccountRepository;
 import dev.guilhermesebastiao.authenticationapi.domain.model.Account;
 import org.junit.jupiter.api.DisplayName;

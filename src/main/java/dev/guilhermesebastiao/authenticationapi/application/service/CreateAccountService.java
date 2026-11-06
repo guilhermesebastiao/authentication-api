@@ -1,13 +1,12 @@
 package dev.guilhermesebastiao.authenticationapi.application.service;
 
-import dev.guilhermesebastiao.authenticationapi.application.command.CreateAccountCommand;
+import dev.guilhermesebastiao.authenticationapi.application.dto.input.CreateAccountInput;
 import dev.guilhermesebastiao.authenticationapi.application.port.in.CreateAccountActivationUseCase;
 import dev.guilhermesebastiao.authenticationapi.application.port.in.CreateAccountUseCase;
-import br.com.guisebastiao.authenticationapi.application.port.out.*;
 import dev.guilhermesebastiao.authenticationapi.application.port.out.AccountRepositoryPort;
 import dev.guilhermesebastiao.authenticationapi.application.port.out.PasswordEncoderPort;
 import dev.guilhermesebastiao.authenticationapi.application.port.out.RoleRepositoryPort;
-import dev.guilhermesebastiao.authenticationapi.application.result.AccountActivationResult;
+import dev.guilhermesebastiao.authenticationapi.application.dto.output.AccountActivationOutput;
 import dev.guilhermesebastiao.authenticationapi.domain.enums.AccountStatus;
 import dev.guilhermesebastiao.authenticationapi.domain.exception.AccountAlreadyExistsException;
 import dev.guilhermesebastiao.authenticationapi.domain.exception.RoleNotFoundException;
@@ -38,26 +37,26 @@ public class CreateAccountService implements CreateAccountUseCase {
     }
 
     @Override
-    public AccountActivationResult execute(CreateAccountCommand command) {
-        Optional<Account> existsAccount = accountRepository.findByEmail(command.email());
+    public AccountActivationOutput execute(CreateAccountInput input) {
+        Optional<Account> existsAccount = accountRepository.findByEmail(input.email());
 
         if (existsAccount.isPresent()) {
             throw new AccountAlreadyExistsException();
         }
 
-        Account accountEntity = createAccount(command);
+        Account accountEntity = createAccount(input);
 
         Account account = accountRepository.save(accountEntity);
 
         return createAccountActivationUseCase.execute(account);
     }
 
-    private Account createAccount(CreateAccountCommand command) {
-        String passwordHash = passwordEncoder.hash(command.password());
+    private Account createAccount(CreateAccountInput input) {
+        String passwordHash = passwordEncoder.hash(input.password());
 
         Account accountEntity = new Account();
 
-        accountEntity.setEmail(command.email());
+        accountEntity.setEmail(input.email());
         accountEntity.setPasswordHash(passwordHash);
         accountEntity.setStatus(AccountStatus.PENDING);
 

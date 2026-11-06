@@ -5,9 +5,11 @@ import dev.guilhermesebastiao.authenticationapi.domain.enums.DomainErrorCode;
 public class IncorrectOtpException extends DomainException {
     public IncorrectOtpException() {
         super(
-                DomainErrorCode.INCORRECT_OTP,
+                "Incorrect Otp",
+                401,
                 "The provided one-time password is incorrect.",
-                401
+                "IncorrectOtpException: The provided one-time password is incorrect.",
+                DomainErrorCode.INCORRECT_OTP
         );
     }
 }

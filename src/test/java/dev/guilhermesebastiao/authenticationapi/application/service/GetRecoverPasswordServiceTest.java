@@ -1,13 +1,11 @@
 package dev.guilhermesebastiao.authenticationapi.application.service;
 
-import dev.guilhermesebastiao.authenticationapi.application.port.out.RecoverPasswordRepositoryPort;
+import dev.guilhermesebastiao.authenticationapi.application.dto.output.ForgotPasswordOutput;
 import dev.guilhermesebastiao.authenticationapi.application.port.out.SecureHasherPort;
-import dev.guilhermesebastiao.authenticationapi.application.result.RecoverPasswordResult;
-import dev.guilhermesebastiao.authenticationapi.domain.exception.RecoverPasswordAlreadyUsedException;
-import dev.guilhermesebastiao.authenticationapi.domain.exception.RecoverPasswordExpiredException;
-import dev.guilhermesebastiao.authenticationapi.domain.exception.RecoverPasswordNotFoundException;
+import dev.guilhermesebastiao.authenticationapi.domain.exception.RecoveryPasswordAlreadyUsedException;
+import dev.guilhermesebastiao.authenticationapi.domain.exception.ForgotPasswordExpiredException;
+import dev.guilhermesebastiao.authenticationapi.domain.exception.RecoveryPasswordNotFoundException;
 import dev.guilhermesebastiao.authenticationapi.domain.model.Account;
-import dev.guilhermesebastiao.authenticationapi.domain.model.RecoverPassword;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -35,7 +33,7 @@ class GetRecoverPasswordServiceTest {
     private SecureHasherPort secureHasher;
 
     @InjectMocks
-    private GetRecoverPasswordService service;
+    private GetRecoveryPasswordService service;
 
     @Test
     @DisplayName("Should return an active password recovery")
@@ -55,7 +53,7 @@ class GetRecoverPasswordServiceTest {
         given(recoverPasswordRepository.findByRecoverTokenHash(recoverTokenHash))
                 .willReturn(Optional.of(recoverPassword));
 
-        RecoverPasswordResult result = service.execute(recoverToken);
+        ForgotPasswordOutput result = service.execute(recoverToken);
 
         assertEquals(account.getEmail(), result.email());
         assertEquals(recoverToken, result.recoverToken());
@@ -82,7 +80,7 @@ class GetRecoverPasswordServiceTest {
         given(recoverPasswordRepository.findByRecoverTokenHash(recoverTokenHash))
                 .willReturn(Optional.of(recoverPassword));
 
-        RecoverPasswordResult result = service.execute(recoverToken);
+        ForgotPasswordOutput result = service.execute(recoverToken);
 
         assertTrue(result.isVerified());
     }
@@ -97,7 +95,7 @@ class GetRecoverPasswordServiceTest {
         given(recoverPasswordRepository.findByRecoverTokenHash(recoverTokenHash))
                 .willReturn(Optional.empty());
 
-        assertThrows(RecoverPasswordNotFoundException.class, () -> service.execute(recoverToken));
+        assertThrows(RecoveryPasswordNotFoundException.class, () -> service.execute(recoverToken));
 
         then(recoverPasswordRepository).should().findByRecoverTokenHash(recoverTokenHash);
     }
@@ -114,7 +112,7 @@ class GetRecoverPasswordServiceTest {
         given(recoverPasswordRepository.findByRecoverTokenHash(recoverTokenHash))
                 .willReturn(Optional.of(recoverPassword));
 
-        assertThrows(RecoverPasswordExpiredException.class, () -> service.execute(recoverToken));
+        assertThrows(ForgotPasswordExpiredException.class, () -> service.execute(recoverToken));
 
         then(recoverPasswordRepository).should().findByRecoverTokenHash(recoverTokenHash);
     }
@@ -132,7 +130,7 @@ class GetRecoverPasswordServiceTest {
         given(recoverPasswordRepository.findByRecoverTokenHash(recoverTokenHash))
                 .willReturn(Optional.of(recoverPassword));
 
-        assertThrows(RecoverPasswordAlreadyUsedException.class, () -> service.execute(recoverToken));
+        assertThrows(RecoveryPasswordAlreadyUsedException.class, () -> service.execute(recoverToken));
 
         then(recoverPasswordRepository).should().findByRecoverTokenHash(recoverTokenHash);
     }

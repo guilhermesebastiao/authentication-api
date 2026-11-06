@@ -5,9 +5,11 @@ import dev.guilhermesebastiao.authenticationapi.domain.enums.DomainErrorCode;
 public class RefreshTokenInvalidException extends DomainException {
     public RefreshTokenInvalidException() {
         super(
-                DomainErrorCode.REFRESH_TOKEN_INVALID,
+                "Refresh Token Invalid",
+                401,
                 "The refresh token is invalid.",
-                401
+                "RefreshTokenInvalidException: The refresh token is invalid.",
+                DomainErrorCode.REFRESH_TOKEN_INVALID
         );
     }
 }

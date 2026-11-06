@@ -1,10 +1,10 @@
 package dev.guilhermesebastiao.authenticationapi.adapter.in.security;
 
-import dev.guilhermesebastiao.authenticationapi.adapter.out.security.SecurityAccount;
-import dev.guilhermesebastiao.authenticationapi.adapter.out.security.SecurityAccountService;
+import dev.guilhermesebastiao.authenticationapi.adapter.out.security.context.SecurityAccount;
+import dev.guilhermesebastiao.authenticationapi.adapter.out.security.context.SecurityAccountService;
 import dev.guilhermesebastiao.authenticationapi.application.port.in.ValidateSessionUseCase;
 import dev.guilhermesebastiao.authenticationapi.application.port.out.JwtTokenPort;
-import dev.guilhermesebastiao.authenticationapi.application.result.JwtValidationResult;
+import dev.guilhermesebastiao.authenticationapi.application.dto.output.JwtValidationOutput;
 import dev.guilhermesebastiao.authenticationapi.domain.exception.DomainException;
 import dev.guilhermesebastiao.authenticationapi.domain.exception.JwtValidationException;
 import dev.guilhermesebastiao.authenticationapi.domain.exception.UnauthorizedException;
@@ -27,8 +27,8 @@ import java.util.Arrays;
 @Component
 public class SecurityFilter extends OncePerRequestFilter {
     private static final AntPathMatcher PATH_MATCHER = new AntPathMatcher();
-    private static final String SESSION_TOKEN_HEADER = "X-Session";
     private static final String AUTHORIZATION_HEADER = "Authorization";
+    private static final String SESSION_TOKEN_HEADER = "X-Session";
     private static final String BEARER_PREFIX = "Bearer ";
 
     private final ValidateSessionUseCase validateSessionUseCase;
@@ -85,7 +85,7 @@ public class SecurityFilter extends OncePerRequestFilter {
             throw new UnauthorizedException();
         }
 
-        JwtValidationResult jwtResult = jwtToken.validate(accessToken, sessionToken);
+        JwtValidationOutput jwtResult = jwtToken.validate(accessToken, sessionToken);
 
         if (!jwtResult.isValid()) {
             throw new JwtValidationException(jwtResult.status());

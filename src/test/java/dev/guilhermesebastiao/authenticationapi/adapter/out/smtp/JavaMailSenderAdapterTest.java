@@ -1,5 +1,7 @@
 package dev.guilhermesebastiao.authenticationapi.adapter.out.smtp;
 
+import dev.guilhermesebastiao.authenticationapi.adapter.out.smtp.adapter.JavaMailSenderAdapter;
+import dev.guilhermesebastiao.authenticationapi.adapter.out.smtp.payload.EmailSendPaylod;
 import dev.guilhermesebastiao.authenticationapi.infrastructure.properties.AppProperties;
 import jakarta.mail.BodyPart;
 import jakarta.mail.Message;

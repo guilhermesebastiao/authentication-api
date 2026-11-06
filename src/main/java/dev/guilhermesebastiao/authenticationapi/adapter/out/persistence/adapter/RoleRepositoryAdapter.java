@@ -1,6 +1,6 @@
 package dev.guilhermesebastiao.authenticationapi.adapter.out.persistence.adapter;
 
-import dev.guilhermesebastiao.authenticationapi.adapter.out.persistence.mappers.JpaRoleMapper;
+import dev.guilhermesebastiao.authenticationapi.adapter.out.persistence.mapper.JpaRoleMapper;
 import dev.guilhermesebastiao.authenticationapi.adapter.out.persistence.repository.JpaRoleRepository;
 import dev.guilhermesebastiao.authenticationapi.application.port.out.RoleRepositoryPort;
 import dev.guilhermesebastiao.authenticationapi.domain.model.Role;

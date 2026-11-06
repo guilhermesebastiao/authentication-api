@@ -1,11 +1,11 @@
 package dev.guilhermesebastiao.authenticationapi.application.service;
 
-import dev.guilhermesebastiao.authenticationapi.application.port.in.SendAccountActivationEmailUseCase;
+import dev.guilhermesebastiao.authenticationapi.application.port.in.SendAccountActivationUseCase;
 import dev.guilhermesebastiao.authenticationapi.application.port.out.AccountActivationRepositoryPort;
 import dev.guilhermesebastiao.authenticationapi.application.port.out.PasswordEncoderPort;
 import dev.guilhermesebastiao.authenticationapi.application.port.out.SecureHasherPort;
 import dev.guilhermesebastiao.authenticationapi.application.port.out.SecureRandomGeneratorPort;
-import dev.guilhermesebastiao.authenticationapi.application.result.AccountActivationResult;
+import dev.guilhermesebastiao.authenticationapi.application.dto.output.AccountActivationOutput;
 import dev.guilhermesebastiao.authenticationapi.domain.enums.AccountStatus;
 import dev.guilhermesebastiao.authenticationapi.domain.model.Account;
 import dev.guilhermesebastiao.authenticationapi.domain.model.AccountActivation;
@@ -30,7 +30,7 @@ import static org.mockito.BDDMockito.then;
 class CreateAccountActivationServiceTest {
 
     @Mock
-    private SendAccountActivationEmailUseCase sendAccountActivationEmailUseCase;
+    private SendAccountActivationUseCase sendAccountActivationUseCase;
 
     @Mock
     private AccountActivationRepositoryPort accountActivationRepository;
@@ -71,7 +71,7 @@ class CreateAccountActivationServiceTest {
 
         Instant beforeExecution = Instant.now();
 
-        AccountActivationResult result = service.execute(account);
+        AccountActivationOutput result = service.execute(account);
         Instant afterExecution = Instant.now();
 
         ArgumentCaptor<AccountActivation> activationCaptor = ArgumentCaptor.forClass(AccountActivation.class);
@@ -100,7 +100,7 @@ class CreateAccountActivationServiceTest {
         assertEquals(savedActivation.getExpiresAt(), result.expiresAt());
         assertEquals(savedActivation.getResendAvailableAt(), result.resendAvailableAt());
 
-        then(sendAccountActivationEmailUseCase).should()
+        then(sendAccountActivationUseCase).should()
                 .execute(account.getEmail(), "001234", savedActivation.getExpiresAt());
 
         then(passwordEncoder).should().hash("001234");

@@ -1,9 +1,5 @@
 package dev.guilhermesebastiao.authenticationapi.adapter.out.persistence.adapter;
 
-import dev.guilhermesebastiao.authenticationapi.adapter.out.persistence.entity.RecoverPasswordEntity;
-import dev.guilhermesebastiao.authenticationapi.adapter.out.persistence.mappers.JpaRecoverPasswordMapper;
-import dev.guilhermesebastiao.authenticationapi.adapter.out.persistence.repository.JpaRecoverPasswordRepository;
-import dev.guilhermesebastiao.authenticationapi.domain.model.RecoverPassword;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;

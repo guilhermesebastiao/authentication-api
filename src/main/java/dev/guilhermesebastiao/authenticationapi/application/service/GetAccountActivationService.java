@@ -3,7 +3,7 @@ package dev.guilhermesebastiao.authenticationapi.application.service;
 import dev.guilhermesebastiao.authenticationapi.application.port.in.GetAccountActivationUseCase;
 import dev.guilhermesebastiao.authenticationapi.application.port.out.AccountActivationRepositoryPort;
 import dev.guilhermesebastiao.authenticationapi.application.port.out.SecureHasherPort;
-import dev.guilhermesebastiao.authenticationapi.application.result.AccountActivationResult;
+import dev.guilhermesebastiao.authenticationapi.application.dto.output.AccountActivationOutput;
 import dev.guilhermesebastiao.authenticationapi.domain.exception.AccountActivationExpiredException;
 import dev.guilhermesebastiao.authenticationapi.domain.exception.AccountActivationNotFoundException;
 import dev.guilhermesebastiao.authenticationapi.domain.exception.AccountAlreadyActivatedException;
@@ -24,7 +24,7 @@ public class GetAccountActivationService implements GetAccountActivationUseCase 
     }
 
     @Override
-    public AccountActivationResult execute(String activationToken) {
+    public AccountActivationOutput execute(String activationToken) {
         String activationTokenHash = secureHasher.hash(activationToken);
 
         AccountActivation accountActivation = accountActivationRepository
@@ -34,7 +34,7 @@ public class GetAccountActivationService implements GetAccountActivationUseCase 
 
         validateAccountActivation(accountActivation);
 
-        return new AccountActivationResult(
+        return new AccountActivationOutput(
                 accountActivation.getAccount().getEmail(),
                 activationToken,
                 accountActivation.getExpiresAt(),

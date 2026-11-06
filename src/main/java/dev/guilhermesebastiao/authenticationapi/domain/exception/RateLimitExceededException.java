@@ -7,9 +7,11 @@ public class RateLimitExceededException extends DomainException {
 
     public RateLimitExceededException(long retryAfterSeconds) {
         super(
-                DomainErrorCode.RATE_LIMIT_EXCEEDED,
+                "Rate Limit Exceeded",
+                429,
                 "The request rate limit has been exceeded.",
-                429
+                "RateLimitExceededException: The request rate limit has been exceeded.",
+                DomainErrorCode.RATE_LIMIT_EXCEEDED
         );
         this.retryAfterSeconds = retryAfterSeconds;
     }

@@ -5,11 +5,12 @@ import dev.guilhermesebastiao.authenticationapi.domain.enums.DomainErrorCode;
 public class GoogleAuthenticationException extends DomainException {
     public GoogleAuthenticationException(Throwable cause) {
         super(
-                DomainErrorCode.GOOGLE_AUTHENTICATION_FAILED,
-                "Authentication with Google failed.",
+                "Google Authentication",
                 502,
+                "Authentication with Google failed.",
+                "GoogleAuthenticationException: Authentication with Google failed.",
+                DomainErrorCode.GOOGLE_AUTHENTICATION_FAILED,
                 cause
-
         );
     }
 }

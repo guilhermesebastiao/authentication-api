@@ -1,5 +1,7 @@
 package dev.guilhermesebastiao.authenticationapi.adapter.out.security;
 
+import dev.guilhermesebastiao.authenticationapi.adapter.out.security.context.SecurityAccount;
+import dev.guilhermesebastiao.authenticationapi.adapter.out.security.context.SecurityAccountService;
 import dev.guilhermesebastiao.authenticationapi.application.port.out.AccountRepositoryPort;
 import dev.guilhermesebastiao.authenticationapi.domain.model.Account;
 import org.junit.jupiter.api.DisplayName;

@@ -5,9 +5,11 @@ import dev.guilhermesebastiao.authenticationapi.domain.enums.DomainErrorCode;
 public class SessionRevokedException extends DomainException {
     public SessionRevokedException() {
         super(
-                DomainErrorCode.SESSION_REVOKED,
+                "Session Revoked",
+                401,
                 "The session has been revoked.",
-                401
+                "SessionRevokedException: The session has been revoked.",
+                DomainErrorCode.SESSION_REVOKED
         );
     }
 }

@@ -1,10 +1,10 @@
 package dev.guilhermesebastiao.authenticationapi.application.service;
 
-import dev.guilhermesebastiao.authenticationapi.application.port.in.SendAccountActivationEmailUseCase;
+import dev.guilhermesebastiao.authenticationapi.application.port.in.SendAccountActivationUseCase;
 import dev.guilhermesebastiao.authenticationapi.application.port.out.AccountActivationRepositoryPort;
 import dev.guilhermesebastiao.authenticationapi.application.port.out.PasswordEncoderPort;
 import dev.guilhermesebastiao.authenticationapi.application.port.out.SecureHasherPort;
-import dev.guilhermesebastiao.authenticationapi.application.result.AccountActivationResult;
+import dev.guilhermesebastiao.authenticationapi.application.dto.output.AccountActivationOutput;
 import dev.guilhermesebastiao.authenticationapi.domain.exception.AccountActivationExpiredException;
 import dev.guilhermesebastiao.authenticationapi.domain.exception.AccountActivationNotFoundException;
 import dev.guilhermesebastiao.authenticationapi.domain.exception.AccountActivationResendNotAvailableException;
@@ -35,7 +35,7 @@ import static org.mockito.Mockito.never;
 class ResendAccountActivationEmailServiceTest {
 
     @Mock
-    private SendAccountActivationEmailUseCase sendAccountActivationEmailUseCase;
+    private SendAccountActivationUseCase sendAccountActivationUseCase;
 
     @Mock
     private AccountActivationRepositoryPort accountActivationRepository;
@@ -77,7 +77,7 @@ class ResendAccountActivationEmailServiceTest {
         given(accountActivationRepository.save(accountActivation))
                 .willReturn(accountActivation);
 
-        AccountActivationResult result = service.execute(activationToken);
+        AccountActivationOutput result = service.execute(activationToken);
         Instant afterExecution = Instant.now();
 
         assertEquals(activationToken, result.activationToken());
@@ -95,7 +95,7 @@ class ResendAccountActivationEmailServiceTest {
         then(secureRandom).should().nextInt(1_000_000);
         then(passwordEncoder).should().hash("001234");
         then(accountActivationRepository).should().save(accountActivation);
-        then(sendAccountActivationEmailUseCase).should()
+        then(sendAccountActivationUseCase).should()
                 .execute(account.getEmail(), "001234", accountActivation.getExpiresAt());
     }
 
@@ -117,7 +117,7 @@ class ResendAccountActivationEmailServiceTest {
         then(accountActivationRepository).should(never()).save(any(AccountActivation.class));
         then(passwordEncoder).shouldHaveNoInteractions();
         then(secureRandom).shouldHaveNoInteractions();
-        then(sendAccountActivationEmailUseCase).shouldHaveNoInteractions();
+        then(sendAccountActivationUseCase).shouldHaveNoInteractions();
     }
 
     @Test
@@ -143,7 +143,7 @@ class ResendAccountActivationEmailServiceTest {
         then(accountActivationRepository).should(never()).save(any(AccountActivation.class));
         then(passwordEncoder).shouldHaveNoInteractions();
         then(secureRandom).shouldHaveNoInteractions();
-        then(sendAccountActivationEmailUseCase).shouldHaveNoInteractions();
+        then(sendAccountActivationUseCase).shouldHaveNoInteractions();
     }
 
     @Test
@@ -169,7 +169,7 @@ class ResendAccountActivationEmailServiceTest {
         then(accountActivationRepository).should(never()).save(any(AccountActivation.class));
         then(passwordEncoder).shouldHaveNoInteractions();
         then(secureRandom).shouldHaveNoInteractions();
-        then(sendAccountActivationEmailUseCase).shouldHaveNoInteractions();
+        then(sendAccountActivationUseCase).shouldHaveNoInteractions();
     }
 
     @Test
@@ -198,7 +198,7 @@ class ResendAccountActivationEmailServiceTest {
         then(accountActivationRepository).should(never()).save(any(AccountActivation.class));
         then(passwordEncoder).shouldHaveNoInteractions();
         then(secureRandom).shouldHaveNoInteractions();
-        then(sendAccountActivationEmailUseCase).shouldHaveNoInteractions();
+        then(sendAccountActivationUseCase).shouldHaveNoInteractions();
     }
 
     private AccountActivation accountActivation(Instant expiresAt, Instant resendAvailableAt, Instant activatedAt) {

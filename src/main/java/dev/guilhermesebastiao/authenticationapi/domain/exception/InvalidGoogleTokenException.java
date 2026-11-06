@@ -5,9 +5,11 @@ import dev.guilhermesebastiao.authenticationapi.domain.enums.DomainErrorCode;
 public class InvalidGoogleTokenException extends DomainException {
     public InvalidGoogleTokenException() {
         super(
-                DomainErrorCode.GOOGLE_TOKEN_INVALID,
+                "Invalid Google Token",
+                400,
                 "The Google identity token is invalid.",
-                400
+                "InvalidGoogleTokenException: The Google identity token is invalid.",
+                DomainErrorCode.GOOGLE_TOKEN_INVALID
         );
     }
 }

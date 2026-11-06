@@ -64,6 +64,18 @@ services:
     networks:
       - authentication-network
 
+  mailpit:
+    image: axllent/mailpit:v1.30
+    container_name: authentication-mailpit
+    restart: unless-stopped
+    ports:
+      - '${MAIL_PORT}:1025'
+      - '${MAIL_UI_PORT}:8025'
+    volumes:
+      - mailpit-data:/data
+    networks:
+      - authentication-network
+
 networks:
   authentication-network:
     driver: bridge
@@ -72,3 +84,4 @@ volumes:
   postgres-data:
   rabbitmq-data:
   redis-data:
+  mailpit-data:

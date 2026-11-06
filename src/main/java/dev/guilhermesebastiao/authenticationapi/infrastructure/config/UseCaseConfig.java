@@ -1,8 +1,5 @@
 package dev.guilhermesebastiao.authenticationapi.infrastructure.config;
 
-import br.com.guisebastiao.authenticationapi.application.port.in.*;
-import br.com.guisebastiao.authenticationapi.application.port.out.*;
-import br.com.guisebastiao.authenticationapi.application.service.*;
 import dev.guilhermesebastiao.authenticationapi.application.port.in.*;
 import dev.guilhermesebastiao.authenticationapi.application.port.out.*;
 import dev.guilhermesebastiao.authenticationapi.application.service.*;
@@ -31,53 +28,20 @@ public class UseCaseConfig {
 
     @Bean
     public ChangePasswordService changePasswordService(
+            RevokeAllSessionsUseCase revokeAllSessionsUseCase,
             AccountRepositoryPort accountRepository,
-            SignOutAllUseCase signOutAllUseCase,
             PasswordEncoderPort passwordEncoder
     ) {
         return new ChangePasswordService(
+                revokeAllSessionsUseCase,
                 accountRepository,
-                signOutAllUseCase,
                 passwordEncoder
         );
     }
 
     @Bean
-    public CleanupAccountActivationService cleanupAccountActivationService(
-            AccountActivationRepositoryPort accountActivationRepository,
-            LoggerPort logger
-    ) {
-        return new CleanupAccountActivationService(
-                accountActivationRepository,
-                logger
-        );
-    }
-
-    @Bean
-    public CleanupRecoverPasswordService cleanupRecoverPasswordService(
-            RecoverPasswordRepositoryPort recoverPasswordRepository,
-            LoggerPort logger
-    ) {
-        return new CleanupRecoverPasswordService(
-                recoverPasswordRepository,
-                logger
-        );
-    }
-
-    @Bean
-    public CleanupSessionService cleanupSessionService(
-            SessionRepositoryPort sessionRepository,
-            LoggerPort logger
-    ) {
-        return new CleanupSessionService(
-                sessionRepository,
-                logger
-        );
-    }
-
-    @Bean
     public CreateAccountActivationService createAccountActivationService(
-            SendAccountActivationEmailUseCase sendAccountActivationEmail,
+            SendAccountActivationUseCase sendAccountActivationEmail,
             AccountActivationRepositoryPort accountActivationRepository,
             SecureRandomGeneratorPort secureRandomGenerator,
             PasswordEncoderPort passwordEncoder,
@@ -110,20 +74,20 @@ public class UseCaseConfig {
     }
 
     @Bean
-    public CreateRecoverPasswordService createRecoverPasswordService(
-            SendRecoverPasswordEmailUseCase sendRecoverPasswordEmail,
-            RecoverPasswordRepositoryPort recoverPasswordRepository,
+    public ForgotPasswordService createRecoverPasswordService(
+            ForgotPasswordRepositoryPort forgotPasswordRepository,
             SecureRandomGeneratorPort secureRandomGenerator,
+            SendForgotUseCase sendRecoverPasswordEmail,
             AccountRepositoryPort accountRepository,
             PasswordEncoderPort passwordEncoder,
             SecureHasherPort secureHasher,
             SecureRandom secureRandom
     ) {
-        return new CreateRecoverPasswordService(
-                sendRecoverPasswordEmail,
-                recoverPasswordRepository,
+        return new ForgotPasswordService(
+                forgotPasswordRepository,
                 secureRandomGenerator,
                 accountRepository,
+                sendRecoverPasswordEmail,
                 passwordEncoder,
                 secureHasher,
                 secureRandom
@@ -152,7 +116,7 @@ public class UseCaseConfig {
     @Bean
     public DisableAccountService disableAccountService(
             AccountRepositoryPort accountRepository,
-            SignOutAllUseCase signOutAll,
+            RevokeAllSessionsUseCase signOutAll,
             PasswordEncoderPort passwordEncoder
     ) {
         return new DisableAccountService(accountRepository, signOutAll, passwordEncoder);
@@ -180,11 +144,14 @@ public class UseCaseConfig {
     }
 
     @Bean
-    public GetRecoverPasswordService getRecoverPasswordService(
-            RecoverPasswordRepositoryPort recoverPasswordRepository,
+    public GetRecoveryPasswordService getRecoverPasswordService(
+            RecoveryPasswordRepositoryPort recoveryPasswordRepository,
             SecureHasherPort secureHasher
     ) {
-        return new GetRecoverPasswordService(recoverPasswordRepository, secureHasher);
+        return new GetRecoveryPasswordService(
+                recoveryPasswordRepository,
+                secureHasher
+        );
     }
 
     @Bean
@@ -235,7 +202,7 @@ public class UseCaseConfig {
 
     @Bean
     public ResendAccountActivationEmailService resendAccountActivationEmailService(
-            SendAccountActivationEmailUseCase sendAccountActivationEmail,
+            SendAccountActivationUseCase sendAccountActivationEmail,
             AccountActivationRepositoryPort accountActivationRepository,
             PasswordEncoderPort passwordEncoder,
             SecureHasherPort secureHasher,
@@ -251,16 +218,16 @@ public class UseCaseConfig {
     }
 
     @Bean
-    public ResendRecoverPasswordEmailService resendRecoverPasswordEmailService(
-            SendRecoverPasswordEmailUseCase sendRecoverPasswordEmail,
-            RecoverPasswordRepositoryPort recoverPasswordRepository,
+    public ResendForgotPasswordService resendRecoverPasswordEmailService(
+            ForgotPasswordRepositoryPort forgotPasswordRepository,
+            SendForgotUseCase sendRecoverPasswordEmail,
             PasswordEncoderPort passwordEncoder,
             SecureHasherPort secureHasher,
             SecureRandom secureRandom
     ) {
-        return new ResendRecoverPasswordEmailService(
+        return new ResendForgotPasswordService(
+                forgotPasswordRepository,
                 sendRecoverPasswordEmail,
-                recoverPasswordRepository,
                 passwordEncoder,
                 secureHasher,
                 secureRandom
@@ -269,14 +236,14 @@ public class UseCaseConfig {
 
     @Bean
     public ResetPasswordService resetPasswordService(
-            RecoverPasswordRepositoryPort recoverPasswordRepository,
+            RecoveryPasswordRepositoryPort recoveryPasswordRepository,
             AccountRepositoryPort accountRepository,
             PasswordEncoderPort passwordEncoder,
-            SignOutAllUseCase signOutAll,
+            RevokeAllSessionsUseCase signOutAll,
             SecureHasherPort secureHasher
     ) {
         return new ResetPasswordService(
-                recoverPasswordRepository,
+                recoveryPasswordRepository,
                 accountRepository,
                 signOutAll,
                 passwordEncoder,
@@ -285,21 +252,49 @@ public class UseCaseConfig {
     }
 
     @Bean
-    public SendAccountActivationEmailService sendAccountActivationEmailService(EmailSenderPort emailSender) {
-        return new SendAccountActivationEmailService(emailSender);
+    public SendAccountActivationService sendAccountActivationEmailService(
+            EmailSenderPort emailSender
+    ) {
+        return new SendAccountActivationService(emailSender);
     }
 
     @Bean
-    public SendRecoverPasswordEmailService sendRecoverPasswordEmailService(EmailSenderPort emailSender) {
-        return new SendRecoverPasswordEmailService(emailSender);
+    public SendForgotService sendRecoverPasswordEmailService(
+            EmailSenderPort emailSender
+    ) {
+        return new SendForgotService(emailSender);
     }
 
     @Bean
-    public SessionSignOutService sessionSignOutService(
+    public RevokeSessionsService revokeSessionsService(
             SessionRepositoryPort sessionRepository,
             RefreshRepositoryPort refreshRepository
     ) {
-        return new SessionSignOutService(sessionRepository, refreshRepository);
+        return new RevokeSessionsService(sessionRepository, refreshRepository);
+    }
+
+    @Bean
+    public RevokeSessionService sessionSignOutService(
+            SessionRepositoryPort sessionRepository,
+            RefreshRepositoryPort refreshRepository,
+            SecureHasherPort secureHasher
+    ) {
+        return new RevokeSessionService(
+                sessionRepository,
+                refreshRepository,
+                secureHasher
+        );
+    }
+
+    @Bean
+    public RevokeAllSessionsService revokeAllSessionsService(
+            SessionRepositoryPort sessionRepository,
+            RefreshRepositoryPort refreshRepository
+    ) {
+        return new RevokeAllSessionsService(
+                sessionRepository,
+                refreshRepository
+        );
     }
 
     @Bean
@@ -322,30 +317,17 @@ public class UseCaseConfig {
     }
 
     @Bean
-    public SignOutAllService signOutAllService(
-            SessionRepositoryPort sessionRepository,
-            RefreshRepositoryPort refreshRepository
-    ) {
-        return new SignOutAllService(sessionRepository, refreshRepository);
-    }
-
-    @Bean
-    public SignOutService signOutService(
-            SessionRepositoryPort sessionRepository,
-            RefreshRepositoryPort refreshRepository,
-            SecureHasherPort secureHasher
-    ) {
-        return new SignOutService(sessionRepository, refreshRepository, secureHasher);
-    }
-
-    @Bean
-    public ValidateRecoverPasswordService validateRecoverPasswordService(
-            RecoverPasswordRepositoryPort recoverPasswordRepository,
+    public ValidateForgotPasswordService validateRecoverPasswordService(
+            RecoveryPasswordRepositoryPort recoveryPasswordRepository,
+            ForgotPasswordRepositoryPort forgotPasswordRepository,
+            SecureRandomGeneratorPort secureRandomGenerator,
             PasswordEncoderPort passwordEncoder,
             SecureHasherPort secureHasher
     ) {
-        return new ValidateRecoverPasswordService(
-                recoverPasswordRepository,
+        return new ValidateForgotPasswordService(
+                recoveryPasswordRepository,
+                forgotPasswordRepository,
+                secureRandomGenerator,
                 passwordEncoder,
                 secureHasher
         );

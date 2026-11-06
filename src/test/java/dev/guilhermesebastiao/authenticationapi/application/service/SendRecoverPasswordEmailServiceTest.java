@@ -1,6 +1,6 @@
 package dev.guilhermesebastiao.authenticationapi.application.service;
 
-import dev.guilhermesebastiao.authenticationapi.adapter.out.smtp.EmailSendPaylod;
+import dev.guilhermesebastiao.authenticationapi.adapter.out.smtp.payload.EmailSendPaylod;
 import dev.guilhermesebastiao.authenticationapi.application.port.out.EmailSenderPort;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -23,7 +23,7 @@ class SendRecoverPasswordEmailServiceTest {
     private EmailSenderPort emailSender;
 
     @InjectMocks
-    private SendRecoverPasswordEmailService service;
+    private SendForgotService service;
 
     @Test
     @DisplayName("Should send the password recovery email with the recipient and OTP")

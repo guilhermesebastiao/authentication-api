@@ -5,9 +5,11 @@ import dev.guilhermesebastiao.authenticationapi.domain.enums.DomainErrorCode;
 public class AccountAlreadyExistsException extends DomainException {
     public AccountAlreadyExistsException() {
         super(
-                DomainErrorCode.ACCOUNT_ALREADY_EXISTS,
+                "Account Already Exists",
+                409,
                 "An account with the provided identifier already exists.",
-                409
+                "AccountAlreadyExistsException: An account with the provided identifier already exists.",
+                DomainErrorCode.ACCOUNT_ALREADY_EXISTS
         );
     }
 }

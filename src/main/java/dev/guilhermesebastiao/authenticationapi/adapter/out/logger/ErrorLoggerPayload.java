@@ -12,8 +12,6 @@ public record ErrorLoggerPayload(
         int status,
         String ip,
         DomainErrorCode errorCode,
-        Throwable exception,
-        String userId,
-        String sessionToken
+        Throwable exception
 ) implements LoggerPayload {
 }

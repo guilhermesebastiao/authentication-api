@@ -5,26 +5,23 @@ import dev.guilhermesebastiao.authenticationapi.adapter.in.validation.valid_pass
 import jakarta.validation.constraints.NotBlank;
 import org.hibernate.validator.constraints.Length;
 
-import static dev.guilhermesebastiao.authenticationapi.adapter.in.validation.ValidationErrorCode.*;
-
-
 @FieldsMatch(field = "newPassword", fieldMatch = "confirmPassword")
 public record ChangePasswordRequest(
-        @NotBlank(message = REQUIRED)
-        @Length(min = 6, message = INVALID_MIN_SIZE)
-        @Length(max = 20, message = INVALID_MAX_SIZE)
+        @NotBlank
+        @Length(min = 6)
+        @Length(max = 20)
         @ValidPassword
         String currentPassword,
 
-        @NotBlank(message = REQUIRED)
-        @Length(min = 6, message = INVALID_MIN_SIZE)
-        @Length(max = 20, message = INVALID_MAX_SIZE)
+        @NotBlank
+        @Length(min = 6)
+        @Length(max = 20)
         @ValidPassword
         String newPassword,
 
-        @NotBlank(message = REQUIRED)
-        @Length(min = 6, message = INVALID_MIN_SIZE)
-        @Length(max = 20, message = INVALID_MAX_SIZE)
+        @NotBlank
+        @Length(min = 6)
+        @Length(max = 20)
         @ValidPassword
         String confirmPassword
 ) {

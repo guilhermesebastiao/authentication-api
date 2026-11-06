@@ -1,7 +1,7 @@
 package dev.guilhermesebastiao.authenticationapi.adapter.out.persistence.adapter;
 
 import dev.guilhermesebastiao.authenticationapi.adapter.out.persistence.entity.RefreshEntity;
-import dev.guilhermesebastiao.authenticationapi.adapter.out.persistence.mappers.JpaRefreshMapper;
+import dev.guilhermesebastiao.authenticationapi.adapter.out.persistence.mapper.JpaRefreshMapper;
 import dev.guilhermesebastiao.authenticationapi.adapter.out.persistence.repository.JpaRefreshRepository;
 import dev.guilhermesebastiao.authenticationapi.application.port.out.RefreshRepositoryPort;
 import dev.guilhermesebastiao.authenticationapi.domain.model.Refresh;
@@ -32,6 +32,11 @@ public class RefreshRepositoryAdapter implements RefreshRepositoryPort {
                 .toList();
 
         repository.saveAll(entities);
+    }
+
+    @Override
+    public Optional<Refresh> findByRefreshBySessionId(UUID sessionId) {
+        return repository.findByRefreshBySessionId(sessionId).map(mapper::toDomain);
     }
 
     @Override

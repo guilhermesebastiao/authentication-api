@@ -1,13 +1,12 @@
 package dev.guilhermesebastiao.authenticationapi.application.service;
 
-import dev.guilhermesebastiao.authenticationapi.application.command.AccountActivationCommand;
+import dev.guilhermesebastiao.authenticationapi.application.dto.input.AccountActivationInput;
 import dev.guilhermesebastiao.authenticationapi.application.port.in.AccountActivateUseCase;
 import dev.guilhermesebastiao.authenticationapi.application.port.out.AccountActivationRepositoryPort;
 import dev.guilhermesebastiao.authenticationapi.application.port.out.AccountRepositoryPort;
 import dev.guilhermesebastiao.authenticationapi.application.port.out.PasswordEncoderPort;
 import dev.guilhermesebastiao.authenticationapi.application.port.out.SecureHasherPort;
 import dev.guilhermesebastiao.authenticationapi.domain.enums.AccountStatus;
-import br.com.guisebastiao.authenticationapi.domain.exception.*;
 import dev.guilhermesebastiao.authenticationapi.domain.exception.AccountActivationExpiredException;
 import dev.guilhermesebastiao.authenticationapi.domain.exception.AccountActivationNotFoundException;
 import dev.guilhermesebastiao.authenticationapi.domain.exception.AccountAlreadyActivatedException;
@@ -36,8 +35,8 @@ public class AccountActivateService implements AccountActivateUseCase {
     }
 
     @Override
-    public void execute(AccountActivationCommand command) {
-        String activationTokenHash = secureHasher.hash(command.activationToken());
+    public void execute(AccountActivationInput input) {
+        String activationTokenHash = secureHasher.hash(input.activationToken());
 
         AccountActivation accountActivation = accountActivationRepository
                 .findByActivationTokenHash(activationTokenHash)
@@ -45,7 +44,7 @@ public class AccountActivateService implements AccountActivateUseCase {
 
         validateAccountActivation(accountActivation);
 
-        boolean otpIsValid = passwordEncoder.matches(command.otpCode(), accountActivation.getOtpCodeHash());
+        boolean otpIsValid = passwordEncoder.matches(input.otp(), accountActivation.getOtpHash());
 
         if (!otpIsValid) {
             throw new IncorrectOtpException();

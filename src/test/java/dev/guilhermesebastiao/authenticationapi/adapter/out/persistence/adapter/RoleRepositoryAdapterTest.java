@@ -1,7 +1,7 @@
 package dev.guilhermesebastiao.authenticationapi.adapter.out.persistence.adapter;
 
 import dev.guilhermesebastiao.authenticationapi.adapter.out.persistence.entity.RoleEntity;
-import dev.guilhermesebastiao.authenticationapi.adapter.out.persistence.mappers.JpaRoleMapper;
+import dev.guilhermesebastiao.authenticationapi.adapter.out.persistence.mapper.JpaRoleMapper;
 import dev.guilhermesebastiao.authenticationapi.adapter.out.persistence.repository.JpaRoleRepository;
 import dev.guilhermesebastiao.authenticationapi.domain.model.Role;
 import org.junit.jupiter.api.DisplayName;

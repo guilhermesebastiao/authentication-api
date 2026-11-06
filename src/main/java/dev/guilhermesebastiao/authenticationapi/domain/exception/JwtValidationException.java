@@ -6,9 +6,11 @@ import dev.guilhermesebastiao.authenticationapi.domain.enums.JwtValidationStatus
 public class JwtValidationException extends DomainException {
     public JwtValidationException(JwtValidationStatus status) {
         super(
-                mapErrorCode(status).code,
+                "JWT Validation Failed",
+                401,
                 mapErrorCode(status).message,
-                401
+                "JwtValidationException: " + mapErrorCode(status).message,
+                mapErrorCode(status).code
         );
     }
 

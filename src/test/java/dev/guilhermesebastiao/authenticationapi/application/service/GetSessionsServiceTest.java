@@ -1,10 +1,10 @@
 package dev.guilhermesebastiao.authenticationapi.application.service;
 
-import dev.guilhermesebastiao.authenticationapi.application.command.PageQueryCommand;
+import dev.guilhermesebastiao.authenticationapi.application.dto.common.PageQuery;
 import dev.guilhermesebastiao.authenticationapi.application.port.out.SecureHasherPort;
 import dev.guilhermesebastiao.authenticationapi.application.port.out.SessionRepositoryPort;
-import dev.guilhermesebastiao.authenticationapi.application.result.PageResult;
-import dev.guilhermesebastiao.authenticationapi.application.result.SessionResult;
+import dev.guilhermesebastiao.authenticationapi.application.dto.common.PageResult;
+import dev.guilhermesebastiao.authenticationapi.application.dto.output.SessionOutput;
 import dev.guilhermesebastiao.authenticationapi.domain.enums.DeviceType;
 import dev.guilhermesebastiao.authenticationapi.domain.exception.SessionNotFoundException;
 import dev.guilhermesebastiao.authenticationapi.domain.model.Account;
@@ -46,7 +46,7 @@ class GetSessionsServiceTest {
         account.setId(UUID.randomUUID());
         String currentSessionToken = "current-session-token";
         String currentSessionTokenHash = "current-session-token-hash";
-        PageQueryCommand paging = new PageQueryCommand(1, 10);
+        PageQuery paging = new PageQuery(1, 10);
         Instant firstLastSeenAt = Instant.parse("2026-10-04T10:00:00Z");
         Instant firstCreatedAt = Instant.parse("2026-10-01T10:00:00Z");
         Instant secondLastSeenAt = Instant.parse("2026-10-03T10:00:00Z");
@@ -82,7 +82,7 @@ class GetSessionsServiceTest {
         given(secureHasher.hash(currentSessionToken))
                 .willReturn(currentSessionTokenHash);
 
-        PageResult<SessionResult> result = service.execute(account, currentSessionToken, paging);
+        PageResult<SessionOutput> result = service.execute(account, currentSessionToken, paging);
 
         assertEquals(2, result.content().size());
         assertEquals(2, result.totalItems());
@@ -90,7 +90,7 @@ class GetSessionsServiceTest {
         assertEquals(1, result.page());
         assertEquals(10, result.size());
 
-        SessionResult currentResult = result.content().get(0);
+        SessionOutput currentResult = result.content().get(0);
         assertEquals(currentSession.getId(), currentResult.id());
         assertEquals(DeviceType.DESKTOP, currentResult.type());
         assertEquals(firstLastSeenAt, currentResult.lastSeenAt());
@@ -98,7 +98,7 @@ class GetSessionsServiceTest {
         assertTrue(currentResult.isCurrent());
         assertEquals(firstCreatedAt, currentResult.createdAt());
 
-        SessionResult otherResult = result.content().get(1);
+        SessionOutput otherResult = result.content().get(1);
         assertEquals(otherSession.getId(), otherResult.id());
         assertEquals(DeviceType.MOBILE, otherResult.type());
         assertFalse(otherResult.isCurrent());
@@ -114,7 +114,7 @@ class GetSessionsServiceTest {
     void givenBlankCurrentSessionToken_whenGetSessions_thenSessionNotFoundExceptionIsThrown() {
         Account account = new Account();
         account.setId(UUID.randomUUID());
-        PageQueryCommand paging = new PageQueryCommand(1, 10);
+        PageQuery paging = new PageQuery(1, 10);
 
         assertThrows(
                 SessionNotFoundException.class,
@@ -131,7 +131,7 @@ class GetSessionsServiceTest {
         Account account = new Account();
         account.setId(UUID.randomUUID());
         String currentSessionToken = "current-session-token";
-        PageQueryCommand paging = new PageQueryCommand(2, 5);
+        PageQuery paging = new PageQuery(2, 5);
         PageResult<Session> sessions = new PageResult<>(List.of(), 0, 0, 2, 5);
 
         given(sessionRepository.findAllByAccountIdAndNotRevoked(account.getId(), paging))
@@ -140,7 +140,7 @@ class GetSessionsServiceTest {
         given(secureHasher.hash(currentSessionToken))
                 .willReturn("current-session-token-hash");
 
-        PageResult<SessionResult> result = service.execute(account, currentSessionToken, paging);
+        PageResult<SessionOutput> result = service.execute(account, currentSessionToken, paging);
 
         assertEquals(List.of(), result.content());
         assertEquals(0, result.totalItems());

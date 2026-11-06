@@ -49,7 +49,7 @@ public class AccountEntity {
             fetch = FetchType.LAZY,
             cascade = CascadeType.ALL
     )
-    private List<RecoverPasswordEntity> recovers;
+    private List<ForgotPasswordEntity> forgotPasswords;
 
     @OneToMany(
             mappedBy = "account",

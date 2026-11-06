@@ -1,32 +1,26 @@
 package dev.guilhermesebastiao.authenticationapi.adapter.in.mapper;
 
-import br.com.guisebastiao.authenticationapi.adapter.in.dto.request.*;
-import dev.guilhermesebastiao.authenticationapi.adapter.in.dto.request.GoogleSignInRequest;
 import dev.guilhermesebastiao.authenticationapi.adapter.in.dto.request.RefreshTokenRequest;
 import dev.guilhermesebastiao.authenticationapi.adapter.in.dto.request.SignInRequest;
 import dev.guilhermesebastiao.authenticationapi.adapter.in.dto.request.SignUpRequest;
 import dev.guilhermesebastiao.authenticationapi.adapter.in.dto.response.AccountActivationResponse;
 import dev.guilhermesebastiao.authenticationapi.adapter.in.dto.response.AuthResponse;
-import br.com.guisebastiao.authenticationapi.application.command.*;
-import dev.guilhermesebastiao.authenticationapi.application.command.CreateAccountCommand;
-import dev.guilhermesebastiao.authenticationapi.application.command.GoogleSignInCommand;
-import dev.guilhermesebastiao.authenticationapi.application.command.RefreshTokenCommand;
-import dev.guilhermesebastiao.authenticationapi.application.command.SignInCommand;
-import dev.guilhermesebastiao.authenticationapi.application.result.AccountActivationResult;
-import dev.guilhermesebastiao.authenticationapi.application.result.AuthResult;
+import dev.guilhermesebastiao.authenticationapi.application.dto.input.CreateAccountInput;
+import dev.guilhermesebastiao.authenticationapi.application.dto.input.RefreshTokenInput;
+import dev.guilhermesebastiao.authenticationapi.application.dto.input.SignInInput;
+import dev.guilhermesebastiao.authenticationapi.application.dto.output.AccountActivationOutput;
+import dev.guilhermesebastiao.authenticationapi.application.dto.output.AuthOutput;
 import org.mapstruct.Mapper;
 
 @Mapper(componentModel = "spring")
 public interface AuthMapper {
-    AuthResponse toResponse(AuthResult result);
+    AuthResponse toResponse(AuthOutput output);
 
-    AccountActivationResponse toResponse(AccountActivationResult result);
+    AccountActivationResponse toResponse(AccountActivationOutput output);
 
-    SignInCommand toCommand(SignInRequest request);
+    SignInInput toInput(SignInRequest request);
 
-    CreateAccountCommand toCommand(SignUpRequest request);
+    CreateAccountInput toInput(SignUpRequest request);
 
-    GoogleSignInCommand toCommand(GoogleSignInRequest request);
-
-    RefreshTokenCommand toCommand(RefreshTokenRequest request);
+    RefreshTokenInput toInput(RefreshTokenRequest request);
 }

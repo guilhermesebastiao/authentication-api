@@ -1,7 +1,7 @@
 package dev.guilhermesebastiao.authenticationapi.application.service;
 
-import dev.guilhermesebastiao.authenticationapi.application.command.DisableAccountCommand;
-import dev.guilhermesebastiao.authenticationapi.application.port.in.SignOutAllUseCase;
+import dev.guilhermesebastiao.authenticationapi.application.dto.input.DisableAccountInput;
+import dev.guilhermesebastiao.authenticationapi.application.port.in.RevokeAllSessionsUseCase;
 import dev.guilhermesebastiao.authenticationapi.application.port.out.AccountRepositoryPort;
 import dev.guilhermesebastiao.authenticationapi.application.port.out.PasswordEncoderPort;
 import dev.guilhermesebastiao.authenticationapi.domain.exception.AccountInvalidCredentialsException;
@@ -30,7 +30,7 @@ class DisableAccountServiceTest {
     private AccountRepositoryPort accountRepository;
 
     @Mock
-    private SignOutAllUseCase signOutAllUseCase;
+    private RevokeAllSessionsUseCase revokeAllSessionsUseCase;
 
     @Mock
     private PasswordEncoderPort passwordEncoder;
@@ -43,7 +43,7 @@ class DisableAccountServiceTest {
     void givenValidPassword_whenDisableAccount_thenAccountIsDisabledAndSessionsAreSignedOut() {
         Account account = new Account();
         account.setPasswordHash("password-hash");
-        DisableAccountCommand command = new DisableAccountCommand("current-password");
+        DisableAccountInput command = new DisableAccountInput("current-password");
         Instant beforeExecution = Instant.now();
 
         given(passwordEncoder.matches(command.password(), account.getPasswordHash()))
@@ -60,7 +60,7 @@ class DisableAccountServiceTest {
                 .matches(command.password(), account.getPasswordHash());
 
         then(accountRepository).should().save(account);
-        then(signOutAllUseCase).should().execute(account);
+        then(revokeAllSessionsUseCase).should().execute(account);
     }
 
     @Test
@@ -68,7 +68,7 @@ class DisableAccountServiceTest {
     void givenInvalidPassword_whenDisableAccount_thenInvalidCredentialsExceptionIsThrown() {
         Account account = new Account();
         account.setPasswordHash("password-hash");
-        DisableAccountCommand command = new DisableAccountCommand("wrong-password");
+        DisableAccountInput command = new DisableAccountInput("wrong-password");
 
         given(passwordEncoder.matches(command.password(), account.getPasswordHash()))
                 .willReturn(false);
@@ -81,6 +81,6 @@ class DisableAccountServiceTest {
                 .matches(command.password(), account.getPasswordHash());
 
         then(accountRepository).should(never()).save(account);
-        then(signOutAllUseCase).shouldHaveNoInteractions();
+        then(revokeAllSessionsUseCase).shouldHaveNoInteractions();
     }
 }

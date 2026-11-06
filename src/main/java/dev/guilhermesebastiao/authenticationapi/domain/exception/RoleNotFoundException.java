@@ -5,9 +5,11 @@ import dev.guilhermesebastiao.authenticationapi.domain.enums.DomainErrorCode;
 public class RoleNotFoundException extends DomainException {
     public RoleNotFoundException() {
         super(
-                DomainErrorCode.ROLE_NOT_FOUND,
+                "Role Not Found",
+                404,
                 "The requested role could not be found.",
-                404
+                "RoleNotFoundException: The requested role could not be found.",
+                DomainErrorCode.ROLE_NOT_FOUND
         );
     }
 }

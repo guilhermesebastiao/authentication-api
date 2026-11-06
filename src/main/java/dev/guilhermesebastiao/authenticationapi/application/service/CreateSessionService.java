@@ -5,8 +5,8 @@ import dev.guilhermesebastiao.authenticationapi.application.port.out.IpGeolocati
 import dev.guilhermesebastiao.authenticationapi.application.port.out.SecureHasherPort;
 import dev.guilhermesebastiao.authenticationapi.application.port.out.SecureRandomGeneratorPort;
 import dev.guilhermesebastiao.authenticationapi.application.port.out.SessionRepositoryPort;
-import dev.guilhermesebastiao.authenticationapi.application.result.CreateSessionResult;
-import dev.guilhermesebastiao.authenticationapi.application.result.IpLocationResult;
+import dev.guilhermesebastiao.authenticationapi.application.dto.output.CreateSessionOutput;
+import dev.guilhermesebastiao.authenticationapi.application.dto.output.IpLocationOutput;
 import dev.guilhermesebastiao.authenticationapi.domain.enums.DeviceType;
 import dev.guilhermesebastiao.authenticationapi.domain.model.Account;
 import dev.guilhermesebastiao.authenticationapi.domain.model.Session;
@@ -40,7 +40,7 @@ public class CreateSessionService implements CreateSessionUseCase {
     }
 
     @Override
-    public CreateSessionResult execute(Account account, String userAgent, String ipAddress) {
+    public CreateSessionOutput execute(Account account, String userAgent, String ipAddress) {
         String sessionToken = secureRandomGenerator.generate(SESSION_TOKEN_SIZE);
         String sessionTokenHash = secureHasher.hash(sessionToken);
 
@@ -62,17 +62,17 @@ public class CreateSessionService implements CreateSessionUseCase {
 
         Session session = sessionRepository.save(sessionEntity);
 
-         return new CreateSessionResult(sessionToken, session);
+         return new CreateSessionOutput(sessionToken, session);
     }
 
     private String createLocation(String ipAddress) {
-        Optional<IpLocationResult> findLocation = ipGeolocation.findLocation(ipAddress);
+        Optional<IpLocationOutput> findLocation = ipGeolocation.findLocation(ipAddress);
 
         if (findLocation.isEmpty()) {
             return "Localização desconhecida";
         }
 
-        IpLocationResult location = findLocation.get();
+        IpLocationOutput location = findLocation.get();
 
         return Stream.of(location.city(), location.country())
                 .filter(value -> value != null && !value.isBlank())

@@ -32,7 +32,7 @@ class SignOutAllServiceTest {
     private RefreshRepositoryPort refreshRepository;
 
     @InjectMocks
-    private SignOutAllService service;
+    private RevokeAllSessionsService service;
 
     @Test
     @DisplayName("Should revoke all active sessions and refresh tokens of the account")

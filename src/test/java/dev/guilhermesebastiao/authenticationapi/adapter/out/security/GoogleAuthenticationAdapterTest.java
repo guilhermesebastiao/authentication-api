@@ -1,6 +1,7 @@
 package dev.guilhermesebastiao.authenticationapi.adapter.out.security;
 
-import dev.guilhermesebastiao.authenticationapi.application.result.GoogleAuthorizationResult;
+import dev.guilhermesebastiao.authenticationapi.adapter.out.security.adapter.GoogleAuthenticationAdapter;
+import dev.guilhermesebastiao.authenticationapi.application.dto.output.GoogleAuthorizationOutput;
 import dev.guilhermesebastiao.authenticationapi.domain.exception.GoogleAuthenticationException;
 import dev.guilhermesebastiao.authenticationapi.domain.exception.InvalidGoogleTokenException;
 import dev.guilhermesebastiao.authenticationapi.infrastructure.properties.GoogleProperties;
@@ -62,7 +63,7 @@ class GoogleAuthenticationAdapterTest {
 
         try (MockedConstruction<GoogleAuthorizationCodeTokenRequest> ignored =
                      mockTokenExchange(tokenResponse)) {
-            GoogleAuthorizationResult result = adapter.authorize(code);
+            GoogleAuthorizationOutput result = adapter.authorize(code);
 
             assertEquals("user@example.com", result.email());
         }

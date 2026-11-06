@@ -1,16 +1,14 @@
 package dev.guilhermesebastiao.authenticationapi.application.service;
 
-import dev.guilhermesebastiao.authenticationapi.application.command.ValidateRecoverPasswordCommand;
+import dev.guilhermesebastiao.authenticationapi.application.dto.input.ValidateForgotPasswordInput;
 import dev.guilhermesebastiao.authenticationapi.application.port.out.PasswordEncoderPort;
-import dev.guilhermesebastiao.authenticationapi.application.port.out.RecoverPasswordRepositoryPort;
 import dev.guilhermesebastiao.authenticationapi.application.port.out.SecureHasherPort;
-import dev.guilhermesebastiao.authenticationapi.application.result.RecoverPasswordResult;
-import dev.guilhermesebastiao.authenticationapi.domain.exception.RecoverPasswordAlreadyUsedException;
-import dev.guilhermesebastiao.authenticationapi.domain.exception.RecoverPasswordExpiredException;
-import dev.guilhermesebastiao.authenticationapi.domain.exception.RecoverPasswordNotFoundException;
+import dev.guilhermesebastiao.authenticationapi.application.dto.output.ForgotPasswordOutput;
+import dev.guilhermesebastiao.authenticationapi.domain.exception.RecoveryPasswordAlreadyUsedException;
+import dev.guilhermesebastiao.authenticationapi.domain.exception.ForgotPasswordExpiredException;
+import dev.guilhermesebastiao.authenticationapi.domain.exception.RecoveryPasswordNotFoundException;
 import dev.guilhermesebastiao.authenticationapi.domain.exception.IncorrectOtpException;
 import dev.guilhermesebastiao.authenticationapi.domain.model.Account;
-import dev.guilhermesebastiao.authenticationapi.domain.model.RecoverPassword;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -44,12 +42,12 @@ class ValidateRecoverPasswordServiceTest {
     private SecureHasherPort secureHasher;
 
     @InjectMocks
-    private ValidateRecoverPasswordService service;
+    private ValidateForgotPasswordService service;
 
     @Test
     @DisplayName("Should verify the recovery request when the token and OTP are valid")
     void givenValidRecoveryTokenAndOtp_whenValidateRecoverPassword_thenRecoveryIsVerifiedAndReturned() {
-        ValidateRecoverPasswordCommand command = new ValidateRecoverPasswordCommand("recover-token", "123456");
+        ValidateForgotPasswordInput command = new ValidateForgotPasswordInput("recover-token", "123456");
         String recoverTokenHash = "recover-token-hash";
         String otpCodeHash = "otp-code-hash";
         Instant now = Instant.now();
@@ -75,7 +73,7 @@ class ValidateRecoverPasswordServiceTest {
         given(recoverPasswordRepository.save(any(RecoverPassword.class)))
                 .willReturn(recoverPassword);
 
-        RecoverPasswordResult result = service.execute(command);
+        ForgotPasswordOutput result = service.execute(command);
 
         assertEquals(account.getEmail(), result.email());
         assertEquals(command.recoverToken(), result.recoverToken());
@@ -96,7 +94,7 @@ class ValidateRecoverPasswordServiceTest {
     @Test
     @DisplayName("Should reject the request when the recovery token is not found")
     void givenUnknownRecoveryToken_whenValidateRecoverPassword_thenRecoveryNotFoundExceptionIsThrown() {
-        ValidateRecoverPasswordCommand command = new ValidateRecoverPasswordCommand("unknown-recover-token", "123456");
+        ValidateForgotPasswordInput command = new ValidateForgotPasswordInput("unknown-recover-token", "123456");
         String recoverTokenHash = "unknown-recover-token-hash";
 
         given(secureHasher.hash(command.recoverToken()))
@@ -106,7 +104,7 @@ class ValidateRecoverPasswordServiceTest {
                 .willReturn(Optional.empty());
 
         assertThrows(
-                RecoverPasswordNotFoundException.class,
+                RecoveryPasswordNotFoundException.class,
                 () -> service.execute(command)
         );
 
@@ -122,7 +120,7 @@ class ValidateRecoverPasswordServiceTest {
     @Test
     @DisplayName("Should reject the request when the recovery has expired")
     void givenExpiredRecovery_whenValidateRecoverPassword_thenRecoveryExpiredExceptionIsThrown() {
-        ValidateRecoverPasswordCommand command = new ValidateRecoverPasswordCommand("expired-recover-token", "123456");
+        ValidateForgotPasswordInput command = new ValidateForgotPasswordInput("expired-recover-token", "123456");
         String recoverTokenHash = "expired-recover-token-hash";
         RecoverPassword recoverPassword = new RecoverPassword();
         recoverPassword.setExpiresAt(Instant.now().minusSeconds(60));
@@ -134,7 +132,7 @@ class ValidateRecoverPasswordServiceTest {
                 .willReturn(Optional.of(recoverPassword));
 
         assertThrows(
-                RecoverPasswordExpiredException.class,
+                ForgotPasswordExpiredException.class,
                 () -> service.execute(command)
         );
 
@@ -148,7 +146,7 @@ class ValidateRecoverPasswordServiceTest {
     @Test
     @DisplayName("Should reject the request when the recovery has already been used")
     void givenUsedRecovery_whenValidateRecoverPassword_thenRecoveryAlreadyUsedExceptionIsThrown() {
-        ValidateRecoverPasswordCommand command = new ValidateRecoverPasswordCommand("used-recover-token", "123456");
+        ValidateForgotPasswordInput command = new ValidateForgotPasswordInput("used-recover-token", "123456");
         String recoverTokenHash = "used-recover-token-hash";
         RecoverPassword recoverPassword = new RecoverPassword();
         recoverPassword.setExpiresAt(Instant.now().plusSeconds(60));
@@ -161,7 +159,7 @@ class ValidateRecoverPasswordServiceTest {
                 .willReturn(Optional.of(recoverPassword));
 
         assertThrows(
-                RecoverPasswordAlreadyUsedException.class,
+                RecoveryPasswordAlreadyUsedException.class,
                 () -> service.execute(command)
         );
 
@@ -175,7 +173,7 @@ class ValidateRecoverPasswordServiceTest {
     @Test
     @DisplayName("Should reject the request when the OTP is incorrect")
     void givenIncorrectOtp_whenValidateRecoverPassword_thenIncorrectOtpExceptionIsThrown() {
-        ValidateRecoverPasswordCommand command = new ValidateRecoverPasswordCommand("recover-token", "654321");
+        ValidateForgotPasswordInput command = new ValidateForgotPasswordInput("recover-token", "654321");
         String recoverTokenHash = "recover-token-hash";
         RecoverPassword recoverPassword = new RecoverPassword();
         recoverPassword.setOtpCodeHash("otp-code-hash");

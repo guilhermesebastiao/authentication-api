@@ -4,8 +4,8 @@ import dev.guilhermesebastiao.authenticationapi.application.port.out.IpGeolocati
 import dev.guilhermesebastiao.authenticationapi.application.port.out.SecureHasherPort;
 import dev.guilhermesebastiao.authenticationapi.application.port.out.SecureRandomGeneratorPort;
 import dev.guilhermesebastiao.authenticationapi.application.port.out.SessionRepositoryPort;
-import dev.guilhermesebastiao.authenticationapi.application.result.CreateSessionResult;
-import dev.guilhermesebastiao.authenticationapi.application.result.IpLocationResult;
+import dev.guilhermesebastiao.authenticationapi.application.dto.output.CreateSessionOutput;
+import dev.guilhermesebastiao.authenticationapi.application.dto.output.IpLocationOutput;
 import dev.guilhermesebastiao.authenticationapi.domain.enums.DeviceType;
 import dev.guilhermesebastiao.authenticationapi.domain.model.Account;
 import dev.guilhermesebastiao.authenticationapi.domain.model.Session;
@@ -63,12 +63,12 @@ class CreateSessionServiceTest {
                 .willReturn(sessionTokenHash);
 
         given(ipGeolocation.findLocation(ipAddress))
-                .willReturn(Optional.of(new IpLocationResult("brAzil", "sao paulo")));
+                .willReturn(Optional.of(new IpLocationOutput("brAzil", "sao paulo")));
 
         given(sessionRepository.save(any(Session.class)))
                 .willAnswer(invocation -> invocation.getArgument(0));
 
-        CreateSessionResult result = service.execute(account, userAgent, ipAddress);
+        CreateSessionOutput result = service.execute(account, userAgent, ipAddress);
         Session savedSession = result.session();
         Instant afterExecution = Instant.now();
 
@@ -112,7 +112,7 @@ class CreateSessionServiceTest {
         given(sessionRepository.save(any(Session.class)))
                 .willAnswer(invocation -> invocation.getArgument(0));
 
-        CreateSessionResult result = service.execute(account, userAgent, ipAddress);
+        CreateSessionOutput result = service.execute(account, userAgent, ipAddress);
 
         assertEquals("Localização desconhecida", result.session().getLocation());
         then(ipGeolocation).should().findLocation(ipAddress);
@@ -132,12 +132,12 @@ class CreateSessionServiceTest {
                 .willReturn("session-token-hash");
 
         given(ipGeolocation.findLocation(ipAddress))
-                .willReturn(Optional.of(new IpLocationResult(null, "  sAO PAULO ")));
+                .willReturn(Optional.of(new IpLocationOutput(null, "  sAO PAULO ")));
 
         given(sessionRepository.save(any(Session.class)))
                 .willAnswer(invocation -> invocation.getArgument(0));
 
-        CreateSessionResult result = service.execute(account, "unknown-agent", ipAddress);
+        CreateSessionOutput result = service.execute(account, "unknown-agent", ipAddress);
 
         assertEquals("Sao paulo", result.session().getLocation());
         then(ipGeolocation).should().findLocation(ipAddress);
@@ -162,7 +162,7 @@ class CreateSessionServiceTest {
         given(sessionRepository.save(any(Session.class)))
                 .willAnswer(invocation -> invocation.getArgument(0));
 
-        CreateSessionResult result = service.execute(account, null, ipAddress);
+        CreateSessionOutput result = service.execute(account, null, ipAddress);
 
         assertEquals(DeviceType.OTHER, result.session().getType());
         then(sessionRepository).should().save(result.session());
@@ -186,7 +186,7 @@ class CreateSessionServiceTest {
         given(sessionRepository.save(any(Session.class)))
                 .willAnswer(invocation -> invocation.getArgument(0));
 
-        CreateSessionResult result = service.execute(account, "curl/8.0", ipAddress);
+        CreateSessionOutput result = service.execute(account, "curl/8.0", ipAddress);
 
         assertEquals(DeviceType.OTHER, result.session().getType());
         then(sessionRepository).should().save(result.session());

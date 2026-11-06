@@ -1,6 +1,6 @@
 package dev.guilhermesebastiao.authenticationapi.application.service;
 
-import dev.guilhermesebastiao.authenticationapi.application.result.AccountResult;
+import dev.guilhermesebastiao.authenticationapi.application.dto.output.AccountOutput;
 import dev.guilhermesebastiao.authenticationapi.domain.model.Account;
 import dev.guilhermesebastiao.authenticationapi.domain.model.Role;
 import org.junit.jupiter.api.DisplayName;
@@ -28,7 +28,7 @@ class GetCurrentAccountServiceTest {
         auditorRole.setName("AUDITOR");
         account.setRoles(Set.of(administratorRole, auditorRole));
 
-        AccountResult result = service.execute(account);
+        AccountOutput result = service.execute(account);
 
         assertEquals(accountId, result.id());
         assertEquals(Set.of("ADMIN", "AUDITOR"), result.roles());
@@ -45,7 +45,7 @@ class GetCurrentAccountServiceTest {
         account.setEmail(accountEmail);
         account.setRoles(Set.of());
 
-        AccountResult result = service.execute(account);
+        AccountOutput result = service.execute(account);
 
         assertEquals(accountId, result.id());
         assertEquals(accountEmail, result.email());

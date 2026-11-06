@@ -5,9 +5,11 @@ import dev.guilhermesebastiao.authenticationapi.domain.enums.DomainErrorCode;
 public class SessionExpiredException extends DomainException {
     public SessionExpiredException() {
         super(
-                DomainErrorCode.SESSION_EXPIRED,
+                "Session Expired",
+                401,
                 "The session has expired.",
-                401
+                "SessionExpiredException: The session has expired.",
+                DomainErrorCode.SESSION_EXPIRED
         );
     }
 }

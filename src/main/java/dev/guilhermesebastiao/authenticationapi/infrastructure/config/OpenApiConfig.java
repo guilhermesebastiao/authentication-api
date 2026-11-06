@@ -1,11 +1,20 @@
 package dev.guilhermesebastiao.authenticationapi.infrastructure.config;
 
+import dev.guilhermesebastiao.authenticationapi.adapter.in.dto.common.ApiErrorBody;
+import io.swagger.v3.core.converter.ModelConverters;
 import io.swagger.v3.oas.models.Components;
 import io.swagger.v3.oas.models.OpenAPI;
 import io.swagger.v3.oas.models.info.Contact;
 import io.swagger.v3.oas.models.info.Info;
 import io.swagger.v3.oas.models.info.License;
+import io.swagger.v3.oas.models.media.Content;
+import io.swagger.v3.oas.models.media.MediaType;
+import io.swagger.v3.oas.models.media.Schema;
+import io.swagger.v3.oas.models.responses.ApiResponse;
+import io.swagger.v3.oas.models.Operation;
 import io.swagger.v3.oas.models.security.SecurityScheme;
+import org.springdoc.core.customizers.OpenApiCustomizer;
+import org.springdoc.core.customizers.OperationCustomizer;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -21,8 +30,8 @@ public class OpenApiConfig {
                                 .description("REST API for account registration, authentication, session management, account activation, and password recovery.")
                                 .contact(new Contact()
                                         .name("Guilherme Sebastião")
-                                        .email("guilhermesebastiaou.u@gmail.com")
-                                        .url("https://github.com/guisebastiao/authentication-api")
+                                        .email("contact@guilhermesebastiao.dev")
+                                        .url("https://github.com/guilhermesebastiao/authentication-api")
                                 )
                                 .license(new License()
                                         .name("MIT License")
@@ -46,5 +55,63 @@ public class OpenApiConfig {
                                         .name("X-Session")
                         )
                 );
+    }
+
+    @Bean
+    public OpenApiCustomizer errorSchemaCustomizer() {
+        return openApi -> {
+            if (openApi.getComponents() == null) {
+                openApi.setComponents(new Components());
+            }
+
+            var schemas = ModelConverters.getInstance()
+                    .readAll(ApiErrorBody.class);
+
+            schemas.forEach((name, schema) ->
+                    openApi.getComponents().addSchemas(name, schema)
+            );
+        };
+    }
+
+    @Bean
+    public OperationCustomizer exceptionCustomizer() {
+        return (operation, handlerMethod) -> {
+
+            addError(operation, "400", "Bad Request");
+            addError(operation, "401", "Unauthorized");
+            addError(operation, "403", "Forbidden");
+            addError(operation, "404", "Not Found");
+            addError(operation, "409", "Conflict");
+            addError(operation, "429", "Too Many Requests");
+            addError(operation, "500", "Internal Server Error");
+            addError(operation, "502", "Bad Gateway");
+            addError(operation, "503", "Service Unavailable");
+
+            return operation;
+        };
+    }
+
+    private void addError(
+            Operation operation,
+            String status,
+            String description
+    ) {
+        if (operation.getResponses().containsKey(status)) {
+            return;
+        }
+
+        ApiResponse response = new ApiResponse()
+                .description(description)
+                .content(
+                        new Content().addMediaType(
+                                "application/json",
+                                new MediaType().schema(
+                                        new Schema<>()
+                                                .$ref("#/components/schemas/ApiErrorBody")
+                                )
+                        )
+                );
+
+        operation.getResponses().addApiResponse(status, response);
     }
 }

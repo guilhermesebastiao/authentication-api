@@ -1,7 +1,7 @@
 package dev.guilhermesebastiao.authenticationapi.application.port.in;
 
-import dev.guilhermesebastiao.authenticationapi.application.result.AccountActivationResult;
+import dev.guilhermesebastiao.authenticationapi.application.dto.output.AccountActivationOutput;
 
 public interface ResendAccountActivationEmailUseCase {
-    AccountActivationResult execute(String activationToken);
+    AccountActivationOutput execute(String activationToken);
 }

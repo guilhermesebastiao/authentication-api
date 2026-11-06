@@ -1,8 +1,8 @@
 package dev.guilhermesebastiao.authenticationapi.application.port.in;
 
-import dev.guilhermesebastiao.authenticationapi.application.command.SignInCommand;
-import dev.guilhermesebastiao.authenticationapi.application.result.AuthResult;
+import dev.guilhermesebastiao.authenticationapi.application.dto.input.SignInInput;
+import dev.guilhermesebastiao.authenticationapi.application.dto.output.AuthOutput;
 
 public interface SignInUseCase {
-    AuthResult execute(SignInCommand command, String userAgent, String ipAddress);
+    AuthOutput execute(SignInInput input, String userAgent, String ipAddress);
 }

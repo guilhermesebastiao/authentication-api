@@ -1,16 +1,14 @@
 package dev.guilhermesebastiao.authenticationapi.application.service;
 
-import dev.guilhermesebastiao.authenticationapi.application.port.in.SendRecoverPasswordEmailUseCase;
+import dev.guilhermesebastiao.authenticationapi.application.port.in.SendForgotUseCase;
 import dev.guilhermesebastiao.authenticationapi.application.port.out.PasswordEncoderPort;
-import dev.guilhermesebastiao.authenticationapi.application.port.out.RecoverPasswordRepositoryPort;
 import dev.guilhermesebastiao.authenticationapi.application.port.out.SecureHasherPort;
-import dev.guilhermesebastiao.authenticationapi.application.result.RecoverPasswordResult;
-import dev.guilhermesebastiao.authenticationapi.domain.exception.RecoverPasswordAlreadyVerifiedException;
-import dev.guilhermesebastiao.authenticationapi.domain.exception.RecoverPasswordExpiredException;
-import dev.guilhermesebastiao.authenticationapi.domain.exception.RecoverPasswordNotFoundException;
-import dev.guilhermesebastiao.authenticationapi.domain.exception.RecoverPasswordResendNotAvailableException;
+import dev.guilhermesebastiao.authenticationapi.application.dto.output.ForgotPasswordOutput;
+import dev.guilhermesebastiao.authenticationapi.domain.exception.ForgotPasswordAlreadyVerifiedException;
+import dev.guilhermesebastiao.authenticationapi.domain.exception.ForgotPasswordExpiredException;
+import dev.guilhermesebastiao.authenticationapi.domain.exception.RecoveryPasswordNotFoundException;
+import dev.guilhermesebastiao.authenticationapi.domain.exception.ForgotPasswordResendNotAvailableException;
 import dev.guilhermesebastiao.authenticationapi.domain.model.Account;
-import dev.guilhermesebastiao.authenticationapi.domain.model.RecoverPassword;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -35,7 +33,7 @@ import static org.mockito.Mockito.never;
 class ResendRecoverPasswordEmailServiceTest {
 
     @Mock
-    private SendRecoverPasswordEmailUseCase sendRecoverPasswordEmailUseCase;
+    private SendForgotUseCase sendForgotUseCase;
 
     @Mock
     private RecoverPasswordRepositoryPort recoverPasswordRepository;
@@ -50,7 +48,7 @@ class ResendRecoverPasswordEmailServiceTest {
     private SecureRandom secureRandom;
 
     @InjectMocks
-    private ResendRecoverPasswordEmailService service;
+    private ResendForgotPasswordService service;
 
     @Test
     @DisplayName("Should generate and send a new OTP for an active recovery")
@@ -81,7 +79,7 @@ class ResendRecoverPasswordEmailServiceTest {
         given(recoverPasswordRepository.save(recoverPassword))
                 .willReturn(recoverPassword);
 
-        RecoverPasswordResult result = service.execute(recoverToken);
+        ForgotPasswordOutput result = service.execute(recoverToken);
         Instant afterExecution = Instant.now();
 
         assertEquals(account.getEmail(), result.email());
@@ -103,7 +101,7 @@ class ResendRecoverPasswordEmailServiceTest {
         then(passwordEncoder).should().hash("001234");
         then(recoverPasswordRepository).should().save(recoverPassword);
 
-        then(sendRecoverPasswordEmailUseCase).should()
+        then(sendForgotUseCase).should()
                 .execute(account.getEmail(), "001234", recoverPassword.getExpiresAt());
     }
 
@@ -119,7 +117,7 @@ class ResendRecoverPasswordEmailServiceTest {
         given(recoverPasswordRepository.findByRecoverTokenHashAndNotVerified(recoverTokenHash))
                 .willReturn(java.util.Optional.empty());
 
-        assertThrows(RecoverPasswordNotFoundException.class, () -> service.execute(recoverToken));
+        assertThrows(RecoveryPasswordNotFoundException.class, () -> service.execute(recoverToken));
 
         then(secureHasher).should().hash(recoverToken);
 
@@ -129,7 +127,7 @@ class ResendRecoverPasswordEmailServiceTest {
         then(recoverPasswordRepository).should(never()).save(any(RecoverPassword.class));
         then(passwordEncoder).shouldHaveNoInteractions();
         then(secureRandom).shouldHaveNoInteractions();
-        then(sendRecoverPasswordEmailUseCase).shouldHaveNoInteractions();
+        then(sendForgotUseCase).shouldHaveNoInteractions();
     }
 
     @Test
@@ -148,7 +146,7 @@ class ResendRecoverPasswordEmailServiceTest {
         given(recoverPasswordRepository.findByRecoverTokenHashAndNotVerified(recoverTokenHash))
                 .willReturn(java.util.Optional.of(recoverPassword));
 
-        assertThrows(RecoverPasswordAlreadyVerifiedException.class, () -> service.execute(recoverToken));
+        assertThrows(ForgotPasswordAlreadyVerifiedException.class, () -> service.execute(recoverToken));
 
         then(recoverPasswordRepository).should()
                 .findByRecoverTokenHashAndNotVerified(recoverTokenHash);
@@ -156,7 +154,7 @@ class ResendRecoverPasswordEmailServiceTest {
         then(recoverPasswordRepository).should(never()).save(any(RecoverPassword.class));
         then(passwordEncoder).shouldHaveNoInteractions();
         then(secureRandom).shouldHaveNoInteractions();
-        then(sendRecoverPasswordEmailUseCase).shouldHaveNoInteractions();
+        then(sendForgotUseCase).shouldHaveNoInteractions();
     }
 
     @Test
@@ -174,7 +172,7 @@ class ResendRecoverPasswordEmailServiceTest {
         given(recoverPasswordRepository.findByRecoverTokenHashAndNotVerified(recoverTokenHash))
                 .willReturn(java.util.Optional.of(recoverPassword));
 
-        assertThrows(RecoverPasswordExpiredException.class, () -> service.execute(recoverToken));
+        assertThrows(ForgotPasswordExpiredException.class, () -> service.execute(recoverToken));
 
         then(recoverPasswordRepository).should()
                 .findByRecoverTokenHashAndNotVerified(recoverTokenHash);
@@ -182,7 +180,7 @@ class ResendRecoverPasswordEmailServiceTest {
         then(recoverPasswordRepository).should(never()).save(any(RecoverPassword.class));
         then(passwordEncoder).shouldHaveNoInteractions();
         then(secureRandom).shouldHaveNoInteractions();
-        then(sendRecoverPasswordEmailUseCase).shouldHaveNoInteractions();
+        then(sendForgotUseCase).shouldHaveNoInteractions();
     }
 
     @Test
@@ -201,7 +199,7 @@ class ResendRecoverPasswordEmailServiceTest {
                 .willReturn(java.util.Optional.of(recoverPassword));
 
         assertThrows(
-                RecoverPasswordResendNotAvailableException.class,
+                ForgotPasswordResendNotAvailableException.class,
                 () -> service.execute(recoverToken)
         );
 
@@ -211,6 +209,6 @@ class ResendRecoverPasswordEmailServiceTest {
         then(recoverPasswordRepository).should(never()).save(any(RecoverPassword.class));
         then(passwordEncoder).shouldHaveNoInteractions();
         then(secureRandom).shouldHaveNoInteractions();
-        then(sendRecoverPasswordEmailUseCase).shouldHaveNoInteractions();
+        then(sendForgotUseCase).shouldHaveNoInteractions();
     }
 }

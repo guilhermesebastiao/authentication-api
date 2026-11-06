@@ -44,8 +44,6 @@ public class Slf4jLoggerAdapter implements LoggerPort {
                 │ IP: {}
                 │ Timestamp: {}
                 │ Error Code: {}
-                │ User: {}
-                │ Session: {}
                 │ Message: {}
                 │ Exception: {}
                 └─────────────────────────────────────────
@@ -56,8 +54,6 @@ public class Slf4jLoggerAdapter implements LoggerPort {
                 payload.ip(),
                 payload.timestamp(),
                 payload.errorCode(),
-                payload.userId(),
-                payload.sessionToken(),
                 payload.message(),
                 payload.exception()
         );
@@ -74,8 +70,6 @@ public class Slf4jLoggerAdapter implements LoggerPort {
                 │ IP: {}
                 │ Timestamp: {}
                 │ Error Code: {}
-                │ User: {}
-                │ Session: {}
                 │ Message: {}
                 │ Exception: {}
                 └─────────────────────────────────────────
@@ -86,8 +80,6 @@ public class Slf4jLoggerAdapter implements LoggerPort {
                 payload.ip(),
                 payload.timestamp(),
                 payload.errorCode(),
-                payload.userId(),
-                payload.sessionToken(),
                 payload.message(),
                 payload.exception()
         );
@@ -99,13 +91,11 @@ public class Slf4jLoggerAdapter implements LoggerPort {
                 ┌─ APPLICATION INFO ──────────────────────
                 │ Operation: {}
                 │ Timestamp: {}
-                │ User: {}
                 │ Message: {}
                 └─────────────────────────────────────────
                 """,
                 payload.operation(),
                 payload.timestamp(),
-                payload.userId(),
                 payload.message()
         );
     }

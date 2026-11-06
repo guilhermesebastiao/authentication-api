@@ -1,6 +1,6 @@
 package dev.guilhermesebastiao.authenticationapi.adapter.out.producer;
 
-import dev.guilhermesebastiao.authenticationapi.adapter.out.smtp.EmailSendPaylod;
+import dev.guilhermesebastiao.authenticationapi.adapter.out.smtp.payload.EmailSendPaylod;
 import dev.guilhermesebastiao.authenticationapi.infrastructure.config.EmailQueueConfig;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;

@@ -1,10 +1,10 @@
 package dev.guilhermesebastiao.authenticationapi.application.port.in;
 
-import dev.guilhermesebastiao.authenticationapi.application.result.PageResult;
-import dev.guilhermesebastiao.authenticationapi.application.command.PageQueryCommand;
-import dev.guilhermesebastiao.authenticationapi.application.result.SessionResult;
+import dev.guilhermesebastiao.authenticationapi.application.dto.common.PageResult;
+import dev.guilhermesebastiao.authenticationapi.application.dto.common.PageQuery;
+import dev.guilhermesebastiao.authenticationapi.application.dto.output.SessionOutput;
 import dev.guilhermesebastiao.authenticationapi.domain.model.Account;
 
 public interface GetSessionsUseCase {
-    PageResult<SessionResult> execute(Account account, String currentSession, PageQueryCommand paging);
+    PageResult<SessionOutput> execute(Account account, String currentSession, PageQuery paging);
 }

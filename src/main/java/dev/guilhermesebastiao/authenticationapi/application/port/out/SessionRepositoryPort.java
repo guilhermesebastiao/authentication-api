@@ -1,7 +1,7 @@
 package dev.guilhermesebastiao.authenticationapi.application.port.out;
 
-import dev.guilhermesebastiao.authenticationapi.application.result.PageResult;
-import dev.guilhermesebastiao.authenticationapi.application.command.PageQueryCommand;
+import dev.guilhermesebastiao.authenticationapi.application.dto.common.PageResult;
+import dev.guilhermesebastiao.authenticationapi.application.dto.common.PageQuery;
 import dev.guilhermesebastiao.authenticationapi.domain.model.Session;
 
 import java.time.Instant;
@@ -16,7 +16,7 @@ public interface SessionRepositoryPort {
 
     Optional<Session> findBySessionTokenHash(String sessionTokenHash);
 
-    PageResult<Session> findAllByAccountIdAndNotRevoked(UUID accountId, PageQueryCommand pagination);
+    PageResult<Session> findAllByAccountIdAndNotRevoked(UUID accountId, PageQuery pagination);
 
     List<Session> findAllByAccountIdAndNotRevoked(UUID accountId);
 

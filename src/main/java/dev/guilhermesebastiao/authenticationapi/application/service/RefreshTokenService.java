@@ -1,19 +1,17 @@
 package dev.guilhermesebastiao.authenticationapi.application.service;
 
-import dev.guilhermesebastiao.authenticationapi.application.command.RefreshTokenCommand;
+import dev.guilhermesebastiao.authenticationapi.application.dto.input.RefreshTokenInput;
 import dev.guilhermesebastiao.authenticationapi.application.port.in.CreateRefreshUseCase;
 import dev.guilhermesebastiao.authenticationapi.application.port.in.RefreshTokenUseCase;
 import dev.guilhermesebastiao.authenticationapi.application.port.in.ValidateSessionUseCase;
-import br.com.guisebastiao.authenticationapi.application.port.out.*;
 import dev.guilhermesebastiao.authenticationapi.application.port.out.JwtTokenPort;
 import dev.guilhermesebastiao.authenticationapi.application.port.out.RefreshRepositoryPort;
 import dev.guilhermesebastiao.authenticationapi.application.port.out.SecureHasherPort;
 import dev.guilhermesebastiao.authenticationapi.application.port.out.SessionRepositoryPort;
-import dev.guilhermesebastiao.authenticationapi.application.result.AuthResult;
-import dev.guilhermesebastiao.authenticationapi.application.result.CreateRefreshResult;
-import dev.guilhermesebastiao.authenticationapi.application.result.JwtValidationResult;
+import dev.guilhermesebastiao.authenticationapi.application.dto.output.AuthOutput;
+import dev.guilhermesebastiao.authenticationapi.application.dto.output.CreateRefreshOutput;
+import dev.guilhermesebastiao.authenticationapi.application.dto.output.JwtValidationOutput;
 import dev.guilhermesebastiao.authenticationapi.domain.enums.JwtValidationStatus;
-import br.com.guisebastiao.authenticationapi.domain.exception.*;
 import dev.guilhermesebastiao.authenticationapi.domain.exception.RefreshTokenInvalidException;
 import dev.guilhermesebastiao.authenticationapi.domain.exception.RefreshTokenNotFoundException;
 import dev.guilhermesebastiao.authenticationapi.domain.exception.RefreshTokenRevokedException;
@@ -51,23 +49,23 @@ public class RefreshTokenService implements RefreshTokenUseCase {
     }
 
     @Override
-    public AuthResult execute(RefreshTokenCommand command) {
-        Session session = validateSessionUseCase.execute(command.sessionToken());
+    public AuthOutput execute(RefreshTokenInput input) {
+        Session session = validateSessionUseCase.execute(input.sessionToken());
 
-        JwtValidationResult jwtResult = jwtToken.validate(
-                command.accessToken(),
-                command.sessionToken()
+        JwtValidationOutput jwtResult = jwtToken.validate(
+                input.accessToken(),
+                input.sessionToken()
         );
 
         boolean jwtIsExpired = validateJwtStatus(jwtResult.status());
 
         if (!jwtIsExpired) {
-            return new AuthResult(command.accessToken(), command.refreshToken(), command.sessionToken());
+            return new AuthOutput(input.accessToken(), input.refreshToken(), input.sessionToken());
         }
 
-        Refresh previousRefresh = consumeAndValidateRefresh(command.refreshToken(), session);
+        Refresh previousRefresh = consumeAndValidateRefresh(input.refreshToken(), session);
 
-        CreateRefreshResult refreshResult = createRefreshUseCase.execute(session);
+        CreateRefreshOutput refreshResult = createRefreshUseCase.execute(session);
 
         previousRefresh.setReplacedBy(refreshResult.refresh());
 
@@ -75,9 +73,9 @@ public class RefreshTokenService implements RefreshTokenUseCase {
 
         updateSession(session);
 
-        String accessToken = jwtToken.generate(session.getAccount(), command.sessionToken());
+        String accessToken = jwtToken.generate(session.getAccount(), input.sessionToken());
 
-        return new AuthResult(accessToken, refreshResult.refreshToken(), command.sessionToken());
+        return new AuthOutput(accessToken, refreshResult.refreshToken(), input.sessionToken());
     }
 
     private void updateSession(Session session) {

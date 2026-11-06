@@ -1,11 +1,11 @@
 package dev.guilhermesebastiao.authenticationapi.application.service;
 
 import dev.guilhermesebastiao.authenticationapi.application.port.in.ResendAccountActivationEmailUseCase;
-import dev.guilhermesebastiao.authenticationapi.application.port.in.SendAccountActivationEmailUseCase;
+import dev.guilhermesebastiao.authenticationapi.application.port.in.SendAccountActivationUseCase;
 import dev.guilhermesebastiao.authenticationapi.application.port.out.AccountActivationRepositoryPort;
 import dev.guilhermesebastiao.authenticationapi.application.port.out.PasswordEncoderPort;
 import dev.guilhermesebastiao.authenticationapi.application.port.out.SecureHasherPort;
-import dev.guilhermesebastiao.authenticationapi.application.result.AccountActivationResult;
+import dev.guilhermesebastiao.authenticationapi.application.dto.output.AccountActivationOutput;
 import dev.guilhermesebastiao.authenticationapi.domain.exception.AccountActivationExpiredException;
 import dev.guilhermesebastiao.authenticationapi.domain.exception.AccountActivationNotFoundException;
 import dev.guilhermesebastiao.authenticationapi.domain.exception.AccountActivationResendNotAvailableException;
@@ -19,20 +19,20 @@ import java.time.temporal.ChronoUnit;
 public class ResendAccountActivationEmailService implements ResendAccountActivationEmailUseCase {
     private static final int RESEND_EMAIL_AVAILABLE_MINUTES = 1;
 
-    private final SendAccountActivationEmailUseCase sendAccountActivationEmailUseCase;
+    private final SendAccountActivationUseCase sendAccountActivationUseCase;
     private final AccountActivationRepositoryPort accountActivationRepository;
     private final PasswordEncoderPort passwordEncoder;
     private final SecureHasherPort secureHasher;
     private final SecureRandom secureRandom;
 
     public ResendAccountActivationEmailService(
-            SendAccountActivationEmailUseCase sendAccountActivationEmailUseCase,
+            SendAccountActivationUseCase sendAccountActivationUseCase,
             AccountActivationRepositoryPort accountActivationRepository,
             PasswordEncoderPort passwordEncoder,
             SecureHasherPort secureHasher,
             SecureRandom secureRandom
     ) {
-        this.sendAccountActivationEmailUseCase = sendAccountActivationEmailUseCase;
+        this.sendAccountActivationUseCase = sendAccountActivationUseCase;
         this.accountActivationRepository = accountActivationRepository;
         this.passwordEncoder = passwordEncoder;
         this.secureHasher = secureHasher;
@@ -40,7 +40,7 @@ public class ResendAccountActivationEmailService implements ResendAccountActivat
     }
 
     @Override
-    public AccountActivationResult execute(String activationToken) {
+    public AccountActivationOutput execute(String activationToken) {
         Instant now = Instant.now();
 
         String activationTokenHash = secureHasher.hash(activationToken);
@@ -51,25 +51,25 @@ public class ResendAccountActivationEmailService implements ResendAccountActivat
 
         validateAccountActivation(accountActivationExists, now);
 
-        String otpCode = String.format("%06d", secureRandom.nextInt(1_000_000));
-        String otpCodeHash = passwordEncoder.hash(otpCode);
+        String otp = String.format("%06d", secureRandom.nextInt(1_000_000));
+        String otpHash = passwordEncoder.hash(otp);
 
         Instant resendAvailableAt = now.plus(RESEND_EMAIL_AVAILABLE_MINUTES, ChronoUnit.MINUTES);
 
         accountActivationExists.setResendAvailableAt(resendAvailableAt);
-        accountActivationExists.setOtpCodeHash(otpCodeHash);
+        accountActivationExists.setOtpHash(otpHash);
 
         AccountActivation accountActivation = accountActivationRepository.save(accountActivationExists);
 
         String email = accountActivation.getAccount().getEmail();
 
-        sendAccountActivationEmailUseCase.execute(
+        sendAccountActivationUseCase.execute(
                 email,
-                otpCode,
+                otp,
                 accountActivation.getExpiresAt()
         );
 
-        return new AccountActivationResult(
+        return new AccountActivationOutput(
                 email,
                 activationToken,
                 accountActivation.getExpiresAt(),

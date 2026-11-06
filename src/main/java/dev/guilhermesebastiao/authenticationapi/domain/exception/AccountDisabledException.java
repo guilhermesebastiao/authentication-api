@@ -5,9 +5,11 @@ import dev.guilhermesebastiao.authenticationapi.domain.enums.DomainErrorCode;
 public class AccountDisabledException extends DomainException {
     public AccountDisabledException() {
         super(
-                DomainErrorCode.ACCOUNT_DISABLED,
+                "Account Disabled",
+                403,
                 "The account is disabled.",
-                403
+                "AccountDisabledException: The account is disabled.",
+                DomainErrorCode.ACCOUNT_DISABLED
         );
     }
 }

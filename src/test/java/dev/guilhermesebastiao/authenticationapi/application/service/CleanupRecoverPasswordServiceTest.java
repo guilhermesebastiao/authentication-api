@@ -2,7 +2,6 @@ package dev.guilhermesebastiao.authenticationapi.application.service;
 
 import dev.guilhermesebastiao.authenticationapi.adapter.out.logger.ScheduleLoggerPayload;
 import dev.guilhermesebastiao.authenticationapi.application.port.out.LoggerPort;
-import dev.guilhermesebastiao.authenticationapi.application.port.out.RecoverPasswordRepositoryPort;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;

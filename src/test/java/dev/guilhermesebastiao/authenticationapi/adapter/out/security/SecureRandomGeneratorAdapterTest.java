@@ -1,5 +1,6 @@
 package dev.guilhermesebastiao.authenticationapi.adapter.out.security;
 
+import dev.guilhermesebastiao.authenticationapi.adapter.out.security.adapter.SecureRandomGeneratorAdapter;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;

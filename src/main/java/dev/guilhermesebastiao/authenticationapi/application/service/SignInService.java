@@ -1,6 +1,6 @@
 package dev.guilhermesebastiao.authenticationapi.application.service;
 
-import dev.guilhermesebastiao.authenticationapi.application.command.SignInCommand;
+import dev.guilhermesebastiao.authenticationapi.application.dto.input.SignInInput;
 import dev.guilhermesebastiao.authenticationapi.application.port.in.CreateAccountActivationUseCase;
 import dev.guilhermesebastiao.authenticationapi.application.port.in.CreateRefreshUseCase;
 import dev.guilhermesebastiao.authenticationapi.application.port.in.CreateSessionUseCase;
@@ -8,10 +8,10 @@ import dev.guilhermesebastiao.authenticationapi.application.port.in.SignInUseCas
 import dev.guilhermesebastiao.authenticationapi.application.port.out.AccountRepositoryPort;
 import dev.guilhermesebastiao.authenticationapi.application.port.out.AuthenticationPort;
 import dev.guilhermesebastiao.authenticationapi.application.port.out.JwtTokenPort;
-import dev.guilhermesebastiao.authenticationapi.application.result.AccountActivationResult;
-import dev.guilhermesebastiao.authenticationapi.application.result.AuthResult;
-import dev.guilhermesebastiao.authenticationapi.application.result.CreateRefreshResult;
-import dev.guilhermesebastiao.authenticationapi.application.result.CreateSessionResult;
+import dev.guilhermesebastiao.authenticationapi.application.dto.output.AccountActivationOutput;
+import dev.guilhermesebastiao.authenticationapi.application.dto.output.AuthOutput;
+import dev.guilhermesebastiao.authenticationapi.application.dto.output.CreateRefreshOutput;
+import dev.guilhermesebastiao.authenticationapi.application.dto.output.CreateSessionOutput;
 import dev.guilhermesebastiao.authenticationapi.domain.enums.AccountStatus;
 import dev.guilhermesebastiao.authenticationapi.domain.exception.AccountInvalidCredentialsException;
 import dev.guilhermesebastiao.authenticationapi.domain.exception.AccountNotActivatedException;
@@ -42,28 +42,28 @@ public class SignInService implements SignInUseCase {
     }
 
     @Override
-    public AuthResult execute(SignInCommand command, String userAgent, String ipAddress) {
-        Account account = accountRepository.findByEmail(command.email())
+    public AuthOutput execute(SignInInput input, String userAgent, String ipAddress) {
+        Account account = accountRepository.findByEmail(input.email())
                 .orElseThrow(AccountInvalidCredentialsException::new);
 
         if (account.getStatus() == AccountStatus.PENDING) {
-            AccountActivationResult data = createAccountActivationUseCase.execute(account);
+            AccountActivationOutput data = createAccountActivationUseCase.execute(account);
 
             throw new AccountNotActivatedException(data);
         }
 
-        authenticationPort.authenticate(command.email(), command.password());
+        authenticationPort.authenticate(input.email(), input.password());
 
-        CreateSessionResult sessionResult = createSessionUseCase.execute(
+        CreateSessionOutput sessionResult = createSessionUseCase.execute(
                 account,
                 userAgent,
                 ipAddress
         );
 
-        CreateRefreshResult refreshResult = createRefreshUseCase.execute(sessionResult.session());
+        CreateRefreshOutput refreshResult = createRefreshUseCase.execute(sessionResult.session());
 
         String accessToken = jwtToken.generate(account, sessionResult.sessionToken());
 
-        return new AuthResult(accessToken, refreshResult.refreshToken(), sessionResult.sessionToken());
+        return new AuthOutput(accessToken, refreshResult.refreshToken(), sessionResult.sessionToken());
     }
 }

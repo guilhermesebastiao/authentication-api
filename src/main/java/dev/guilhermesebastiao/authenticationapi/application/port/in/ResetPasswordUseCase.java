@@ -1,7 +1,7 @@
 package dev.guilhermesebastiao.authenticationapi.application.port.in;
 
-import dev.guilhermesebastiao.authenticationapi.application.command.ResetPasswordCommand;
+import dev.guilhermesebastiao.authenticationapi.application.dto.input.ResetPasswordInput;
 
 public interface ResetPasswordUseCase {
-    void execute(ResetPasswordCommand command);
+    void execute(ResetPasswordInput input);
 }

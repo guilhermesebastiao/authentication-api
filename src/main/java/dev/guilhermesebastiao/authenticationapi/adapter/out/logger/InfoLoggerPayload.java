@@ -5,7 +5,6 @@ import java.time.Instant;
 public record InfoLoggerPayload(
         Instant timestamp,
         String message,
-        String operation,
-        String userId
+        String operation
 ) implements LoggerPayload {
 }

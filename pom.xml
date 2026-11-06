@@ -41,50 +41,15 @@
     </scm>
 
     <properties>
-        <java.version>26</java.version>
+        <java.version>25</java.version>
         <lombok.version>1.18.48</lombok.version>
         <org.mapstruct.version>1.6.3</org.mapstruct.version>
         <org.lombok.mapstruct.binding>0.2.0</org.lombok.mapstruct.binding>
         <nimbus-jose-jwt.version>10.9.1</nimbus-jose-jwt.version>
         <google-api-client.version>2.8.1</google-api-client.version>
         <bucket4j.version>8.19.0</bucket4j.version>
+        <org.springdoc.version>3.1.0</org.springdoc.version>
     </properties>
-
-    <dependencyManagement>
-        <dependencies>
-            <!-- Versions with fixes for vulnerabilities reported by OSV. -->
-            <dependency>
-                <groupId>com.fasterxml.jackson.core</groupId>
-                <artifactId>jackson-core</artifactId>
-                <version>2.21.7</version>
-            </dependency>
-            <dependency>
-                <groupId>com.fasterxml.jackson.core</groupId>
-                <artifactId>jackson-databind</artifactId>
-                <version>2.21.7</version>
-            </dependency>
-            <dependency>
-                <groupId>tools.jackson.core</groupId>
-                <artifactId>jackson-core</artifactId>
-                <version>3.1.7</version>
-            </dependency>
-            <dependency>
-                <groupId>tools.jackson.core</groupId>
-                <artifactId>jackson-databind</artifactId>
-                <version>3.1.7</version>
-            </dependency>
-            <dependency>
-                <groupId>com.rabbitmq</groupId>
-                <artifactId>amqp-client</artifactId>
-                <version>5.37.0</version>
-            </dependency>
-            <dependency>
-                <groupId>org.apache.tomcat.embed</groupId>
-                <artifactId>tomcat-embed-core</artifactId>
-                <version>11.0.25</version>
-            </dependency>
-        </dependencies>
-    </dependencyManagement>
 
     <dependencies>
         <dependency>
@@ -158,7 +123,7 @@
         <dependency>
             <groupId>org.springdoc</groupId>
             <artifactId>springdoc-openapi-starter-webmvc-ui</artifactId>
-            <version>3.1.0</version>
+            <version>${org.springdoc.version}</version>
         </dependency>
         <dependency>
             <groupId>org.thymeleaf.extras</groupId>

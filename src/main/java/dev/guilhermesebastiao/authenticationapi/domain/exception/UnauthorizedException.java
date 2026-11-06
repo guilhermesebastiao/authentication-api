@@ -5,9 +5,11 @@ import dev.guilhermesebastiao.authenticationapi.domain.enums.DomainErrorCode;
 public class UnauthorizedException extends DomainException {
     public UnauthorizedException() {
         super(
-                DomainErrorCode.UNAUTHORIZED,
+                "Unauthorized",
+                401,
                 "Authentication is required to access the requested resource.",
-                401
+                "UnauthorizedException: Authentication is required to access the requested resource.",
+                DomainErrorCode.UNAUTHORIZED
         );
     }
 }

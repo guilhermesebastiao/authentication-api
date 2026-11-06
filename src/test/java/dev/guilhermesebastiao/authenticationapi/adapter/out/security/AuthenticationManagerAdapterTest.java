@@ -1,5 +1,6 @@
 package dev.guilhermesebastiao.authenticationapi.adapter.out.security;
 
+import dev.guilhermesebastiao.authenticationapi.adapter.out.security.adapter.AuthenticationManagerAdapter;
 import dev.guilhermesebastiao.authenticationapi.domain.exception.AccountAuthenticationExpiredException;
 import dev.guilhermesebastiao.authenticationapi.domain.exception.AccountDisabledException;
 import dev.guilhermesebastiao.authenticationapi.domain.exception.AccountInvalidCredentialsException;

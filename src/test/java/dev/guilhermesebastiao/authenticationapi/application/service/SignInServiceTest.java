@@ -1,16 +1,16 @@
 package dev.guilhermesebastiao.authenticationapi.application.service;
 
-import dev.guilhermesebastiao.authenticationapi.application.command.SignInCommand;
+import dev.guilhermesebastiao.authenticationapi.application.dto.input.SignInInput;
 import dev.guilhermesebastiao.authenticationapi.application.port.in.CreateAccountActivationUseCase;
 import dev.guilhermesebastiao.authenticationapi.application.port.in.CreateRefreshUseCase;
 import dev.guilhermesebastiao.authenticationapi.application.port.in.CreateSessionUseCase;
 import dev.guilhermesebastiao.authenticationapi.application.port.out.AccountRepositoryPort;
 import dev.guilhermesebastiao.authenticationapi.application.port.out.AuthenticationPort;
 import dev.guilhermesebastiao.authenticationapi.application.port.out.JwtTokenPort;
-import dev.guilhermesebastiao.authenticationapi.application.result.AccountActivationResult;
-import dev.guilhermesebastiao.authenticationapi.application.result.AuthResult;
-import dev.guilhermesebastiao.authenticationapi.application.result.CreateRefreshResult;
-import dev.guilhermesebastiao.authenticationapi.application.result.CreateSessionResult;
+import dev.guilhermesebastiao.authenticationapi.application.dto.output.AccountActivationOutput;
+import dev.guilhermesebastiao.authenticationapi.application.dto.output.AuthOutput;
+import dev.guilhermesebastiao.authenticationapi.application.dto.output.CreateRefreshOutput;
+import dev.guilhermesebastiao.authenticationapi.application.dto.output.CreateSessionOutput;
 import dev.guilhermesebastiao.authenticationapi.domain.enums.AccountStatus;
 import dev.guilhermesebastiao.authenticationapi.domain.exception.AccountInvalidCredentialsException;
 import dev.guilhermesebastiao.authenticationapi.domain.exception.AccountNotActivatedException;
@@ -60,7 +60,7 @@ class SignInServiceTest {
     @Test
     @DisplayName("Should sign in an activated account and return authentication tokens")
     void givenActivatedAccountAndValidCredentials_whenSignIn_thenAuthenticationTokensAreReturned() {
-        SignInCommand command = new SignInCommand("user@example.com", "plain-password");
+        SignInInput command = new SignInInput("user@example.com", "plain-password");
         String userAgent = "Mozilla/5.0";
         String ipAddress = "192.168.0.10";
 
@@ -69,8 +69,8 @@ class SignInServiceTest {
         account.setStatus(AccountStatus.ACTIVATED);
 
         Session session = new Session();
-        CreateSessionResult sessionResult = new CreateSessionResult("session-token", session);
-        CreateRefreshResult refreshResult = new CreateRefreshResult("refresh-token", new Refresh());
+        CreateSessionOutput sessionResult = new CreateSessionOutput("session-token", session);
+        CreateRefreshOutput refreshResult = new CreateRefreshOutput("refresh-token", new Refresh());
         String accessToken = "access-token";
 
         given(accountRepository.findByEmail(command.email()))
@@ -85,7 +85,7 @@ class SignInServiceTest {
         given(jwtToken.generate(account, sessionResult.sessionToken()))
                 .willReturn(accessToken);
 
-        AuthResult result = service.execute(command, userAgent, ipAddress);
+        AuthOutput result = service.execute(command, userAgent, ipAddress);
 
         assertEquals(accessToken, result.accessToken());
         assertEquals(refreshResult.refreshToken(), result.refreshToken());
@@ -107,7 +107,7 @@ class SignInServiceTest {
     @Test
     @DisplayName("Should reject sign in when the account does not exist")
     void givenUnknownAccount_whenSignIn_thenInvalidCredentialsExceptionIsThrown() {
-        SignInCommand command = new SignInCommand("unknown@example.com", "plain-password");
+        SignInInput command = new SignInInput("unknown@example.com", "plain-password");
 
         given(accountRepository.findByEmail(command.email()))
                 .willReturn(Optional.empty());
@@ -127,12 +127,12 @@ class SignInServiceTest {
     @Test
     @DisplayName("Should request a new activation and reject sign in for a pending account")
     void givenPendingAccount_whenSignIn_thenAccountNotActivatedExceptionIsThrown() {
-        SignInCommand command = new SignInCommand("pending@example.com", "plain-password");
+        SignInInput command = new SignInInput("pending@example.com", "plain-password");
         Account account = new Account();
         account.setEmail(command.email());
         account.setStatus(AccountStatus.PENDING);
 
-        AccountActivationResult activationResult = new AccountActivationResult(
+        AccountActivationOutput activationResult = new AccountActivationOutput(
                 command.email(),
                 "activation-token",
                 Instant.parse("2026-10-04T12:15:00Z"),

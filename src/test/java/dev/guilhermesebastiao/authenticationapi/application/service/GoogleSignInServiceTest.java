@@ -1,17 +1,16 @@
 package dev.guilhermesebastiao.authenticationapi.application.service;
 
-import dev.guilhermesebastiao.authenticationapi.application.command.GoogleSignInCommand;
 import dev.guilhermesebastiao.authenticationapi.application.port.in.CreateAccountActivationUseCase;
 import dev.guilhermesebastiao.authenticationapi.application.port.in.CreateRefreshUseCase;
 import dev.guilhermesebastiao.authenticationapi.application.port.in.CreateSessionUseCase;
 import dev.guilhermesebastiao.authenticationapi.application.port.out.AccountRepositoryPort;
 import dev.guilhermesebastiao.authenticationapi.application.port.out.GoogleAuthorizationPort;
 import dev.guilhermesebastiao.authenticationapi.application.port.out.JwtTokenPort;
-import dev.guilhermesebastiao.authenticationapi.application.result.AccountActivationResult;
-import dev.guilhermesebastiao.authenticationapi.application.result.AuthResult;
-import dev.guilhermesebastiao.authenticationapi.application.result.CreateRefreshResult;
-import dev.guilhermesebastiao.authenticationapi.application.result.CreateSessionResult;
-import dev.guilhermesebastiao.authenticationapi.application.result.GoogleAuthorizationResult;
+import dev.guilhermesebastiao.authenticationapi.application.dto.output.AccountActivationOutput;
+import dev.guilhermesebastiao.authenticationapi.application.dto.output.AuthOutput;
+import dev.guilhermesebastiao.authenticationapi.application.dto.output.CreateRefreshOutput;
+import dev.guilhermesebastiao.authenticationapi.application.dto.output.CreateSessionOutput;
+import dev.guilhermesebastiao.authenticationapi.application.dto.output.GoogleAuthorizationOutput;
 import dev.guilhermesebastiao.authenticationapi.domain.enums.AccountStatus;
 import dev.guilhermesebastiao.authenticationapi.domain.exception.AccountDisabledException;
 import dev.guilhermesebastiao.authenticationapi.domain.exception.AccountNotActivatedException;
@@ -61,16 +60,16 @@ class GoogleSignInServiceTest {
     @Test
     @DisplayName("Should sign in an activated account using Google authorization")
     void givenActivatedAccountAndValidGoogleCredential_whenGoogleSignIn_thenAuthenticationTokensAreReturned() {
-        GoogleSignInCommand command = new GoogleSignInCommand("google-credential");
+        GoogleSignInInput command = new GoogleSignInInput("google-credential");
         String userAgent = "Mozilla/5.0";
         String ipAddress = "192.168.0.10";
-        GoogleAuthorizationResult googleResult = new GoogleAuthorizationResult("user@example.com");
+        GoogleAuthorizationOutput googleResult = new GoogleAuthorizationOutput("user@example.com");
         Account account = new Account();
         account.setEmail(googleResult.email());
         account.setStatus(AccountStatus.ACTIVATED);
         Session session = new Session();
-        CreateSessionResult sessionResult = new CreateSessionResult("session-token", session);
-        CreateRefreshResult refreshResult = new CreateRefreshResult("refresh-token", new Refresh());
+        CreateSessionOutput sessionResult = new CreateSessionOutput("session-token", session);
+        CreateRefreshOutput refreshResult = new CreateRefreshOutput("refresh-token", new Refresh());
 
         given(googleAuthorization.authorize(command.code()))
                 .willReturn(googleResult);
@@ -87,7 +86,7 @@ class GoogleSignInServiceTest {
         given(jwtToken.generate(account, sessionResult.sessionToken()))
                 .willReturn("access-token");
 
-        AuthResult result = service.execute(command, userAgent, ipAddress);
+        AuthOutput result = service.execute(command, userAgent, ipAddress);
 
         assertEquals("access-token", result.accessToken());
         assertEquals(refreshResult.refreshToken(), result.refreshToken());
@@ -104,8 +103,8 @@ class GoogleSignInServiceTest {
     @Test
     @DisplayName("Should reject Google sign in when the account does not exist")
     void givenGoogleCredentialForUnknownAccount_whenGoogleSignIn_thenAccountNotFoundExceptionIsThrown() {
-        GoogleSignInCommand command = new GoogleSignInCommand("google-credential");
-        GoogleAuthorizationResult googleResult = new GoogleAuthorizationResult("unknown@example.com");
+        GoogleSignInInput command = new GoogleSignInInput("google-credential");
+        GoogleAuthorizationOutput googleResult = new GoogleAuthorizationOutput("unknown@example.com");
 
         given(googleAuthorization.authorize(command.code()))
                 .willReturn(googleResult);
@@ -129,12 +128,12 @@ class GoogleSignInServiceTest {
     @Test
     @DisplayName("Should request account activation and reject Google sign in for a pending account")
     void givenPendingAccount_whenGoogleSignIn_thenAccountNotActivatedExceptionIsThrown() {
-        GoogleSignInCommand command = new GoogleSignInCommand("google-credential");
-        GoogleAuthorizationResult googleResult = new GoogleAuthorizationResult("pending@example.com");
+        GoogleSignInInput command = new GoogleSignInInput("google-credential");
+        GoogleAuthorizationOutput googleResult = new GoogleAuthorizationOutput("pending@example.com");
         Account account = new Account();
         account.setEmail(googleResult.email());
         account.setStatus(AccountStatus.PENDING);
-        AccountActivationResult activationResult = new AccountActivationResult(
+        AccountActivationOutput activationResult = new AccountActivationOutput(
                 googleResult.email(),
                 "activation-token",
                 Instant.parse("2026-10-04T12:15:00Z"),
@@ -165,8 +164,8 @@ class GoogleSignInServiceTest {
     @Test
     @DisplayName("Should reject Google sign in for a disabled account")
     void givenDisabledAccount_whenGoogleSignIn_thenAccountDisabledExceptionIsThrown() {
-        GoogleSignInCommand command = new GoogleSignInCommand("google-credential");
-        GoogleAuthorizationResult googleResult = new GoogleAuthorizationResult("disabled@example.com");
+        GoogleSignInInput command = new GoogleSignInInput("google-credential");
+        GoogleAuthorizationOutput googleResult = new GoogleAuthorizationOutput("disabled@example.com");
         Account account = new Account();
         account.setEmail(googleResult.email());
         account.setStatus(AccountStatus.DISABLED);

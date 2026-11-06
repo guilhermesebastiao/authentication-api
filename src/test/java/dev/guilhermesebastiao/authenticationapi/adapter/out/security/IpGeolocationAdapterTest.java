@@ -1,6 +1,7 @@
 package dev.guilhermesebastiao.authenticationapi.adapter.out.security;
 
-import dev.guilhermesebastiao.authenticationapi.application.result.IpLocationResult;
+import dev.guilhermesebastiao.authenticationapi.adapter.out.security.adapter.IpGeolocationAdapter;
+import dev.guilhermesebastiao.authenticationapi.application.dto.output.IpLocationOutput;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -48,7 +49,7 @@ class IpGeolocationAdapterTest {
         var result = adapter.findLocation(ipAddress);
 
         assertTrue(result.isPresent());
-        assertEquals(new IpLocationResult("Brazil", "Sao Paulo"), result.get());
+        assertEquals(new IpLocationOutput("Brazil", "Sao Paulo"), result.get());
         then(requestHeadersUriSpec).should().uri("/{ip}", ipAddress);
     }
 

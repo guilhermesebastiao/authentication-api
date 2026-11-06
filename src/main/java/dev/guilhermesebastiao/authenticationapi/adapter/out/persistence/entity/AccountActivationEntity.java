@@ -30,8 +30,8 @@ public class AccountActivationEntity {
     @Column(name = "activation_token_hash")
     private String activationTokenHash;
 
-    @Column(name = "otp_code_hash")
-    private String otpCodeHash;
+    @Column(name = "otp_hash")
+    private String otpHash;
 
     @Column(name = "expires_at")
     private Instant expiresAt;

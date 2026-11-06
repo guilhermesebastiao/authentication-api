@@ -16,6 +16,13 @@ public interface JpaRefreshRepository extends JpaRepository<RefreshEntity, UUID>
 
     @Query("""
         SELECT r FROM RefreshEntity r
+            WHERE r.session.id IN (:sessionId)
+                AND r.revokedAt IS NULL
+    """)
+    Optional<RefreshEntity> findByRefreshBySessionId(@Param("sessionId") UUID sessionId);
+
+    @Query("""
+        SELECT r FROM RefreshEntity r
             WHERE r.session.id IN (:sessionIds)
               AND r.revokedAt IS NULL
     """)

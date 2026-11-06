@@ -1,11 +1,11 @@
 package dev.guilhermesebastiao.authenticationapi.application.service;
 
-import dev.guilhermesebastiao.authenticationapi.application.result.PageResult;
-import dev.guilhermesebastiao.authenticationapi.application.command.PageQueryCommand;
+import dev.guilhermesebastiao.authenticationapi.application.dto.common.PageResult;
+import dev.guilhermesebastiao.authenticationapi.application.dto.common.PageQuery;
 import dev.guilhermesebastiao.authenticationapi.application.port.in.GetSessionsUseCase;
 import dev.guilhermesebastiao.authenticationapi.application.port.out.SecureHasherPort;
 import dev.guilhermesebastiao.authenticationapi.application.port.out.SessionRepositoryPort;
-import dev.guilhermesebastiao.authenticationapi.application.result.SessionResult;
+import dev.guilhermesebastiao.authenticationapi.application.dto.output.SessionOutput;
 import dev.guilhermesebastiao.authenticationapi.domain.exception.SessionNotFoundException;
 import dev.guilhermesebastiao.authenticationapi.domain.model.Account;
 import dev.guilhermesebastiao.authenticationapi.domain.model.Session;
@@ -25,7 +25,7 @@ public class GetSessionsService implements GetSessionsUseCase {
     }
 
     @Override
-    public PageResult<SessionResult> execute(Account account, String currentSession, PageQueryCommand paging) {
+    public PageResult<SessionOutput> execute(Account account, String currentSession, PageQuery paging) {
         if (currentSession.isBlank()) {
             throw new SessionNotFoundException();
         }
@@ -34,9 +34,9 @@ public class GetSessionsService implements GetSessionsUseCase {
 
         String sessionTokenHash = secureHasher.hash(currentSession);
 
-        List<SessionResult> content = sessions.content()
+        List<SessionOutput> content = sessions.content()
                 .stream()
-                .map((session) -> new SessionResult(
+                .map((session) -> new SessionOutput(
                         session.getId(),
                         session.getType(),
                         session.getLastSeenAt(),

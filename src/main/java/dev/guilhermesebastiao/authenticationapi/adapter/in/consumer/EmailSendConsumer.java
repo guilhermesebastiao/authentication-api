@@ -1,7 +1,7 @@
 package dev.guilhermesebastiao.authenticationapi.adapter.in.consumer;
 
-import dev.guilhermesebastiao.authenticationapi.adapter.out.smtp.JavaMailSenderAdapter;
-import dev.guilhermesebastiao.authenticationapi.adapter.out.smtp.EmailSendPaylod;
+import dev.guilhermesebastiao.authenticationapi.adapter.out.smtp.adapter.JavaMailSenderAdapter;
+import dev.guilhermesebastiao.authenticationapi.adapter.out.smtp.payload.EmailSendPaylod;
 import dev.guilhermesebastiao.authenticationapi.infrastructure.config.EmailQueueConfig;
 import jakarta.mail.MessagingException;
 import lombok.AllArgsConstructor;

@@ -3,48 +3,60 @@ package dev.guilhermesebastiao.authenticationapi.domain.exception;
 import dev.guilhermesebastiao.authenticationapi.domain.enums.DomainErrorCode;
 
 public class DomainException extends RuntimeException {
-    private final int value;
+    private final String title;
+    private final int status;
+    private final String detail;
+    private final String logMessage;
     private final DomainErrorCode code;
-    private final Object details;
 
-    public DomainException(DomainErrorCode code, String message, int value) {
-        super(message);
+    public DomainException(
+            String title,
+            int status,
+            String detail,
+            String logMessage,
+            DomainErrorCode code
+    ) {
+        super(title);
+        this.title = title;
+        this.status = status;
+        this.detail = detail;
+        this.logMessage = logMessage;
         this.code = code;
-        this.value = value;
-        this.details = null;
     }
 
-    public DomainException(DomainErrorCode code, String message, int value, Object details) {
-        super(message);
+    public DomainException(
+            String title,
+            int status,
+            String detail,
+            String logMessage,
+            DomainErrorCode code,
+            Throwable cause
+    ) {
+        super(title, cause);
+        this.title = title;
+        this.status = status;
+        this.detail = detail;
+        this.logMessage = logMessage;
         this.code = code;
-        this.value = value;
-        this.details = details;
     }
 
-    public DomainException(DomainErrorCode code, String message, int value, Throwable cause) {
-        super(message, cause);
-        this.code = code;
-        this.value = value;
-        this.details = null;
+    public String getTitle() {
+        return title;
     }
 
-    public DomainException(DomainErrorCode code, String message, int value, Object details, Throwable cause) {
-        super(message, cause);
-        this.code = code;
-        this.value = value;
-        this.details = details;
+    public int getStatus() {
+        return status;
     }
 
+    public String getDetail() {
+        return detail;
+    }
+
+    public String getLogMessage() {
+        return logMessage;
+    }
 
     public DomainErrorCode getCode() {
         return code;
-    }
-
-    public int getValue() {
-        return value;
-    }
-
-    public Object getDetails() {
-        return details;
     }
 }

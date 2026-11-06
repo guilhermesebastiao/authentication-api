@@ -1,11 +1,11 @@
 package dev.guilhermesebastiao.authenticationapi.application.service;
 
-import dev.guilhermesebastiao.authenticationapi.application.command.CreateAccountCommand;
+import dev.guilhermesebastiao.authenticationapi.application.dto.input.CreateAccountInput;
 import dev.guilhermesebastiao.authenticationapi.application.port.in.CreateAccountActivationUseCase;
 import dev.guilhermesebastiao.authenticationapi.application.port.out.AccountRepositoryPort;
 import dev.guilhermesebastiao.authenticationapi.application.port.out.PasswordEncoderPort;
 import dev.guilhermesebastiao.authenticationapi.application.port.out.RoleRepositoryPort;
-import dev.guilhermesebastiao.authenticationapi.application.result.AccountActivationResult;
+import dev.guilhermesebastiao.authenticationapi.application.dto.output.AccountActivationOutput;
 import dev.guilhermesebastiao.authenticationapi.domain.enums.AccountStatus;
 import dev.guilhermesebastiao.authenticationapi.domain.exception.AccountAlreadyExistsException;
 import dev.guilhermesebastiao.authenticationapi.domain.exception.RoleNotFoundException;
@@ -53,11 +53,11 @@ class CreateAccountServiceTest {
     @Test
     @DisplayName("Should create a pending account with the default role and request activation")
     void givenNewAccountData_whenCreateAccount_thenAccountIsSavedAndActivationIsCreated() {
-        CreateAccountCommand command = new CreateAccountCommand("user@example.com", "plain-password");
+        CreateAccountInput command = new CreateAccountInput("user@example.com", "plain-password");
         String passwordHash = "hashed-password";
         Role defaultRole = new Role();
 
-        AccountActivationResult expectedResult = new AccountActivationResult(
+        AccountActivationOutput expectedResult = new AccountActivationOutput(
                 command.email(),
                 "activation-token",
                 Instant.parse("2026-10-04T12:15:00Z"),
@@ -79,7 +79,7 @@ class CreateAccountServiceTest {
         given(createAccountActivationUseCase.execute(any(Account.class)))
                 .willReturn(expectedResult);
 
-        AccountActivationResult actualResult = service.execute(command);
+        AccountActivationOutput actualResult = service.execute(command);
 
         ArgumentCaptor<Account> accountCaptor = ArgumentCaptor.forClass(Account.class);
         then(accountRepository).should().save(accountCaptor.capture());
@@ -100,7 +100,7 @@ class CreateAccountServiceTest {
     @Test
     @DisplayName("Should reject account creation when the email is already registered")
     void givenExistingAccount_whenCreateAccount_thenAccountAlreadyExistsExceptionIsThrown() {
-        CreateAccountCommand command = new CreateAccountCommand("existing@example.com", "plain-password");
+        CreateAccountInput command = new CreateAccountInput("existing@example.com", "plain-password");
 
         Account existingAccount = new Account();
 
@@ -119,7 +119,7 @@ class CreateAccountServiceTest {
     @Test
     @DisplayName("Should reject account creation when the default role does not exist")
     void givenMissingDefaultRole_whenCreateAccount_thenRoleNotFoundExceptionIsThrown() {
-        CreateAccountCommand command = new CreateAccountCommand("user@example.com", "plain-password");
+        CreateAccountInput command = new CreateAccountInput("user@example.com", "plain-password");
 
         given(accountRepository.findByEmail(command.email()))
                 .willReturn(Optional.empty());

@@ -32,7 +32,7 @@ class SessionSignOutServiceTest {
     private RefreshRepositoryPort refreshRepository;
 
     @InjectMocks
-    private SessionSignOutService service;
+    private RevokeSessionsService service;
 
     @Test
     @DisplayName("Should revoke only authorized sessions and their active refresh tokens")

@@ -1,6 +1,6 @@
 package dev.guilhermesebastiao.authenticationapi.application.service;
 
-import dev.guilhermesebastiao.authenticationapi.application.command.AccountActivationCommand;
+import dev.guilhermesebastiao.authenticationapi.application.dto.input.AccountActivationInput;
 import dev.guilhermesebastiao.authenticationapi.application.port.out.AccountActivationRepositoryPort;
 import dev.guilhermesebastiao.authenticationapi.application.port.out.AccountRepositoryPort;
 import dev.guilhermesebastiao.authenticationapi.application.port.out.PasswordEncoderPort;
@@ -68,7 +68,7 @@ class AccountActivateServiceTest {
         activation.setOtpCodeHash(otpCodeHash);
         activation.setExpiresAt(Instant.now().plusSeconds(300));
 
-        AccountActivationCommand command = new AccountActivationCommand(activationToken, otpCode);
+        AccountActivationInput command = new AccountActivationInput(activationToken, otpCode);
 
         when(secureHasher.hash(activationToken))
                 .thenReturn(activationTokenHash);
@@ -96,7 +96,7 @@ class AccountActivateServiceTest {
         String activationToken = "invalid-token";
         String activationTokenHash = "invalid-token-hash";
 
-        AccountActivationCommand command = new AccountActivationCommand(activationToken, "123456");
+        AccountActivationInput command = new AccountActivationInput(activationToken, "123456");
 
         when(secureHasher.hash(activationToken))
                 .thenReturn(activationTokenHash);
@@ -122,7 +122,7 @@ class AccountActivateServiceTest {
 
         activation.setExpiresAt(Instant.now().plusSeconds(300));
 
-        AccountActivationCommand command = new AccountActivationCommand("activation-token", "123456");
+        AccountActivationInput command = new AccountActivationInput("activation-token", "123456");
 
         when(secureHasher.hash(command.activationToken()))
                 .thenReturn("activation-token-hash");
@@ -146,7 +146,7 @@ class AccountActivateServiceTest {
 
         activation.setExpiresAt(Instant.now().minusSeconds(60));
 
-        AccountActivationCommand command = new AccountActivationCommand("activation-token", "123456");
+        AccountActivationInput command = new AccountActivationInput("activation-token", "123456");
 
         when(secureHasher.hash(command.activationToken()))
                 .thenReturn("activation-token-hash");
@@ -178,7 +178,7 @@ class AccountActivateServiceTest {
         activation.setOtpCodeHash(otpCodeHash);
         activation.setExpiresAt(Instant.now().plusSeconds(300));
 
-        AccountActivationCommand command = new AccountActivationCommand("activation-token", otpCode);
+        AccountActivationInput command = new AccountActivationInput("activation-token", otpCode);
 
         when(secureHasher.hash(command.activationToken()))
                 .thenReturn("activation-token-hash");

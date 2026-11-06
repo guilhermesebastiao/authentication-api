@@ -1,17 +1,14 @@
 package dev.guilhermesebastiao.authenticationapi.application.service;
 
-import dev.guilhermesebastiao.authenticationapi.application.command.ResetPasswordCommand;
-import dev.guilhermesebastiao.authenticationapi.application.port.in.SignOutAllUseCase;
+import dev.guilhermesebastiao.authenticationapi.application.dto.input.ResetPasswordInput;
+import dev.guilhermesebastiao.authenticationapi.application.port.in.RevokeAllSessionsUseCase;
 import dev.guilhermesebastiao.authenticationapi.application.port.out.AccountRepositoryPort;
 import dev.guilhermesebastiao.authenticationapi.application.port.out.PasswordEncoderPort;
-import dev.guilhermesebastiao.authenticationapi.application.port.out.RecoverPasswordRepositoryPort;
 import dev.guilhermesebastiao.authenticationapi.application.port.out.SecureHasherPort;
-import dev.guilhermesebastiao.authenticationapi.domain.exception.RecoverPasswordAlreadyUsedException;
-import dev.guilhermesebastiao.authenticationapi.domain.exception.RecoverPasswordExpiredException;
-import dev.guilhermesebastiao.authenticationapi.domain.exception.RecoverPasswordNotFoundException;
-import dev.guilhermesebastiao.authenticationapi.domain.exception.RecoverPasswordNotVerifiedException;
+import dev.guilhermesebastiao.authenticationapi.domain.exception.RecoveryPasswordAlreadyUsedException;
+import dev.guilhermesebastiao.authenticationapi.domain.exception.ForgotPasswordExpiredException;
+import dev.guilhermesebastiao.authenticationapi.domain.exception.RecoveryPasswordNotFoundException;
 import dev.guilhermesebastiao.authenticationapi.domain.model.Account;
-import dev.guilhermesebastiao.authenticationapi.domain.model.RecoverPassword;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -38,7 +35,7 @@ class ResetPasswordServiceTest {
     private AccountRepositoryPort accountRepository;
 
     @Mock
-    private SignOutAllUseCase signOutAllUseCase;
+    private RevokeAllSessionsUseCase revokeAllSessionsUseCase;
 
     @Mock
     private PasswordEncoderPort passwordEncoder;
@@ -52,7 +49,7 @@ class ResetPasswordServiceTest {
     @Test
     @DisplayName("Should reset the password and consume the verified recovery")
     void givenVerifiedActiveRecovery_whenResetPassword_thenPasswordIsChangedAndRecoveryIsUsed() {
-        ResetPasswordCommand command = new ResetPasswordCommand("recover-token", "new-password", "new-password");
+        ResetPasswordInput command = new ResetPasswordInput("recover-token", "new-password", "new-password");
         String recoverTokenHash = "recover-token-hash";
         Account account = new Account();
         account.setPasswordHash("old-password-hash");
@@ -85,14 +82,14 @@ class ResetPasswordServiceTest {
         then(recoverPasswordRepository).should().findByRecoverTokenHash(recoverTokenHash);
         then(passwordEncoder).should().hash(command.newPassword());
         then(accountRepository).should().save(account);
-        then(signOutAllUseCase).should().execute(account);
+        then(revokeAllSessionsUseCase).should().execute(account);
         then(recoverPasswordRepository).should().save(recoverPassword);
     }
 
     @Test
     @DisplayName("Should reject an unknown recovery token")
     void givenUnknownRecoveryToken_whenResetPassword_thenThrowNotFoundException() {
-        ResetPasswordCommand command = command();
+        ResetPasswordInput command = command();
         String recoverTokenHash = "unknown-recover-token-hash";
 
         given(secureHasher.hash(command.recoverToken()))
@@ -101,11 +98,11 @@ class ResetPasswordServiceTest {
         given(recoverPasswordRepository.findByRecoverTokenHash(recoverTokenHash))
                 .willReturn(Optional.empty());
 
-        assertThrows(RecoverPasswordNotFoundException.class, () -> service.execute(command));
+        assertThrows(RecoveryPasswordNotFoundException.class, () -> service.execute(command));
 
         then(passwordEncoder).shouldHaveNoInteractions();
         then(accountRepository).shouldHaveNoInteractions();
-        then(signOutAllUseCase).shouldHaveNoInteractions();
+        then(revokeAllSessionsUseCase).shouldHaveNoInteractions();
         then(recoverPasswordRepository).should().findByRecoverTokenHash(recoverTokenHash);
         then(recoverPasswordRepository).shouldHaveNoMoreInteractions();
     }
@@ -127,11 +124,11 @@ class ResetPasswordServiceTest {
         given(recoverPasswordRepository.findByRecoverTokenHash(recoverTokenHash))
                 .willReturn(Optional.of(recoverPassword));
 
-        assertThrows(RecoverPasswordExpiredException.class, () -> service.execute(command()));
+        assertThrows(ForgotPasswordExpiredException.class, () -> service.execute(command()));
 
         then(passwordEncoder).shouldHaveNoInteractions();
         then(accountRepository).shouldHaveNoInteractions();
-        then(signOutAllUseCase).shouldHaveNoInteractions();
+        then(revokeAllSessionsUseCase).shouldHaveNoInteractions();
         then(recoverPasswordRepository).shouldHaveNoMoreInteractions();
     }
 
@@ -152,11 +149,11 @@ class ResetPasswordServiceTest {
         given(recoverPasswordRepository.findByRecoverTokenHash(recoverTokenHash))
                 .willReturn(Optional.of(recoverPassword));
 
-        assertThrows(RecoverPasswordAlreadyUsedException.class, () -> service.execute(command()));
+        assertThrows(RecoveryPasswordAlreadyUsedException.class, () -> service.execute(command()));
 
         then(passwordEncoder).shouldHaveNoInteractions();
         then(accountRepository).shouldHaveNoInteractions();
-        then(signOutAllUseCase).shouldHaveNoInteractions();
+        then(revokeAllSessionsUseCase).shouldHaveNoInteractions();
         then(recoverPasswordRepository).shouldHaveNoMoreInteractions();
     }
 
@@ -181,12 +178,12 @@ class ResetPasswordServiceTest {
 
         then(passwordEncoder).shouldHaveNoInteractions();
         then(accountRepository).shouldHaveNoInteractions();
-        then(signOutAllUseCase).shouldHaveNoInteractions();
+        then(revokeAllSessionsUseCase).shouldHaveNoInteractions();
         then(recoverPasswordRepository).shouldHaveNoMoreInteractions();
     }
 
-    private ResetPasswordCommand command() {
-        return new ResetPasswordCommand("recover-token", "new-password", "new-password");
+    private ResetPasswordInput command() {
+        return new ResetPasswordInput("recover-token", "new-password", "new-password");
     }
 
     private RecoverPassword recovery(Instant expiresAt, Instant verifiedAt, Instant usedAt) {

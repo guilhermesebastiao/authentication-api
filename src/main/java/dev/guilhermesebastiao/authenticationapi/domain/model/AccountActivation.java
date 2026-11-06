@@ -7,7 +7,7 @@ public class AccountActivation {
     private UUID id;
     private Account account;
     private String activationTokenHash;
-    private String otpCodeHash;
+    private String otpHash;
     private Instant expiresAt;
     private Instant resendAvailableAt;
     private Instant activatedAt;
@@ -20,7 +20,7 @@ public class AccountActivation {
             UUID id,
             Account account,
             String activationTokenHash,
-            String otpCodeHash,
+            String otpHash,
             Instant expiresAt,
             Instant resendAvailableAt,
             Instant activatedAt,
@@ -30,7 +30,7 @@ public class AccountActivation {
         this.id = id;
         this.account = account;
         this.activationTokenHash = activationTokenHash;
-        this.otpCodeHash = otpCodeHash;
+        this.otpHash = otpHash;
         this.expiresAt = expiresAt;
         this.resendAvailableAt = resendAvailableAt;
         this.activatedAt = activatedAt;
@@ -62,12 +62,12 @@ public class AccountActivation {
         this.activationTokenHash = activationTokenHash;
     }
 
-    public String getOtpCodeHash() {
-        return otpCodeHash;
+    public String getOtpHash() {
+        return otpHash;
     }
 
-    public void setOtpCodeHash(String otpCodeHash) {
-        this.otpCodeHash = otpCodeHash;
+    public void setOtpHash(String otpHash) {
+        this.otpHash = otpHash;
     }
 
     public Instant getExpiresAt() {

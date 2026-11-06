@@ -5,9 +5,11 @@ import dev.guilhermesebastiao.authenticationapi.domain.enums.DomainErrorCode;
 public class RefreshTokenRevokedException extends DomainException {
     public RefreshTokenRevokedException() {
         super(
-                DomainErrorCode.REFRESH_TOKEN_REVOKED,
+                "Refresh Token Revoked",
+                401,
                 "The refresh token has been revoked.",
-                401
+                "RefreshTokenRevokedException: The refresh token has been revoked.",
+                DomainErrorCode.REFRESH_TOKEN_REVOKED
         );
     }
 }

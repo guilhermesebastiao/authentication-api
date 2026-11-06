@@ -5,9 +5,11 @@ import dev.guilhermesebastiao.authenticationapi.domain.enums.DomainErrorCode;
 public class AccountInvalidCredentialsException extends DomainException {
     public AccountInvalidCredentialsException() {
         super(
-                DomainErrorCode.ACCOUNT_INVALID_CREDENTIALS,
+                "Account Invalid Credentials",
+                401,
                 "The provided account credentials are invalid.",
-                401
+                "AccountInvalidCredentialsException: The provided account credentials are invalid.",
+                DomainErrorCode.ACCOUNT_INVALID_CREDENTIALS
         );
     }
 }

@@ -11,6 +11,8 @@ public interface RefreshRepositoryPort {
 
     void save(List<Refresh> refreshes);
 
+    Optional<Refresh> findByRefreshBySessionId(UUID sessionId);
+
     Optional<Refresh> findByRefreshTokenHash(String refreshTokenHash);
 
     List<Refresh> findAllBySessionIdsAndNotRevoked(List<UUID> sessionIds);

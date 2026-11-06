@@ -3,14 +3,14 @@ package dev.guilhermesebastiao.authenticationapi.adapter.in.controller;
 import dev.guilhermesebastiao.authenticationapi.adapter.in.contract.AccountActivationApi;
 import dev.guilhermesebastiao.authenticationapi.adapter.in.dto.common.ApiBody;
 import dev.guilhermesebastiao.authenticationapi.adapter.in.dto.request.AccountActivateRequest;
-import dev.guilhermesebastiao.authenticationapi.adapter.in.dto.request.ResendAccountActivationEmailRequest;
+import dev.guilhermesebastiao.authenticationapi.adapter.in.dto.request.ResendAccountActivationRequest;
 import dev.guilhermesebastiao.authenticationapi.adapter.in.dto.response.AccountActivationResponse;
 import dev.guilhermesebastiao.authenticationapi.adapter.in.mapper.AccountActivationMapper;
-import dev.guilhermesebastiao.authenticationapi.application.command.AccountActivationCommand;
+import dev.guilhermesebastiao.authenticationapi.application.dto.input.AccountActivationInput;
 import dev.guilhermesebastiao.authenticationapi.application.port.in.AccountActivateUseCase;
 import dev.guilhermesebastiao.authenticationapi.application.port.in.GetAccountActivationUseCase;
 import dev.guilhermesebastiao.authenticationapi.application.port.in.ResendAccountActivationEmailUseCase;
-import dev.guilhermesebastiao.authenticationapi.application.result.AccountActivationResult;
+import dev.guilhermesebastiao.authenticationapi.application.dto.output.AccountActivationOutput;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -33,9 +33,9 @@ public class AccountActivationController implements AccountActivationApi {
             HttpServletRequest request,
             @RequestBody @Valid AccountActivateRequest dto
     ) {
-        AccountActivationCommand command = mapper.toCommand(dto);
+        AccountActivationInput input = mapper.toInput(dto);
 
-        accountActivateUseCase.execute(command);
+        accountActivateUseCase.execute(input);
 
         return ApiBody.of();
     }
@@ -47,9 +47,9 @@ public class AccountActivationController implements AccountActivationApi {
             HttpServletRequest request,
             @PathVariable String activationToken
     ) {
-        AccountActivationResult data = getAccountActivationUseCase.execute(activationToken);
+        AccountActivationOutput output = getAccountActivationUseCase.execute(activationToken);
 
-        return ApiBody.of(mapper.toResponse(data));
+        return ApiBody.of(mapper.toResponse(output));
     }
 
     @Override
@@ -57,10 +57,10 @@ public class AccountActivationController implements AccountActivationApi {
     @ResponseStatus(HttpStatus.OK)
     public ApiBody<AccountActivationResponse> resend(
             HttpServletRequest request,
-            @RequestBody @Valid ResendAccountActivationEmailRequest dto
+            @RequestBody @Valid ResendAccountActivationRequest dto
     ) {
-        AccountActivationResult data = resendAccountActivationEmailUseCase.execute(dto.activationToken());
+        AccountActivationOutput output = resendAccountActivationEmailUseCase.execute(dto.activationToken());
 
-        return ApiBody.of(mapper.toResponse(data));
+        return ApiBody.of(mapper.toResponse(output));
     }
 }

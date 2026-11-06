@@ -5,8 +5,6 @@ import jakarta.validation.Payload;
 
 import java.lang.annotation.*;
 
-import static dev.guilhermesebastiao.authenticationapi.adapter.in.validation.ValidationErrorCode.INVALID_PASSWORD;
-
 @Documented
 @Target({
         ElementType.FIELD,
@@ -15,7 +13,7 @@ import static dev.guilhermesebastiao.authenticationapi.adapter.in.validation.Val
 @Retention(RetentionPolicy.RUNTIME)
 @Constraint(validatedBy = PasswordValidator.class)
 public @interface ValidPassword {
-    String message() default INVALID_PASSWORD;
+    String message() default "Invalid password";
     Class<?>[] groups() default {};
     Class<? extends Payload>[] payload() default {};
 }

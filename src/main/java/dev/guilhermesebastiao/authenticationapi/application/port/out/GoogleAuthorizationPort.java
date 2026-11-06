@@ -1,7 +1,7 @@
 package dev.guilhermesebastiao.authenticationapi.application.port.out;
 
-import dev.guilhermesebastiao.authenticationapi.application.result.GoogleAuthorizationResult;
+import dev.guilhermesebastiao.authenticationapi.application.dto.output.GoogleAuthorizationOutput;
 
 public interface GoogleAuthorizationPort {
-    GoogleAuthorizationResult authorize(String credential);
+    GoogleAuthorizationOutput authorize(String credential);
 }

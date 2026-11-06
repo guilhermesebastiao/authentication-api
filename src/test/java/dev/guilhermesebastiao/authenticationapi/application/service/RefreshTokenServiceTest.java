@@ -1,15 +1,15 @@
 package dev.guilhermesebastiao.authenticationapi.application.service;
 
-import dev.guilhermesebastiao.authenticationapi.application.command.RefreshTokenCommand;
+import dev.guilhermesebastiao.authenticationapi.application.dto.input.RefreshTokenInput;
 import dev.guilhermesebastiao.authenticationapi.application.port.in.CreateRefreshUseCase;
 import dev.guilhermesebastiao.authenticationapi.application.port.in.ValidateSessionUseCase;
 import dev.guilhermesebastiao.authenticationapi.application.port.out.JwtTokenPort;
 import dev.guilhermesebastiao.authenticationapi.application.port.out.RefreshRepositoryPort;
 import dev.guilhermesebastiao.authenticationapi.application.port.out.SecureHasherPort;
 import dev.guilhermesebastiao.authenticationapi.application.port.out.SessionRepositoryPort;
-import dev.guilhermesebastiao.authenticationapi.application.result.AuthResult;
-import dev.guilhermesebastiao.authenticationapi.application.result.CreateRefreshResult;
-import dev.guilhermesebastiao.authenticationapi.application.result.JwtValidationResult;
+import dev.guilhermesebastiao.authenticationapi.application.dto.output.AuthOutput;
+import dev.guilhermesebastiao.authenticationapi.application.dto.output.CreateRefreshOutput;
+import dev.guilhermesebastiao.authenticationapi.application.dto.output.JwtValidationOutput;
 import dev.guilhermesebastiao.authenticationapi.domain.enums.JwtValidationStatus;
 import dev.guilhermesebastiao.authenticationapi.domain.exception.RefreshTokenInvalidException;
 import dev.guilhermesebastiao.authenticationapi.domain.exception.RefreshTokenNotFoundException;
@@ -67,7 +67,7 @@ class RefreshTokenServiceTest {
     @Test
     @DisplayName("Should return the existing tokens when the access token is valid")
     void givenValidAccessToken_whenRefreshTokens_thenExistingTokensAreReturned() {
-        RefreshTokenCommand command = new RefreshTokenCommand("access-token", "refresh-token", "session-token");
+        RefreshTokenInput command = new RefreshTokenInput("access-token", "refresh-token", "session-token");
 
         Session session = new Session();
 
@@ -75,9 +75,9 @@ class RefreshTokenServiceTest {
                 .willReturn(session);
 
         given(jwtToken.validate(command.accessToken(), command.sessionToken()))
-                .willReturn(JwtValidationResult.valid(UUID.randomUUID()));
+                .willReturn(JwtValidationOutput.valid(UUID.randomUUID()));
 
-        AuthResult result = service.execute(command);
+        AuthOutput result = service.execute(command);
 
         assertEquals(command.accessToken(), result.accessToken());
         assertEquals(command.refreshToken(), result.refreshToken());
@@ -94,7 +94,7 @@ class RefreshTokenServiceTest {
     @Test
     @DisplayName("Should reject the request when the access token is invalid")
     void givenInvalidAccessToken_whenRefreshTokens_thenUnauthorizedExceptionIsThrown() {
-        RefreshTokenCommand command = new RefreshTokenCommand("invalid-access-token", "refresh-token", "session-token");
+        RefreshTokenInput command = new RefreshTokenInput("invalid-access-token", "refresh-token", "session-token");
 
         Session session = new Session();
 
@@ -102,7 +102,7 @@ class RefreshTokenServiceTest {
                 .willReturn(session);
 
         given(jwtToken.validate(command.accessToken(), command.sessionToken()))
-                .willReturn(JwtValidationResult.invalid(JwtValidationStatus.INVALID_SIGNATURE));
+                .willReturn(JwtValidationOutput.invalid(JwtValidationStatus.INVALID_SIGNATURE));
 
         assertThrows(UnauthorizedException.class, () -> service.execute(command));
 
@@ -117,7 +117,7 @@ class RefreshTokenServiceTest {
     @Test
     @DisplayName("Should rotate the refresh token and renew the session when the access token is expired")
     void givenExpiredAccessTokenAndValidRefreshToken_whenRefreshTokens_thenTokensAndSessionAreRenewed() {
-        RefreshTokenCommand command = new RefreshTokenCommand("expired-access-token", "refresh-token", "session-token");
+        RefreshTokenInput command = new RefreshTokenInput("expired-access-token", "refresh-token", "session-token");
 
         Account account = new Account();
         Session session = new Session();
@@ -127,7 +127,7 @@ class RefreshTokenServiceTest {
         Refresh previousRefresh = new Refresh();
         previousRefresh.setSession(session);
         Refresh replacementRefresh = new Refresh();
-        CreateRefreshResult refreshResult = new CreateRefreshResult("new-refresh-token", replacementRefresh);
+        CreateRefreshOutput refreshResult = new CreateRefreshOutput("new-refresh-token", replacementRefresh);
 
         Instant beforeExecution = Instant.now();
 
@@ -135,7 +135,7 @@ class RefreshTokenServiceTest {
                 .willReturn(session);
 
         given(jwtToken.validate(command.accessToken(), command.sessionToken()))
-                .willReturn(JwtValidationResult.invalid(JwtValidationStatus.EXPIRED));
+                .willReturn(JwtValidationOutput.invalid(JwtValidationStatus.EXPIRED));
 
         given(secureHasher.hash(command.refreshToken()))
                 .willReturn("refresh-token-hash");
@@ -149,7 +149,7 @@ class RefreshTokenServiceTest {
         given(jwtToken.generate(account, command.sessionToken()))
                 .willReturn("new-access-token");
 
-        AuthResult result = service.execute(command);
+        AuthOutput result = service.execute(command);
         Instant afterExecution = Instant.now();
 
         assertEquals("new-access-token", result.accessToken());
@@ -175,7 +175,7 @@ class RefreshTokenServiceTest {
     @Test
     @DisplayName("Should reject the request when the refresh token is not found")
     void givenExpiredAccessTokenAndUnknownRefreshToken_whenRefreshTokens_thenRefreshTokenNotFoundExceptionIsThrown() {
-        RefreshTokenCommand command = new RefreshTokenCommand("expired-access-token", "unknown-refresh-token", "session-token");
+        RefreshTokenInput command = new RefreshTokenInput("expired-access-token", "unknown-refresh-token", "session-token");
 
         Session session = new Session();
 
@@ -183,7 +183,7 @@ class RefreshTokenServiceTest {
                 .willReturn(session);
 
         given(jwtToken.validate(command.accessToken(), command.sessionToken()))
-                .willReturn(JwtValidationResult.invalid(JwtValidationStatus.EXPIRED));
+                .willReturn(JwtValidationOutput.invalid(JwtValidationStatus.EXPIRED));
 
         given(secureHasher.hash(command.refreshToken()))
                 .willReturn("unknown-refresh-token-hash");
@@ -206,7 +206,7 @@ class RefreshTokenServiceTest {
     @Test
     @DisplayName("Should reject the request when the refresh token has been revoked")
     void givenExpiredAccessTokenAndRevokedRefreshToken_whenRefreshTokens_thenRefreshTokenRevokedExceptionIsThrown() {
-        RefreshTokenCommand command = new RefreshTokenCommand("expired-access-token", "revoked-refresh-token", "session-token");
+        RefreshTokenInput command = new RefreshTokenInput("expired-access-token", "revoked-refresh-token", "session-token");
 
         Session session = new Session();
         Refresh revokedRefresh = new Refresh();
@@ -217,7 +217,7 @@ class RefreshTokenServiceTest {
                 .willReturn(session);
 
         given(jwtToken.validate(command.accessToken(), command.sessionToken()))
-                .willReturn(JwtValidationResult.invalid(JwtValidationStatus.EXPIRED));
+                .willReturn(JwtValidationOutput.invalid(JwtValidationStatus.EXPIRED));
 
         given(secureHasher.hash(command.refreshToken()))
                 .willReturn("revoked-refresh-token-hash");
@@ -240,7 +240,7 @@ class RefreshTokenServiceTest {
     @Test
     @DisplayName("Should reject the request when the refresh token belongs to another session")
     void givenExpiredAccessTokenAndRefreshTokenFromAnotherSession_whenRefreshTokens_thenRefreshTokenInvalidExceptionIsThrown() {
-        RefreshTokenCommand command = new RefreshTokenCommand("expired-access-token", "another-session-refresh-token", "session-token");
+        RefreshTokenInput command = new RefreshTokenInput("expired-access-token", "another-session-refresh-token", "session-token");
 
         Session currentSession = new Session();
         currentSession.setId(UUID.randomUUID());
@@ -253,7 +253,7 @@ class RefreshTokenServiceTest {
                 .willReturn(currentSession);
 
         given(jwtToken.validate(command.accessToken(), command.sessionToken()))
-                .willReturn(JwtValidationResult.invalid(JwtValidationStatus.EXPIRED));
+                .willReturn(JwtValidationOutput.invalid(JwtValidationStatus.EXPIRED));
 
         given(secureHasher.hash(command.refreshToken()))
                 .willReturn("another-session-refresh-token-hash");
