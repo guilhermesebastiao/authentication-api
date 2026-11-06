@@ -1,0 +1,86 @@
+package dev.guilhermesebastiao.authenticationapi.application.service;
+
+import dev.guilhermesebastiao.authenticationapi.application.command.DisableAccountCommand;
+import dev.guilhermesebastiao.authenticationapi.application.port.in.SignOutAllUseCase;
+import dev.guilhermesebastiao.authenticationapi.application.port.out.AccountRepositoryPort;
+import dev.guilhermesebastiao.authenticationapi.application.port.out.PasswordEncoderPort;
+import dev.guilhermesebastiao.authenticationapi.domain.exception.AccountInvalidCredentialsException;
+import dev.guilhermesebastiao.authenticationapi.domain.model.Account;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
+
+import java.time.Instant;
+
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.BDDMockito.given;
+import static org.mockito.BDDMockito.then;
+import static org.mockito.Mockito.never;
+
+@ExtendWith(MockitoExtension.class)
+class DisableAccountServiceTest {
+
+    @Mock
+    private AccountRepositoryPort accountRepository;
+
+    @Mock
+    private SignOutAllUseCase signOutAllUseCase;
+
+    @Mock
+    private PasswordEncoderPort passwordEncoder;
+
+    @InjectMocks
+    private DisableAccountService service;
+
+    @Test
+    @DisplayName("Should disable the account, save it and sign out all sessions")
+    void givenValidPassword_whenDisableAccount_thenAccountIsDisabledAndSessionsAreSignedOut() {
+        Account account = new Account();
+        account.setPasswordHash("password-hash");
+        DisableAccountCommand command = new DisableAccountCommand("current-password");
+        Instant beforeExecution = Instant.now();
+
+        given(passwordEncoder.matches(command.password(), account.getPasswordHash()))
+                .willReturn(true);
+
+        service.execute(account, command);
+        Instant afterExecution = Instant.now();
+
+        assertNotNull(account.getDisabledAt());
+        assertFalse(account.getDisabledAt().isBefore(beforeExecution));
+        assertFalse(account.getDisabledAt().isAfter(afterExecution));
+
+        then(passwordEncoder).should()
+                .matches(command.password(), account.getPasswordHash());
+
+        then(accountRepository).should().save(account);
+        then(signOutAllUseCase).should().execute(account);
+    }
+
+    @Test
+    @DisplayName("Should reject account disabling when the password is invalid")
+    void givenInvalidPassword_whenDisableAccount_thenInvalidCredentialsExceptionIsThrown() {
+        Account account = new Account();
+        account.setPasswordHash("password-hash");
+        DisableAccountCommand command = new DisableAccountCommand("wrong-password");
+
+        given(passwordEncoder.matches(command.password(), account.getPasswordHash()))
+                .willReturn(false);
+
+        assertThrows(AccountInvalidCredentialsException.class, () -> service.execute(account, command));
+
+        assertNull(account.getDisabledAt());
+
+        then(passwordEncoder).should()
+                .matches(command.password(), account.getPasswordHash());
+
+        then(accountRepository).should(never()).save(account);
+        then(signOutAllUseCase).shouldHaveNoInteractions();
+    }
+}
