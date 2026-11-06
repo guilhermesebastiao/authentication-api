@@ -150,7 +150,7 @@ class SignInServiceTest {
                 () -> service.execute(command, "Mozilla/5.0", "192.168.0.10")
         );
 
-        assertSame(activationResult, exception.getDetails());
+        assertEquals("The account has not been activated.", exception.getDetail());
 
         then(accountRepository).should().findByEmail(command.email());
         then(createAccountActivationUseCase).should().execute(account);

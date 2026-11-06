@@ -60,7 +60,7 @@ class GoogleSignInServiceTest {
     @Test
     @DisplayName("Should sign in an activated account using Google authorization")
     void givenActivatedAccountAndValidGoogleCredential_whenGoogleSignIn_thenAuthenticationTokensAreReturned() {
-        GoogleSignInInput command = new GoogleSignInInput("google-credential");
+        String code = "google-credential";
         String userAgent = "Mozilla/5.0";
         String ipAddress = "192.168.0.10";
         GoogleAuthorizationOutput googleResult = new GoogleAuthorizationOutput("user@example.com");
@@ -71,7 +71,7 @@ class GoogleSignInServiceTest {
         CreateSessionOutput sessionResult = new CreateSessionOutput("session-token", session);
         CreateRefreshOutput refreshResult = new CreateRefreshOutput("refresh-token", new Refresh());
 
-        given(googleAuthorization.authorize(command.code()))
+        given(googleAuthorization.authorize(code))
                 .willReturn(googleResult);
 
         given(accountRepository.findByEmail(googleResult.email()))
@@ -86,13 +86,13 @@ class GoogleSignInServiceTest {
         given(jwtToken.generate(account, sessionResult.sessionToken()))
                 .willReturn("access-token");
 
-        AuthOutput result = service.execute(command, userAgent, ipAddress);
+        AuthOutput result = service.execute(code, userAgent, ipAddress);
 
         assertEquals("access-token", result.accessToken());
         assertEquals(refreshResult.refreshToken(), result.refreshToken());
         assertEquals(sessionResult.sessionToken(), result.sessionToken());
 
-        then(googleAuthorization).should().authorize(command.code());
+        then(googleAuthorization).should().authorize(code);
         then(accountRepository).should().findByEmail(googleResult.email());
         then(createSessionUseCase).should().execute(account, userAgent, ipAddress);
         then(createRefreshUseCase).should().execute(session);
@@ -103,10 +103,10 @@ class GoogleSignInServiceTest {
     @Test
     @DisplayName("Should reject Google sign in when the account does not exist")
     void givenGoogleCredentialForUnknownAccount_whenGoogleSignIn_thenAccountNotFoundExceptionIsThrown() {
-        GoogleSignInInput command = new GoogleSignInInput("google-credential");
+        String code = "google-credential";
         GoogleAuthorizationOutput googleResult = new GoogleAuthorizationOutput("unknown@example.com");
 
-        given(googleAuthorization.authorize(command.code()))
+        given(googleAuthorization.authorize(code))
                 .willReturn(googleResult);
 
         given(accountRepository.findByEmail(googleResult.email()))
@@ -114,10 +114,10 @@ class GoogleSignInServiceTest {
 
         assertThrows(
                 AccountNotFoundException.class,
-                () -> service.execute(command, "Mozilla/5.0", "192.168.0.10")
+                () -> service.execute(code, "Mozilla/5.0", "192.168.0.10")
         );
 
-        then(googleAuthorization).should().authorize(command.code());
+        then(googleAuthorization).should().authorize(code);
         then(accountRepository).should().findByEmail(googleResult.email());
         then(createAccountActivationUseCase).shouldHaveNoInteractions();
         then(createSessionUseCase).shouldHaveNoInteractions();
@@ -128,7 +128,7 @@ class GoogleSignInServiceTest {
     @Test
     @DisplayName("Should request account activation and reject Google sign in for a pending account")
     void givenPendingAccount_whenGoogleSignIn_thenAccountNotActivatedExceptionIsThrown() {
-        GoogleSignInInput command = new GoogleSignInInput("google-credential");
+        String code = "google-credential";
         GoogleAuthorizationOutput googleResult = new GoogleAuthorizationOutput("pending@example.com");
         Account account = new Account();
         account.setEmail(googleResult.email());
@@ -140,7 +140,7 @@ class GoogleSignInServiceTest {
                 Instant.parse("2026-10-04T12:01:00Z")
         );
 
-        given(googleAuthorization.authorize(command.code()))
+        given(googleAuthorization.authorize(code))
                 .willReturn(googleResult);
 
         given(accountRepository.findByEmail(googleResult.email()))
@@ -151,10 +151,10 @@ class GoogleSignInServiceTest {
 
         AccountNotActivatedException exception = assertThrows(
                 AccountNotActivatedException.class,
-                () -> service.execute(command, "Mozilla/5.0", "192.168.0.10")
+                () -> service.execute(code, "Mozilla/5.0", "192.168.0.10")
         );
 
-        assertSame(activationResult, exception.getDetails());
+        assertEquals("The account has not been activated.", exception.getDetail());
         then(createAccountActivationUseCase).should().execute(account);
         then(createSessionUseCase).shouldHaveNoInteractions();
         then(createRefreshUseCase).shouldHaveNoInteractions();
@@ -164,13 +164,13 @@ class GoogleSignInServiceTest {
     @Test
     @DisplayName("Should reject Google sign in for a disabled account")
     void givenDisabledAccount_whenGoogleSignIn_thenAccountDisabledExceptionIsThrown() {
-        GoogleSignInInput command = new GoogleSignInInput("google-credential");
+        String code = "google-credential";
         GoogleAuthorizationOutput googleResult = new GoogleAuthorizationOutput("disabled@example.com");
         Account account = new Account();
         account.setEmail(googleResult.email());
         account.setStatus(AccountStatus.DISABLED);
 
-        given(googleAuthorization.authorize(command.code()))
+        given(googleAuthorization.authorize(code))
                 .willReturn(googleResult);
 
         given(accountRepository.findByEmail(googleResult.email()))
@@ -178,7 +178,7 @@ class GoogleSignInServiceTest {
 
         assertThrows(
                 AccountDisabledException.class,
-                () -> service.execute(command, "Mozilla/5.0", "192.168.0.10")
+                () -> service.execute(code, "Mozilla/5.0", "192.168.0.10")
         );
 
         then(createAccountActivationUseCase).shouldHaveNoInteractions();

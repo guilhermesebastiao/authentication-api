@@ -81,7 +81,7 @@ class CreateAccountActivationServiceTest {
 
         assertEquals(account, savedActivation.getAccount());
         assertEquals("activation-token-hash", savedActivation.getActivationTokenHash());
-        assertEquals("otp-code-hash", savedActivation.getOtpCodeHash());
+        assertEquals("otp-code-hash", savedActivation.getOtpHash());
 
         assertTrue(savedActivation.getExpiresAt()
                 .isAfter(beforeExecution.plus(14, ChronoUnit.MINUTES)));

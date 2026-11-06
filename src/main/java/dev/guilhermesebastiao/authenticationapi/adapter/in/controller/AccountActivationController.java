@@ -9,7 +9,7 @@ import dev.guilhermesebastiao.authenticationapi.adapter.in.mapper.AccountActivat
 import dev.guilhermesebastiao.authenticationapi.application.dto.input.AccountActivationInput;
 import dev.guilhermesebastiao.authenticationapi.application.port.in.AccountActivateUseCase;
 import dev.guilhermesebastiao.authenticationapi.application.port.in.GetAccountActivationUseCase;
-import dev.guilhermesebastiao.authenticationapi.application.port.in.ResendAccountActivationEmailUseCase;
+import dev.guilhermesebastiao.authenticationapi.application.port.in.ResendAccountActivationUseCase;
 import dev.guilhermesebastiao.authenticationapi.application.dto.output.AccountActivationOutput;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
@@ -21,7 +21,7 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/account-activation")
 @RequiredArgsConstructor
 public class AccountActivationController implements AccountActivationApi {
-    private final ResendAccountActivationEmailUseCase resendAccountActivationEmailUseCase;
+    private final ResendAccountActivationUseCase resendAccountActivationUseCase;
     private final GetAccountActivationUseCase getAccountActivationUseCase;
     private final AccountActivateUseCase accountActivateUseCase;
     private final AccountActivationMapper mapper;
@@ -59,7 +59,7 @@ public class AccountActivationController implements AccountActivationApi {
             HttpServletRequest request,
             @RequestBody @Valid ResendAccountActivationRequest dto
     ) {
-        AccountActivationOutput output = resendAccountActivationEmailUseCase.execute(dto.activationToken());
+        AccountActivationOutput output = resendAccountActivationUseCase.execute(dto.activationToken());
 
         return ApiBody.of(mapper.toResponse(output));
     }

@@ -41,6 +41,6 @@ class SendAccountActivationEmailServiceTest {
         assertEquals("account-activation-template", payload.template());
         assertEquals(email, payload.recipient());
         assertEquals("Confirme seu e-mail para ativar sua conta", payload.subject());
-        assertEquals(Map.of("email", email, "otpCode", otpCode), payload.variables());
+        assertEquals(Map.of("email", email, "otp", otpCode), payload.variables());
     }
 }

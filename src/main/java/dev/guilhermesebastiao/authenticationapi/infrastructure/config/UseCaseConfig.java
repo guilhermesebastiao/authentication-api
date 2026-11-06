@@ -201,14 +201,14 @@ public class UseCaseConfig {
     }
 
     @Bean
-    public ResendAccountActivationEmailService resendAccountActivationEmailService(
+    public ResendAccountActivationService resendAccountActivationEmailService(
             SendAccountActivationUseCase sendAccountActivationEmail,
             AccountActivationRepositoryPort accountActivationRepository,
             PasswordEncoderPort passwordEncoder,
             SecureHasherPort secureHasher,
             SecureRandom secureRandom
     ) {
-        return new ResendAccountActivationEmailService(
+        return new ResendAccountActivationService(
                 sendAccountActivationEmail,
                 accountActivationRepository,
                 passwordEncoder,

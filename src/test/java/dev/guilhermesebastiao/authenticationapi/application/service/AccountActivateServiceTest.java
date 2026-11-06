@@ -65,7 +65,7 @@ class AccountActivateServiceTest {
 
         AccountActivation activation = new AccountActivation();
         activation.setAccount(account);
-        activation.setOtpCodeHash(otpCodeHash);
+        activation.setOtpHash(otpCodeHash);
         activation.setExpiresAt(Instant.now().plusSeconds(300));
 
         AccountActivationInput command = new AccountActivationInput(activationToken, otpCode);
@@ -175,7 +175,7 @@ class AccountActivateServiceTest {
         AccountActivation activation = new AccountActivation();
 
         activation.setAccount(account);
-        activation.setOtpCodeHash(otpCodeHash);
+        activation.setOtpHash(otpCodeHash);
         activation.setExpiresAt(Instant.now().plusSeconds(300));
 
         AccountActivationInput command = new AccountActivationInput("activation-token", otpCode);

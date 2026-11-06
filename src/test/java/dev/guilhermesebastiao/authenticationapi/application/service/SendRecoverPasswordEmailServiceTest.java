@@ -41,6 +41,6 @@ class SendRecoverPasswordEmailServiceTest {
         assertEquals("recover-password-template", payload.template());
         assertEquals(email, payload.recipient());
         assertEquals("Solicitação de redefinição de senha", payload.subject());
-        assertEquals(Map.of("email", email, "otpCode", otpCode), payload.variables());
+        assertEquals(Map.of("email", email, "otp", otpCode), payload.variables());
     }
 }

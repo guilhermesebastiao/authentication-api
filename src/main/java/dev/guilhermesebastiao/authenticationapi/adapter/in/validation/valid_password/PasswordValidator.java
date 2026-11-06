@@ -33,6 +33,11 @@ public class PasswordValidator implements ConstraintValidator<ValidPassword, Str
             valid = false;
         }
 
+        if (!valid) {
+            context.buildConstraintViolationWithTemplate(context.getDefaultConstraintMessageTemplate())
+                    .addConstraintViolation();
+        }
+
         return valid;
     }
 }

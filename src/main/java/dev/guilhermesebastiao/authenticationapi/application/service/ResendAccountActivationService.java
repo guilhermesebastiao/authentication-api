@@ -1,6 +1,6 @@
 package dev.guilhermesebastiao.authenticationapi.application.service;
 
-import dev.guilhermesebastiao.authenticationapi.application.port.in.ResendAccountActivationEmailUseCase;
+import dev.guilhermesebastiao.authenticationapi.application.port.in.ResendAccountActivationUseCase;
 import dev.guilhermesebastiao.authenticationapi.application.port.in.SendAccountActivationUseCase;
 import dev.guilhermesebastiao.authenticationapi.application.port.out.AccountActivationRepositoryPort;
 import dev.guilhermesebastiao.authenticationapi.application.port.out.PasswordEncoderPort;
@@ -16,7 +16,7 @@ import java.security.SecureRandom;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 
-public class ResendAccountActivationEmailService implements ResendAccountActivationEmailUseCase {
+public class ResendAccountActivationService implements ResendAccountActivationUseCase {
     private static final int RESEND_EMAIL_AVAILABLE_MINUTES = 1;
 
     private final SendAccountActivationUseCase sendAccountActivationUseCase;
@@ -25,7 +25,7 @@ public class ResendAccountActivationEmailService implements ResendAccountActivat
     private final SecureHasherPort secureHasher;
     private final SecureRandom secureRandom;
 
-    public ResendAccountActivationEmailService(
+    public ResendAccountActivationService(
             SendAccountActivationUseCase sendAccountActivationUseCase,
             AccountActivationRepositoryPort accountActivationRepository,
             PasswordEncoderPort passwordEncoder,
