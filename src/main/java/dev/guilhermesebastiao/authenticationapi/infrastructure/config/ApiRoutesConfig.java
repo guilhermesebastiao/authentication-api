@@ -1,6 +1,9 @@
 package dev.guilhermesebastiao.authenticationapi.infrastructure.config;
 
 import lombok.NoArgsConstructor;
+import org.springframework.util.AntPathMatcher;
+
+import java.util.Arrays;
 
 @NoArgsConstructor
 public final class ApiRoutesConfig {
@@ -9,11 +12,18 @@ public final class ApiRoutesConfig {
             "/auth/google/sign-in",
             "/auth/sign-up",
             "/auth/refresh",
-            "/password-recovery/**",
+            "/recovery-password/**",
+            "/forgot-password/**",
             "/account-activation/**",
-            "/actuator/**",
             "/v3/api-docs/**",
             "/swagger-ui/**",
             "/swagger-ui.html"
     };
+
+    private static final AntPathMatcher PATH_MATCHER = new AntPathMatcher();
+
+    public static boolean isPublic(String path) {
+        return Arrays.stream(PUBLIC)
+                .anyMatch(pattern -> PATH_MATCHER.match(pattern, path));
+    }
 }

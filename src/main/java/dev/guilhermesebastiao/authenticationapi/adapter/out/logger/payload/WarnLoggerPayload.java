@@ -1,4 +1,4 @@
-package dev.guilhermesebastiao.authenticationapi.adapter.out.logger;
+package dev.guilhermesebastiao.authenticationapi.adapter.out.logger.payload;
 
 import dev.guilhermesebastiao.authenticationapi.domain.enums.DomainErrorCode;
 

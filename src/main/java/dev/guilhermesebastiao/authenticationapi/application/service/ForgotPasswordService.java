@@ -4,6 +4,7 @@ import dev.guilhermesebastiao.authenticationapi.application.dto.output.ForgotPas
 import dev.guilhermesebastiao.authenticationapi.application.port.in.ForgotPasswordUseCase;
 import dev.guilhermesebastiao.authenticationapi.application.port.in.SendForgotUseCase;
 import dev.guilhermesebastiao.authenticationapi.application.port.out.*;
+import dev.guilhermesebastiao.authenticationapi.domain.exception.AccountDisabledException;
 import dev.guilhermesebastiao.authenticationapi.domain.exception.AccountNotFoundException;
 import dev.guilhermesebastiao.authenticationapi.domain.model.Account;
 import dev.guilhermesebastiao.authenticationapi.domain.model.ForgotPassword;
@@ -47,6 +48,10 @@ public class ForgotPasswordService implements ForgotPasswordUseCase {
     public ForgotPasswordOutput execute(String email) {
         Account account = accountRepository.findByEmail(email)
                 .orElseThrow(AccountNotFoundException::new);
+
+        if (account.getDisabledAt() != null) {
+            throw new AccountDisabledException();
+        }
 
         String otp = String.format("%06d", secureRandom.nextInt(1_000_000));
 

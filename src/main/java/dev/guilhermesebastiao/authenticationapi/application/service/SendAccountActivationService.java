@@ -8,11 +8,13 @@ import java.time.Instant;
 import java.util.Map;
 
 public class SendAccountActivationService implements SendAccountActivationUseCase {
-    private static final String TEMPLATE = "account-activation-template";
+    private static final String TEMPLATE = "account-activation";
 
     private final EmailSenderPort emailSender;
 
-    public SendAccountActivationService(EmailSenderPort emailSender) {
+    public SendAccountActivationService(
+            EmailSenderPort emailSender
+    ) {
         this.emailSender = emailSender;
     }
 

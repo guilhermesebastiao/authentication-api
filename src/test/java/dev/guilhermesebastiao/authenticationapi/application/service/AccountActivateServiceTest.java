@@ -1,6 +1,7 @@
 package dev.guilhermesebastiao.authenticationapi.application.service;
 
 import dev.guilhermesebastiao.authenticationapi.application.dto.input.AccountActivationInput;
+import dev.guilhermesebastiao.authenticationapi.application.port.in.SendAccountWelcomeUseCase;
 import dev.guilhermesebastiao.authenticationapi.application.port.out.AccountActivationRepositoryPort;
 import dev.guilhermesebastiao.authenticationapi.application.port.out.AccountRepositoryPort;
 import dev.guilhermesebastiao.authenticationapi.application.port.out.PasswordEncoderPort;
@@ -33,6 +34,9 @@ class AccountActivateServiceTest {
     private AccountActivationRepositoryPort accountActivationRepository;
 
     @Mock
+    private SendAccountWelcomeUseCase sendAccountWelcomeUseCase;
+
+    @Mock
     private AccountRepositoryPort accountRepository;
 
     @Mock
@@ -47,6 +51,7 @@ class AccountActivateServiceTest {
     void setUp() {
         service = new AccountActivateService(
                 accountActivationRepository,
+                sendAccountWelcomeUseCase,
                 accountRepository,
                 passwordEncoder,
                 secureHasher

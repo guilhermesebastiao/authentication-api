@@ -5,6 +5,7 @@ import dev.guilhermesebastiao.authenticationapi.application.port.out.SecureHashe
 import dev.guilhermesebastiao.authenticationapi.application.port.out.SessionRepositoryPort;
 import dev.guilhermesebastiao.authenticationapi.application.dto.common.PageResult;
 import dev.guilhermesebastiao.authenticationapi.application.dto.output.SessionOutput;
+import dev.guilhermesebastiao.authenticationapi.application.port.in.GetDeviceNameUseCase;
 import dev.guilhermesebastiao.authenticationapi.domain.enums.DeviceType;
 import dev.guilhermesebastiao.authenticationapi.domain.exception.SessionNotFoundException;
 import dev.guilhermesebastiao.authenticationapi.domain.model.Account;
@@ -34,6 +35,9 @@ class GetSessionsServiceTest {
     private SessionRepositoryPort sessionRepository;
 
     @Mock
+    private GetDeviceNameUseCase getDeviceNameUseCase;
+
+    @Mock
     private SecureHasherPort secureHasher;
 
     @InjectMocks
@@ -58,6 +62,8 @@ class GetSessionsServiceTest {
         currentSession.setLastSeenAt(firstLastSeenAt);
         currentSession.setLocation("Sao Paulo, Brazil");
         currentSession.setSessionTokenHash(currentSessionTokenHash);
+        currentSession.setUserAgent("current-user-agent");
+        currentSession.setIpAddress("192.0.2.1");
         currentSession.setCreatedAt(firstCreatedAt);
 
         Session otherSession = new Session();
@@ -66,6 +72,8 @@ class GetSessionsServiceTest {
         otherSession.setLastSeenAt(secondLastSeenAt);
         otherSession.setLocation("Rio de Janeiro, Brazil");
         otherSession.setSessionTokenHash("other-session-token-hash");
+        otherSession.setUserAgent("other-user-agent");
+        otherSession.setIpAddress("192.0.2.2");
         otherSession.setCreatedAt(secondCreatedAt);
 
         PageResult<Session> sessions = new PageResult<>(
@@ -76,11 +84,14 @@ class GetSessionsServiceTest {
                 10
         );
 
-        given(sessionRepository.findAllByAccountIdAndNotRevoked(account.getId(), paging))
+        given(sessionRepository.findAllByAccountIdAndNotRevoked(account.getId(), currentSessionTokenHash, paging))
                 .willReturn(sessions);
 
         given(secureHasher.hash(currentSessionToken))
                 .willReturn(currentSessionTokenHash);
+
+        given(getDeviceNameUseCase.execute("current-user-agent")).willReturn("Chrome on Windows 10/11");
+        given(getDeviceNameUseCase.execute("other-user-agent")).willReturn("Firefox on Linux");
 
         PageResult<SessionOutput> result = service.execute(account, currentSessionToken, paging);
 
@@ -92,21 +103,26 @@ class GetSessionsServiceTest {
 
         SessionOutput currentResult = result.content().get(0);
         assertEquals(currentSession.getId(), currentResult.id());
+        assertEquals("Chrome on Windows 10/11", currentResult.name());
         assertEquals(DeviceType.DESKTOP, currentResult.type());
         assertEquals(firstLastSeenAt, currentResult.lastSeenAt());
         assertEquals("Sao Paulo, Brazil", currentResult.location());
+        assertEquals("192.0.2.1", currentResult.ipAddress());
         assertTrue(currentResult.isCurrent());
         assertEquals(firstCreatedAt, currentResult.createdAt());
 
         SessionOutput otherResult = result.content().get(1);
         assertEquals(otherSession.getId(), otherResult.id());
+        assertEquals("Firefox on Linux", otherResult.name());
         assertEquals(DeviceType.MOBILE, otherResult.type());
         assertFalse(otherResult.isCurrent());
 
         then(sessionRepository).should()
-                .findAllByAccountIdAndNotRevoked(account.getId(), paging);
+                .findAllByAccountIdAndNotRevoked(account.getId(), currentSessionTokenHash, paging);
 
         then(secureHasher).should().hash(currentSessionToken);
+        then(getDeviceNameUseCase).should().execute("current-user-agent");
+        then(getDeviceNameUseCase).should().execute("other-user-agent");
     }
 
     @Test
@@ -123,6 +139,7 @@ class GetSessionsServiceTest {
 
         then(sessionRepository).shouldHaveNoInteractions();
         then(secureHasher).shouldHaveNoInteractions();
+        then(getDeviceNameUseCase).shouldHaveNoInteractions();
     }
 
     @Test
@@ -134,7 +151,7 @@ class GetSessionsServiceTest {
         PageQuery paging = new PageQuery(2, 5);
         PageResult<Session> sessions = new PageResult<>(List.of(), 0, 0, 2, 5);
 
-        given(sessionRepository.findAllByAccountIdAndNotRevoked(account.getId(), paging))
+        given(sessionRepository.findAllByAccountIdAndNotRevoked(account.getId(), "current-session-token-hash", paging))
                 .willReturn(sessions);
 
         given(secureHasher.hash(currentSessionToken))
@@ -148,7 +165,7 @@ class GetSessionsServiceTest {
         assertEquals(2, result.page());
         assertEquals(5, result.size());
         then(sessionRepository).should()
-                .findAllByAccountIdAndNotRevoked(account.getId(), paging);
+                .findAllByAccountIdAndNotRevoked(account.getId(), "current-session-token-hash", paging);
         then(secureHasher).should().hash(currentSessionToken);
     }
 }

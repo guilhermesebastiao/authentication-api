@@ -62,10 +62,14 @@ public class ValidateForgotPasswordService implements ValidateForgotPasswordUseC
 
         recoveryPasswordRepository.save(recoveryPassword);
 
+        String email = recoveryPassword.getForgotPassword().getAccount().getEmail();
+        boolean isUsed = recoveryPassword.getUsedAt() != null;
+
         return new RecoveryPasswordOutput(
                 recoveryToken,
+                email,
                 recoveryPassword.getExpiresAt(),
-                false
+                isUsed
         );
     }
 

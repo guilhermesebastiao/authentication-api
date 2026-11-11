@@ -47,9 +47,9 @@ public class SignInService implements SignInUseCase {
                 .orElseThrow(AccountInvalidCredentialsException::new);
 
         if (account.getStatus() == AccountStatus.PENDING) {
-            AccountActivationOutput data = createAccountActivationUseCase.execute(account);
+            AccountActivationOutput output = createAccountActivationUseCase.execute(account);
 
-            throw new AccountNotActivatedException(data);
+            throw new AccountNotActivatedException(output);
         }
 
         authenticationPort.authenticate(input.email(), input.password());

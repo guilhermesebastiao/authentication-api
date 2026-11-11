@@ -33,10 +33,12 @@ public class GetRecoveryPasswordService implements GetRecoveryPasswordUseCase {
 
         validateRecoverPassword(recoveryPassword, Instant.now());
 
+        String email = recoveryPassword.getForgotPassword().getAccount().getEmail();
         boolean isUsed = recoveryPassword.getUsedAt() != null;
 
         return new RecoveryPasswordOutput(
                 recoveryToken,
+                email,
                 recoveryPassword.getExpiresAt(),
                 isUsed
         );

@@ -1,7 +1,6 @@
 package dev.guilhermesebastiao.authenticationapi.adapter.in.controller;
 
 import dev.guilhermesebastiao.authenticationapi.adapter.in.contract.AccountApi;
-import dev.guilhermesebastiao.authenticationapi.adapter.in.dto.common.ApiBody;
 import dev.guilhermesebastiao.authenticationapi.adapter.in.dto.request.ChangePasswordRequest;
 import dev.guilhermesebastiao.authenticationapi.adapter.in.dto.request.DisableAccountRequest;
 import dev.guilhermesebastiao.authenticationapi.adapter.in.dto.response.AccountResponse;
@@ -31,39 +30,33 @@ public class AccountController implements AccountApi {
     @Override
     @ResponseStatus(HttpStatus.OK)
     @GetMapping("/me")
-    public ApiBody<AccountResponse> me(
-            @AuthenticationPrincipal SecurityAccount securityAccount
-    ) {
+    public AccountResponse me(@AuthenticationPrincipal SecurityAccount securityAccount) {
         AccountOutput output = getCurrentAccountUseCase.execute(securityAccount.account());
 
-        return ApiBody.of(mapper.toResponse(output));
+        return mapper.toResponse(output);
     }
 
     @Override
-    @ResponseStatus(HttpStatus.OK)
+    @ResponseStatus(HttpStatus.NO_CONTENT)
     @PatchMapping("/me/password")
-    public ApiBody<Void> changePassword(
+    public void changePassword(
             @AuthenticationPrincipal SecurityAccount securityAccount,
             @RequestBody @Valid ChangePasswordRequest dto
     ) {
         ChangePasswordInput input = mapper.toInput(dto);
 
         changePasswordUseCase.execute(securityAccount.account(), input);
-
-        return ApiBody.of();
     }
 
     @Override
-    @ResponseStatus(HttpStatus.OK)
+    @ResponseStatus(HttpStatus.NO_CONTENT)
     @DeleteMapping("/me")
-    public ApiBody<Void> disableAccount(
+    public void disableAccount(
             @AuthenticationPrincipal SecurityAccount securityAccount,
             @RequestBody @Valid DisableAccountRequest dto
     ) {
         DisableAccountInput input = mapper.toInput(dto);
 
         disableAccountUseCase.execute(securityAccount.account(), input);
-
-        return ApiBody.of();
     }
 }

@@ -13,5 +13,5 @@ public interface AccountActivationRepositoryPort {
 
     Optional<AccountActivation> findByActivationTokenHash(String activationTokenHash);
 
-    int deleteAllExpired(Instant now);
+    long deleteAllExpiredOrUsed(Instant now);
 }

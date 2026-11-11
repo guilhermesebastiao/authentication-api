@@ -8,6 +8,7 @@ import dev.guilhermesebastiao.authenticationapi.domain.model.RecoveryPassword;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
+import java.time.Instant;
 import java.util.Optional;
 
 @Component
@@ -26,5 +27,10 @@ public class RecoveryPasswordRepositoryAdapter implements RecoveryPasswordReposi
     @Override
     public Optional<RecoveryPassword> findByRecoveryTokenHash(String recoveryTokenHash) {
         return repository.findByRecoveryTokenHash(recoveryTokenHash).map(mapper::toDomain);
+    }
+
+    @Override
+    public long deleteAllExpiredOrUsed(Instant now) {
+        return repository.deleteAllExpiredOrUsed(now);
     }
 }

@@ -1,7 +1,6 @@
 package dev.guilhermesebastiao.authenticationapi.adapter.in.controller;
 
 import dev.guilhermesebastiao.authenticationapi.adapter.in.contract.AccountActivationApi;
-import dev.guilhermesebastiao.authenticationapi.adapter.in.dto.common.ApiBody;
 import dev.guilhermesebastiao.authenticationapi.adapter.in.dto.request.AccountActivateRequest;
 import dev.guilhermesebastiao.authenticationapi.adapter.in.dto.request.ResendAccountActivationRequest;
 import dev.guilhermesebastiao.authenticationapi.adapter.in.dto.response.AccountActivationResponse;
@@ -28,39 +27,37 @@ public class AccountActivationController implements AccountActivationApi {
 
     @Override
     @PostMapping
-    @ResponseStatus(HttpStatus.OK)
-    public ApiBody<Void> activate(
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void activate(
             HttpServletRequest request,
             @RequestBody @Valid AccountActivateRequest dto
     ) {
         AccountActivationInput input = mapper.toInput(dto);
 
         accountActivateUseCase.execute(input);
-
-        return ApiBody.of();
     }
 
     @Override
     @GetMapping("/{activationToken}")
     @ResponseStatus(HttpStatus.OK)
-    public ApiBody<AccountActivationResponse> getAccountActivation(
+    public AccountActivationResponse getAccountActivation(
             HttpServletRequest request,
             @PathVariable String activationToken
     ) {
         AccountActivationOutput output = getAccountActivationUseCase.execute(activationToken);
 
-        return ApiBody.of(mapper.toResponse(output));
+        return mapper.toResponse(output);
     }
 
     @Override
     @PostMapping("/resend")
     @ResponseStatus(HttpStatus.OK)
-    public ApiBody<AccountActivationResponse> resend(
+    public AccountActivationResponse resend(
             HttpServletRequest request,
             @RequestBody @Valid ResendAccountActivationRequest dto
     ) {
         AccountActivationOutput output = resendAccountActivationUseCase.execute(dto.activationToken());
 
-        return ApiBody.of(mapper.toResponse(output));
+        return mapper.toResponse(output);
     }
 }

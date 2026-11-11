@@ -7,9 +7,11 @@ import java.util.UUID;
 
 public record SessionResponse(
         UUID id,
+        String name,
         DeviceType type,
         Instant lastSeenAt,
         String location,
+        String ipAddress,
         boolean isCurrent,
         Instant createdAt
 ) {

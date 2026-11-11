@@ -11,6 +11,7 @@ import dev.guilhermesebastiao.authenticationapi.domain.model.Refresh;
 import dev.guilhermesebastiao.authenticationapi.domain.model.Session;
 
 import java.time.Instant;
+import java.util.UUID;
 
 public class RevokeSessionService implements RevokeSessionUseCase {
     private final SessionRepositoryPort sessionRepository;
@@ -34,6 +35,18 @@ public class RevokeSessionService implements RevokeSessionUseCase {
         Session session = sessionRepository.findBySessionTokenHash(sessionTokenHash)
                 .orElseThrow(SessionNotFoundException::new);
 
+        revoke(account, session);
+    }
+
+    @Override
+    public void execute(Account account, UUID sessionId) {
+        Session session = sessionRepository.findById(sessionId)
+                .orElseThrow(SessionNotFoundException::new);
+
+        revoke(account, session);
+    }
+
+    private void revoke(Account account, Session session) {
         Refresh refresh = refreshRepository.findByRefreshBySessionId(session.getId())
                 .orElseThrow(RefreshTokenNotFoundException::new);
 

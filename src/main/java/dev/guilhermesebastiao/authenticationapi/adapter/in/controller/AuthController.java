@@ -1,7 +1,6 @@
 package dev.guilhermesebastiao.authenticationapi.adapter.in.controller;
 
 import dev.guilhermesebastiao.authenticationapi.adapter.in.contract.AuthApi;
-import dev.guilhermesebastiao.authenticationapi.adapter.in.dto.common.ApiBody;
 import dev.guilhermesebastiao.authenticationapi.adapter.in.dto.request.GoogleSignInRequest;
 import dev.guilhermesebastiao.authenticationapi.adapter.in.dto.request.RefreshTokenRequest;
 import dev.guilhermesebastiao.authenticationapi.adapter.in.dto.request.SignInRequest;
@@ -37,7 +36,7 @@ public class AuthController implements AuthApi {
     @Override
     @ResponseStatus(HttpStatus.OK)
     @PostMapping("/sign-in")
-    public ApiBody<AuthResponse> signIn(
+    public AuthResponse signIn(
             HttpServletRequest request,
             @RequestBody @Valid SignInRequest dto
     ) {
@@ -49,13 +48,13 @@ public class AuthController implements AuthApi {
                 request.getRemoteAddr()
         );
 
-        return ApiBody.of(mapper.toResponse(output));
+        return mapper.toResponse(output);
     }
 
     @Override
     @ResponseStatus(HttpStatus.OK)
     @PostMapping("/google/sign-in")
-    public ApiBody<AuthResponse> googleSignIn(
+    public AuthResponse googleSignIn(
             HttpServletRequest request,
             @RequestBody @Valid GoogleSignInRequest dto
     ) {
@@ -65,26 +64,26 @@ public class AuthController implements AuthApi {
                 request.getRemoteAddr()
         );
 
-        return ApiBody.of(mapper.toResponse(output));
+        return mapper.toResponse(output);
     }
 
     @Override
     @ResponseStatus(HttpStatus.CREATED)
     @PostMapping("/sign-up")
-    public ApiBody<AccountActivationResponse> signUp(
+    public AccountActivationResponse signUp(
             @RequestBody @Valid SignUpRequest dto
     ) {
         CreateAccountInput input = mapper.toInput(dto);
 
         AccountActivationOutput output = createAccountUseCase.execute(input);
 
-        return ApiBody.of(mapper.toResponse(output));
+        return mapper.toResponse(output);
     }
 
     @Override
-    @ResponseStatus(HttpStatus.OK)
+    @ResponseStatus(HttpStatus.NO_CONTENT)
     @PostMapping("/sign-out")
-    public ApiBody<Void> signOut(
+    public void signOut(
             HttpServletRequest request,
             @AuthenticationPrincipal SecurityAccount securityAccount
     ) {
@@ -92,14 +91,12 @@ public class AuthController implements AuthApi {
                 securityAccount.account(),
                 request.getHeader("X-Session")
         );
-
-        return ApiBody.of();
     }
 
     @Override
     @ResponseStatus(HttpStatus.OK)
     @PostMapping("/refresh")
-    public ApiBody<AuthResponse> refresh(
+    public AuthResponse refresh(
             HttpServletRequest request,
             @RequestBody @Valid RefreshTokenRequest dto
     ) {
@@ -107,6 +104,6 @@ public class AuthController implements AuthApi {
 
         AuthOutput output = refreshTokenUseCase.execute(input);
 
-        return ApiBody.of(mapper.toResponse(output));
+        return mapper.toResponse(output);
     }
 }

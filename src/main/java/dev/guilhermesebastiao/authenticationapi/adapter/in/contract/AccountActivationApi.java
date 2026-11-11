@@ -1,6 +1,5 @@
 package dev.guilhermesebastiao.authenticationapi.adapter.in.contract;
 
-import dev.guilhermesebastiao.authenticationapi.adapter.in.dto.common.ApiBody;
 import dev.guilhermesebastiao.authenticationapi.adapter.in.dto.request.AccountActivateRequest;
 import dev.guilhermesebastiao.authenticationapi.adapter.in.dto.request.ResendAccountActivationRequest;
 import dev.guilhermesebastiao.authenticationapi.adapter.in.dto.response.AccountActivationResponse;
@@ -18,7 +17,7 @@ public interface AccountActivationApi {
             summary = "Activate account",
             description = "Activates a pending account using a valid activation token."
     )
-    ApiBody<Void> activate(
+    void activate(
             HttpServletRequest request,
             AccountActivateRequest dto
     );
@@ -27,7 +26,7 @@ public interface AccountActivationApi {
             summary = "Get activate account",
             description = "Get activate account using activation token."
     )
-    ApiBody<AccountActivationResponse> getAccountActivation(
+    AccountActivationResponse getAccountActivation(
             HttpServletRequest request,
             String activationToken
     );
@@ -36,7 +35,7 @@ public interface AccountActivationApi {
             summary = "Resend activation email",
             description = "Resends the account activation email to the user."
     )
-    ApiBody<AccountActivationResponse> resend(
+    AccountActivationResponse resend(
             HttpServletRequest request,
             ResendAccountActivationRequest dto
     );

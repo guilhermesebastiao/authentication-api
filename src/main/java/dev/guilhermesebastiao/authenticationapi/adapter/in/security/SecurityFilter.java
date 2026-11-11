@@ -13,51 +13,36 @@ import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import org.springframework.stereotype.Component;
-import org.springframework.util.AntPathMatcher;
 import org.springframework.web.filter.OncePerRequestFilter;
 import org.springframework.web.servlet.HandlerExceptionResolver;
 
 import java.io.IOException;
-import java.util.Arrays;
 
 @Component
+@RequiredArgsConstructor
 public class SecurityFilter extends OncePerRequestFilter {
-    private static final AntPathMatcher PATH_MATCHER = new AntPathMatcher();
-    private static final String AUTHORIZATION_HEADER = "Authorization";
     private static final String SESSION_TOKEN_HEADER = "X-Session";
     private static final String BEARER_PREFIX = "Bearer ";
 
-    private final ValidateSessionUseCase validateSessionUseCase;
+    @Qualifier("handlerExceptionResolver")
     private final HandlerExceptionResolver exceptionResolver;
+
+    private final ValidateSessionUseCase validateSessionUseCase;
     private final SecurityAccountService userDetailsService;
     private final JwtTokenPort jwtToken;
 
-    public SecurityFilter(
-            @Qualifier("handlerExceptionResolver")
-            HandlerExceptionResolver exceptionResolver,
-            ValidateSessionUseCase validateSessionUseCase,
-            SecurityAccountService userDetailsService,
-            JwtTokenPort jwtToken
-    ) {
-        this.validateSessionUseCase = validateSessionUseCase;
-        this.userDetailsService = userDetailsService;
-        this.exceptionResolver = exceptionResolver;
-        this.jwtToken = jwtToken;
-    }
-
     @Override
     protected boolean shouldNotFilter(HttpServletRequest request) {
-        if ("OPTIONS".equalsIgnoreCase(request.getMethod())) {
-            return true;
-        }
-
-        String path = request.getServletPath();
-
-        return Arrays.stream(ApiRoutesConfig.PUBLIC).anyMatch(pattern -> PATH_MATCHER.match(pattern, path));
+        return HttpMethod.OPTIONS.matches(request.getMethod())
+                || ApiRoutesConfig.isPublic(request.getServletPath());
     }
 
     @Override
@@ -97,11 +82,13 @@ public class SecurityFilter extends OncePerRequestFilter {
 
         var authentication = new UsernamePasswordAuthenticationToken(user, null, user.getAuthorities());
 
+        authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
+
         SecurityContextHolder.getContext().setAuthentication(authentication);
     }
 
     private String getAccessToken(HttpServletRequest request) {
-        String authorization = request.getHeader(AUTHORIZATION_HEADER);
+        String authorization = request.getHeader(HttpHeaders.AUTHORIZATION);
 
         if (authorization == null || !authorization.startsWith(BEARER_PREFIX)) {
             return null;

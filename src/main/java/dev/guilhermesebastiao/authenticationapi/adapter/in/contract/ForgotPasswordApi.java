@@ -1,6 +1,5 @@
 package dev.guilhermesebastiao.authenticationapi.adapter.in.contract;
 
-import dev.guilhermesebastiao.authenticationapi.adapter.in.dto.common.ApiBody;
 import dev.guilhermesebastiao.authenticationapi.adapter.in.dto.request.ForgotPasswordRequest;
 import dev.guilhermesebastiao.authenticationapi.adapter.in.dto.request.ResendForgotPasswordRequest;
 import dev.guilhermesebastiao.authenticationapi.adapter.in.dto.request.ValidateForgotPasswordRequest;
@@ -20,16 +19,25 @@ public interface ForgotPasswordApi {
             summary = "Create password recovery",
             description = "Starts a password recovery flow for an account."
     )
-    ApiBody<ForgotPasswordResponse> forgot(
+    ForgotPasswordResponse forgot(
             HttpServletRequest request,
             ForgotPasswordRequest dto
+    );
+
+    @Operation(
+            summary = "Get forgot password",
+            description = "Get forgot password using forgot token."
+    )
+    ForgotPasswordResponse getForgotPassword(
+            HttpServletRequest request,
+            String forgotToken
     );
 
     @Operation(
             summary = "Validate password recovery OTP",
             description = "Validates the OTP associated with a password recovery token."
     )
-    ApiBody<RecoveryPasswordResponse> validate(
+    RecoveryPasswordResponse validate(
             HttpServletRequest request,
             ValidateForgotPasswordRequest dto
     );
@@ -38,7 +46,7 @@ public interface ForgotPasswordApi {
             summary = "Resend password recovery email",
             description = "Resends the password recovery email for a valid recovery token."
     )
-    ApiBody<ForgotPasswordResponse> resend(
+    ForgotPasswordResponse resend(
             HttpServletRequest request,
             ResendForgotPasswordRequest dto
     );

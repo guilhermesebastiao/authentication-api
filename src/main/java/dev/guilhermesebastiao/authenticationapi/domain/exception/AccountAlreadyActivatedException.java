@@ -5,11 +5,46 @@ import dev.guilhermesebastiao.authenticationapi.domain.enums.DomainErrorCode;
 public class AccountAlreadyActivatedException extends DomainException {
     public AccountAlreadyActivatedException() {
         super(
-                "Account Already Activated",
+                "Conta jé ativada",
+                "A conta jé esté ativada.",
                 409,
-                "The account is already activated.",
                 "AccountAlreadyActivatedException: The account is already activated.",
-                DomainErrorCode.ACCOUNT_ALREADY_ACTIVATED
+                DomainErrorCode.ACCOUNT_ALREADY_ACTIVATED,
+                null,
+                null
+        );
+    }
+    public AccountAlreadyActivatedException(Object details) {
+        super(
+                "Conta jé ativada",
+                "A conta jé esté ativada.",
+                409,
+                "AccountAlreadyActivatedException: The account is already activated.",
+                DomainErrorCode.ACCOUNT_ALREADY_ACTIVATED,
+                details,
+                null
+        );
+    }
+    public AccountAlreadyActivatedException(Throwable cause) {
+        super(
+                "Conta jé ativada",
+                "A conta jé esté ativada.",
+                409,
+                "AccountAlreadyActivatedException: The account is already activated.",
+                DomainErrorCode.ACCOUNT_ALREADY_ACTIVATED,
+                null,
+                cause
+        );
+    }
+    public AccountAlreadyActivatedException(Object details, Throwable cause) {
+        super(
+                "Conta jé ativada",
+                "A conta jé esté ativada.",
+                409,
+                "AccountAlreadyActivatedException: The account is already activated.",
+                DomainErrorCode.ACCOUNT_ALREADY_ACTIVATED,
+                details,
+                cause
         );
     }
 }

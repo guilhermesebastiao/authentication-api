@@ -1,9 +1,10 @@
 package dev.guilhermesebastiao.authenticationapi.adapter.in.exception;
 
 import dev.guilhermesebastiao.authenticationapi.adapter.in.dto.common.ApiErrorBody;
-import dev.guilhermesebastiao.authenticationapi.adapter.out.logger.ErrorLoggerPayload;
+import dev.guilhermesebastiao.authenticationapi.adapter.in.dto.common.ApiFieldError;
+import dev.guilhermesebastiao.authenticationapi.adapter.out.logger.payload.ErrorLoggerPayload;
 import dev.guilhermesebastiao.authenticationapi.domain.exception.RateLimitExceededException;
-import dev.guilhermesebastiao.authenticationapi.adapter.out.logger.WarnLoggerPayload;
+import dev.guilhermesebastiao.authenticationapi.adapter.out.logger.payload.WarnLoggerPayload;
 import dev.guilhermesebastiao.authenticationapi.application.port.out.LoggerPort;
 import dev.guilhermesebastiao.authenticationapi.domain.enums.DomainErrorCode;
 import dev.guilhermesebastiao.authenticationapi.domain.exception.DomainException;
@@ -19,6 +20,7 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.servlet.NoHandlerFoundException;
 
 import java.time.Instant;
+import java.util.List;
 
 @RestControllerAdvice
 @RequiredArgsConstructor
@@ -33,7 +35,7 @@ public class GlobalExceptionHandler {
     ) {
         WarnLoggerPayload payload = new WarnLoggerPayload(
                 Instant.now(),
-                exception.getLogMessage(),
+                exception.getLoggerDetails(),
                 request.getMethod(),
                 request.getRequestURI(),
                 exception.getStatus(),
@@ -46,9 +48,10 @@ public class GlobalExceptionHandler {
 
         ApiErrorBody data = ApiErrorBody.of(
                 exception.getTitle(),
+                exception.getMessage(),
                 exception.getStatus(),
-                exception.getDetail(),
-                exception.getCode()
+                exception.getCode(),
+                exception.getDetails()
         );
 
         if (exception instanceof RateLimitExceededException rateLimitException) {
@@ -76,11 +79,22 @@ public class GlobalExceptionHandler {
 
         logger.warn(payload);
 
+        List<ApiFieldError> fieldErrors = exception.getBindingResult()
+                .getFieldErrors()
+                .stream()
+                .map(error -> new ApiFieldError(
+                        error.getField(),
+                        error.getDefaultMessage()
+                ))
+                .toList();
+
         ApiErrorBody data = ApiErrorBody.of(
-                "Validation Error",
+                "Erro de validação",
+                "Alguns campos da solicitação não passaram na validação.",
                 HttpStatus.UNPROCESSABLE_ENTITY.value(),
-                "One or more request fields failed validation",
-                DomainErrorCode.VALIDATION_ERROR);
+                DomainErrorCode.VALIDATION_ERROR,
+                fieldErrors
+        );
 
         return ResponseEntity.status(HttpStatus.UNPROCESSABLE_ENTITY).body(data);
     }
@@ -104,9 +118,9 @@ public class GlobalExceptionHandler {
         logger.warn(payload);
 
         ApiErrorBody data = ApiErrorBody.of(
-                "Method Not Supported",
+                "Método não suportado",
+                "O método HTTP não é suportado para este endpoint.",
                 HttpStatus.METHOD_NOT_ALLOWED.value(),
-                "The HTTP method is not supported for this endpoint",
                 DomainErrorCode.METHOD_NOT_ALLOWED
         );
 
@@ -132,9 +146,9 @@ public class GlobalExceptionHandler {
         logger.warn(payload);
 
         ApiErrorBody data = ApiErrorBody.of(
-                "Route Not Found",
+                "Rota não encontrada",
+                "O endpoint solicitado não existe.",
                 HttpStatus.NOT_FOUND.value(),
-                "The requested endpoint does not exist",
                 DomainErrorCode.ROUTE_NOT_FOUND
         );
 
@@ -160,9 +174,9 @@ public class GlobalExceptionHandler {
         logger.error(payload);
 
         ApiErrorBody data = ApiErrorBody.of(
-                "Internal Server Error",
+                "Erro do interno servidor",
+                "Ocorreu um erro interno inesperado no servidor.",
                 HttpStatus.INTERNAL_SERVER_ERROR.value(),
-                "An unexpected internal server error occurred",
                 DomainErrorCode.INTERNAL_SERVER_ERROR
         );
 

@@ -14,6 +14,8 @@ import dev.guilhermesebastiao.authenticationapi.domain.exception.AccountNotActiv
 import dev.guilhermesebastiao.authenticationapi.domain.exception.AccountNotFoundException;
 import dev.guilhermesebastiao.authenticationapi.domain.model.Account;
 
+import java.util.Map;
+
 public class GoogleSignInService implements GoogleSignInUseCase {
     private final CreateAccountActivationUseCase createAccountActivationUseCase;
     private final GoogleAuthorizationPort googleAuthorization;
@@ -43,7 +45,7 @@ public class GoogleSignInService implements GoogleSignInUseCase {
         GoogleAuthorizationOutput googleResult = googleAuthorization.authorize(code);
 
         Account account = accountRepository.findByEmail(googleResult.email())
-                .orElseThrow(AccountNotFoundException::new);
+                .orElseThrow(() -> new AccountNotFoundException(Map.of("email", googleResult.email())));
 
         if (account.getStatus() == AccountStatus.PENDING) {
             AccountActivationOutput data = createAccountActivationUseCase.execute(account);

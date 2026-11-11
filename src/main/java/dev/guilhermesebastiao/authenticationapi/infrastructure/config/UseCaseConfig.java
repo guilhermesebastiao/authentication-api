@@ -14,12 +14,14 @@ public class UseCaseConfig {
     @Bean
     public AccountActivateService accountActivateService(
             AccountActivationRepositoryPort accountActivationRepository,
+            SendAccountWelcomeUseCase sendAccountWelcomeUseCase,
             AccountRepositoryPort accountRepository,
             PasswordEncoderPort passwordEncoder,
             SecureHasherPort secureHasher
     ) {
         return new AccountActivateService(
                 accountActivationRepository,
+                sendAccountWelcomeUseCase,
                 accountRepository,
                 passwordEncoder,
                 secureHasher
@@ -28,11 +30,13 @@ public class UseCaseConfig {
 
     @Bean
     public ChangePasswordService changePasswordService(
+            SendPasswordChangedUseCase sendPasswordChangedUseCase,
             RevokeAllSessionsUseCase revokeAllSessionsUseCase,
             AccountRepositoryPort accountRepository,
             PasswordEncoderPort passwordEncoder
     ) {
         return new ChangePasswordService(
+                sendPasswordChangedUseCase,
                 revokeAllSessionsUseCase,
                 accountRepository,
                 passwordEncoder
@@ -114,12 +118,51 @@ public class UseCaseConfig {
     }
 
     @Bean
+    public DeleteAccountActivationScheduleService deleteAccountActivationScheduleService(
+            AccountActivationRepositoryPort accountActivationRepository,
+            LoggerPort logger
+    ) {
+        return new DeleteAccountActivationScheduleService(
+                accountActivationRepository,
+                logger
+        );
+    }
+
+    @Bean
+    public DeleteForgotPasswordScheduleService deleteForgotPasswordScheduleService(
+            ForgotPasswordRepositoryPort forgotPasswordRepository,
+            LoggerPort logger
+    ) {
+        return new DeleteForgotPasswordScheduleService(
+                forgotPasswordRepository,
+                logger
+        );
+    }
+
+    @Bean
+    public DeleteSessionScheduleService deleteSessionScheduleService(
+            SessionRepositoryPort sessionRepository,
+            LoggerPort logger
+    ) {
+        return new DeleteSessionScheduleService(
+                sessionRepository,
+                logger
+        );
+    }
+
+    @Bean
     public DisableAccountService disableAccountService(
+            SendAccountDisabledUseCase sendAccountDisabledUseCase,
+            RevokeAllSessionsUseCase revokeAllSessionsUseCase,
             AccountRepositoryPort accountRepository,
-            RevokeAllSessionsUseCase signOutAll,
             PasswordEncoderPort passwordEncoder
     ) {
-        return new DisableAccountService(accountRepository, signOutAll, passwordEncoder);
+        return new DisableAccountService(
+                sendAccountDisabledUseCase,
+                revokeAllSessionsUseCase,
+                accountRepository,
+                passwordEncoder
+        );
     }
 
     @Bean
@@ -127,7 +170,9 @@ public class UseCaseConfig {
             AccountActivationRepositoryPort accountActivationRepository,
             SecureHasherPort secureHasher
     ) {
-        return new GetAccountActivationService(accountActivationRepository, secureHasher);
+        return new GetAccountActivationService(
+                accountActivationRepository, secureHasher
+        );
     }
 
     @Bean
@@ -137,10 +182,31 @@ public class UseCaseConfig {
 
     @Bean
     public GetCurrentSessionService getCurrentSessionService(
+            GetDeviceNameUseCase getDeviceNameUseCase,
             SessionRepositoryPort sessionRepository,
             SecureHasherPort secureHasher
     ) {
-        return new GetCurrentSessionService(sessionRepository, secureHasher);
+        return new GetCurrentSessionService(
+                getDeviceNameUseCase,
+                sessionRepository,
+                secureHasher
+        );
+    }
+
+    @Bean
+    public GetForgotPasswordService getForgotPasswordService(
+            ForgotPasswordRepositoryPort forgotPasswordRepository,
+            SecureHasherPort secureHasher
+    ) {
+        return new GetForgotPasswordService(
+                forgotPasswordRepository,
+                secureHasher
+        );
+    }
+
+    @Bean
+    public GetDeviceNameService getDeviceNameService() {
+        return new GetDeviceNameService();
     }
 
     @Bean
@@ -156,10 +222,15 @@ public class UseCaseConfig {
 
     @Bean
     public GetSessionsService getSessionsService(
+            GetDeviceNameUseCase getDeviceNameUseCase,
             SessionRepositoryPort sessionRepository,
             SecureHasherPort secureHasher
     ) {
-        return new GetSessionsService(sessionRepository, secureHasher);
+        return new GetSessionsService(
+                getDeviceNameUseCase,
+                sessionRepository,
+                secureHasher
+        );
     }
 
     @Bean
@@ -237,15 +308,17 @@ public class UseCaseConfig {
     @Bean
     public ResetPasswordService resetPasswordService(
             RecoveryPasswordRepositoryPort recoveryPasswordRepository,
+            SendPasswordChangedUseCase sendPasswordChangedUseCase,
+            RevokeAllSessionsUseCase revokeAllSessionsUseCase,
             AccountRepositoryPort accountRepository,
             PasswordEncoderPort passwordEncoder,
-            RevokeAllSessionsUseCase signOutAll,
             SecureHasherPort secureHasher
     ) {
         return new ResetPasswordService(
                 recoveryPasswordRepository,
+                sendPasswordChangedUseCase,
+                revokeAllSessionsUseCase,
                 accountRepository,
-                signOutAll,
                 passwordEncoder,
                 secureHasher
         );
@@ -259,6 +332,20 @@ public class UseCaseConfig {
     }
 
     @Bean
+    public SendAccountDisabledService sendAccountDisabledService(
+            EmailSenderPort emailSender
+    ) {
+        return new SendAccountDisabledService(emailSender);
+    }
+
+    @Bean
+    public SendAccountWelcomeService sendAccountWelcomeService(
+            EmailSenderPort emailSender
+    ) {
+        return new SendAccountWelcomeService(emailSender);
+    }
+
+    @Bean
     public SendForgotService sendRecoverPasswordEmailService(
             EmailSenderPort emailSender
     ) {
@@ -266,11 +353,10 @@ public class UseCaseConfig {
     }
 
     @Bean
-    public RevokeSessionsService revokeSessionsService(
-            SessionRepositoryPort sessionRepository,
-            RefreshRepositoryPort refreshRepository
+    public SendPasswordChangedService sendPasswordChangedService(
+            EmailSenderPort emailSender
     ) {
-        return new RevokeSessionsService(sessionRepository, refreshRepository);
+        return new SendPasswordChangedService(emailSender);
     }
 
     @Bean
