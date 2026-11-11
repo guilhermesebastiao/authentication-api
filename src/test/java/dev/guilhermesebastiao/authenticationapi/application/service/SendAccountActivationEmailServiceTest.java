@@ -38,7 +38,7 @@ class SendAccountActivationEmailServiceTest {
         then(emailSender).should().send(payloadCaptor.capture());
 
         EmailSendPaylod payload = payloadCaptor.getValue();
-        assertEquals("account-activation-template", payload.template());
+        assertEquals("account-activation", payload.template());
         assertEquals(email, payload.recipient());
         assertEquals("Confirme seu e-mail para ativar sua conta", payload.subject());
         assertEquals(Map.of("email", email, "otp", otpCode), payload.variables());

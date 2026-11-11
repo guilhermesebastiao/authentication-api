@@ -145,7 +145,8 @@ class SessionRepositoryAdapterTest {
 
         ArgumentCaptor<Pageable> pageableCaptor = ArgumentCaptor.forClass(Pageable.class);
 
-        given(repository.findAllByAccountIdAndNotRevoked(eq(accountId), any(Pageable.class)))
+        String sessionTokenHash = "current-session-hash";
+        given(repository.findAllByAccountIdAndNotRevoked(eq(accountId), eq(sessionTokenHash), any(Pageable.class)))
                 .willReturn(page);
 
         given(mapper.toDomain(firstEntity))
@@ -154,13 +155,13 @@ class SessionRepositoryAdapterTest {
         given(mapper.toDomain(secondEntity))
                 .willReturn(secondSession);
 
-        PageResult<Session> result = adapter.findAllByAccountIdAndNotRevoked(accountId, pagination);
+        PageResult<Session> result = adapter.findAllByAccountIdAndNotRevoked(accountId, sessionTokenHash, pagination);
 
-        verify(repository).findAllByAccountIdAndNotRevoked(eq(accountId), pageableCaptor.capture());
+        verify(repository).findAllByAccountIdAndNotRevoked(eq(accountId), eq(sessionTokenHash), pageableCaptor.capture());
         Pageable pageable = pageableCaptor.getValue();
         assertEquals(1, pageable.getPageNumber());
         assertEquals(2, pageable.getPageSize());
-        assertEquals(Sort.by(Sort.Direction.DESC, "lastSeenAt"), pageable.getSort());
+        assertEquals(Sort.unsorted(), pageable.getSort());
         assertEquals(List.of(firstSession, secondSession), result.content());
         assertEquals(5L, result.totalItems());
         assertEquals(3, result.totalPages());

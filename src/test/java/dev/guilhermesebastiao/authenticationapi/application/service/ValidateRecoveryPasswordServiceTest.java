@@ -39,6 +39,7 @@ class ValidateRecoveryPasswordServiceTest {
     void verifiesForgotRequestAndCreatesRecoveryToken() {
         var input = new ValidateForgotPasswordInput("forgot-token", "123456");
         var forgot = new ForgotPassword();
+        forgot.setAccount(new Account());
         forgot.setOtpHash("otp-hash");
         forgot.setExpiresAt(Instant.now().plusSeconds(300));
         given(secureHasher.hash(input.forgotToken())).willReturn("forgot-hash", "recovery-hash");

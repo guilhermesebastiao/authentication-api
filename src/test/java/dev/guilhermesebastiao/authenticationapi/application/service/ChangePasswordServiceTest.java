@@ -2,9 +2,10 @@ package dev.guilhermesebastiao.authenticationapi.application.service;
 
 import dev.guilhermesebastiao.authenticationapi.application.dto.input.ChangePasswordInput;
 import dev.guilhermesebastiao.authenticationapi.application.port.in.RevokeAllSessionsUseCase;
+import dev.guilhermesebastiao.authenticationapi.application.port.in.SendPasswordChangedUseCase;
 import dev.guilhermesebastiao.authenticationapi.application.port.out.AccountRepositoryPort;
 import dev.guilhermesebastiao.authenticationapi.application.port.out.PasswordEncoderPort;
-import dev.guilhermesebastiao.authenticationapi.domain.exception.AccountInvalidCredentialsException;
+import dev.guilhermesebastiao.authenticationapi.domain.exception.ChangePasswordInvalidCredentialsException;
 import dev.guilhermesebastiao.authenticationapi.domain.exception.PasswordSameAsCurrentException;
 import dev.guilhermesebastiao.authenticationapi.domain.model.Account;
 import org.junit.jupiter.api.DisplayName;
@@ -31,6 +32,9 @@ class ChangePasswordServiceTest {
 
     @Mock
     private PasswordEncoderPort passwordEncoder;
+
+    @Mock
+    private SendPasswordChangedUseCase sendPasswordChangedUseCase;
 
     @InjectMocks
     private ChangePasswordService service;
@@ -66,7 +70,7 @@ class ChangePasswordServiceTest {
         given(passwordEncoder.matches(command.currentPassword(), account.getPasswordHash()))
                 .willReturn(false);
 
-        assertThrows(AccountInvalidCredentialsException.class, () -> service.execute(account, command));
+        assertThrows(ChangePasswordInvalidCredentialsException.class, () -> service.execute(account, command));
 
         then(passwordEncoder).should().matches(command.currentPassword(), account.getPasswordHash());
         then(passwordEncoder).should(never()).matches(command.newPassword(), account.getPasswordHash());

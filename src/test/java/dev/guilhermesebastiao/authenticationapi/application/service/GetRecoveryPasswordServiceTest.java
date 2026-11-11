@@ -7,6 +7,8 @@ import dev.guilhermesebastiao.authenticationapi.domain.exception.ForgotPasswordE
 import dev.guilhermesebastiao.authenticationapi.domain.exception.RecoveryPasswordAlreadyUsedException;
 import dev.guilhermesebastiao.authenticationapi.domain.exception.RecoveryPasswordNotFoundException;
 import dev.guilhermesebastiao.authenticationapi.domain.model.RecoveryPassword;
+import dev.guilhermesebastiao.authenticationapi.domain.model.ForgotPassword;
+import dev.guilhermesebastiao.authenticationapi.domain.model.Account;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -31,6 +33,9 @@ class GetRecoveryPasswordServiceTest {
         String token = "recovery-token", hash = "token-hash";
         Instant expiry = Instant.now().plusSeconds(600);
         RecoveryPassword recovery = new RecoveryPassword();
+        var forgotPassword = new ForgotPassword();
+        forgotPassword.setAccount(new Account());
+        recovery.setForgotPassword(forgotPassword);
         recovery.setExpiresAt(expiry);
         given(secureHasher.hash(token)).willReturn(hash);
         given(recoveryPasswordRepository.findByRecoveryTokenHash(hash)).willReturn(Optional.of(recovery));

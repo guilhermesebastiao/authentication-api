@@ -2,9 +2,10 @@ package dev.guilhermesebastiao.authenticationapi.application.service;
 
 import dev.guilhermesebastiao.authenticationapi.application.dto.input.DisableAccountInput;
 import dev.guilhermesebastiao.authenticationapi.application.port.in.RevokeAllSessionsUseCase;
+import dev.guilhermesebastiao.authenticationapi.application.port.in.SendAccountDisabledUseCase;
 import dev.guilhermesebastiao.authenticationapi.application.port.out.AccountRepositoryPort;
 import dev.guilhermesebastiao.authenticationapi.application.port.out.PasswordEncoderPort;
-import dev.guilhermesebastiao.authenticationapi.domain.exception.AccountInvalidCredentialsException;
+import dev.guilhermesebastiao.authenticationapi.domain.exception.DisableAccountInvalidCredentialsException;
 import dev.guilhermesebastiao.authenticationapi.domain.model.Account;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -34,6 +35,9 @@ class DisableAccountServiceTest {
 
     @Mock
     private PasswordEncoderPort passwordEncoder;
+
+    @Mock
+    private SendAccountDisabledUseCase sendAccountDisabledUseCase;
 
     @InjectMocks
     private DisableAccountService service;
@@ -73,7 +77,7 @@ class DisableAccountServiceTest {
         given(passwordEncoder.matches(command.password(), account.getPasswordHash()))
                 .willReturn(false);
 
-        assertThrows(AccountInvalidCredentialsException.class, () -> service.execute(account, command));
+        assertThrows(DisableAccountInvalidCredentialsException.class, () -> service.execute(account, command));
 
         assertNull(account.getDisabledAt());
 
