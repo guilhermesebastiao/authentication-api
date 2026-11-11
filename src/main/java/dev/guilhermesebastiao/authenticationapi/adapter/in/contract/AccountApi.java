@@ -1,6 +1,5 @@
 package dev.guilhermesebastiao.authenticationapi.adapter.in.contract;
 
-import dev.guilhermesebastiao.authenticationapi.adapter.in.dto.common.ApiBody;
 import dev.guilhermesebastiao.authenticationapi.adapter.in.dto.request.ChangePasswordRequest;
 import dev.guilhermesebastiao.authenticationapi.adapter.in.dto.request.DisableAccountRequest;
 import dev.guilhermesebastiao.authenticationapi.adapter.in.dto.response.AccountResponse;
@@ -24,15 +23,13 @@ public interface AccountApi {
             summary = "Get current account",
             description = "Retrieves the account information of the currently authenticated user."
     )
-    ApiBody<AccountResponse> me(
-            SecurityAccount securityAccount
-    );
+    AccountResponse me(SecurityAccount securityAccount);
 
     @Operation(
             summary = "Change account password",
             description = "Changes the password of the currently authenticated account."
     )
-    ApiBody<Void> changePassword(
+    void changePassword(
             SecurityAccount securityAccount,
             ChangePasswordRequest dto
     );
@@ -41,7 +38,7 @@ public interface AccountApi {
             summary = "Disable current account",
             description = "Disables the currently authenticated account and revokes all active sessions."
     )
-    ApiBody<Void> disableAccount(
+    void disableAccount(
             SecurityAccount securityAccount,
             DisableAccountRequest dto
     );

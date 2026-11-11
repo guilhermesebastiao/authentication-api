@@ -21,19 +21,25 @@ public interface JpaSessionRepository extends JpaRepository<SessionEntity, UUID>
     Optional<SessionEntity> findByAccountIdAndSessionTokenHash(UUID accountId, String sessionTokenHash);
 
     @Query("""
-         SELECT s FROM SessionEntity s
-        WHERE s.account.id = :accountId
-         AND s.revokedAt IS NULL
+        SELECT s
+            FROM SessionEntity s
+                WHERE s.account.id = :accountId
+                    AND s.revokedAt IS NULL
+                ORDER BY
+                  CASE WHEN s.sessionTokenHash = :sessionTokenHash THEN 0 ELSE 1 END,
+                  s.lastSeenAt DESC,
+                  s.id ASC
     """)
     Page<SessionEntity> findAllByAccountIdAndNotRevoked(
             @Param("accountId") UUID accountId,
+            @Param("sessionTokenHash") String sessionTokenHash,
             Pageable pageable
     );
 
     @Query("""
-         SELECT s FROM SessionEntity s
-        WHERE s.account.id = :accountId
-         AND s.revokedAt IS NULL
+        SELECT s FROM SessionEntity s
+            WHERE s.account.id = :accountId
+                AND s.revokedAt IS NULL
     """)
     List<SessionEntity> findAllByAccountIdAndNotRevoked(
             @Param("accountId") UUID accountId
@@ -41,9 +47,9 @@ public interface JpaSessionRepository extends JpaRepository<SessionEntity, UUID>
 
     @Query("""
         SELECT s FROM SessionEntity s
-        WHERE s.account.id = :accountId
-            AND s.id IN (:sessionsIds)
-            AND s.revokedAt IS NULL
+            WHERE s.account.id = :accountId
+                AND s.id IN (:sessionsIds)
+                AND s.revokedAt IS NULL
     """)
     List<SessionEntity> findAllByAccountIdAndSessionIdsAndNotRevoked(
             @Param("accountId") UUID accountId,
@@ -53,8 +59,7 @@ public interface JpaSessionRepository extends JpaRepository<SessionEntity, UUID>
     @Modifying
     @Query("""
         DELETE FROM SessionEntity s
-        WHERE s.revokedAt IS NOT NULL
-            OR s.expiresAt < :now
+            WHERE s.expiresAt <= :now
     """)
-    int deleteAllRevokedOrExpired(@Param("now") Instant now);
+    int deleteAllExpiredOrUsed(@Param("now") Instant now);
 }

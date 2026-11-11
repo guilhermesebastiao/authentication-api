@@ -1,4 +1,4 @@
-package dev.guilhermesebastiao.authenticationapi.adapter.out.logger;
+package dev.guilhermesebastiao.authenticationapi.adapter.out.logger.payload;
 
 import java.time.Instant;
 
@@ -6,6 +6,6 @@ public record ScheduleLoggerPayload(
         Instant timestamp,
         String message,
         String job,
-        int affectedItems
+        long affectedItems
 ) implements LoggerPayload {
 }

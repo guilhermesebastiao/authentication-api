@@ -1,7 +1,6 @@
 package dev.guilhermesebastiao.authenticationapi.adapter.in.controller;
 
 import dev.guilhermesebastiao.authenticationapi.adapter.in.contract.ForgotPasswordApi;
-import dev.guilhermesebastiao.authenticationapi.adapter.in.dto.common.ApiBody;
 import dev.guilhermesebastiao.authenticationapi.adapter.in.dto.request.ForgotPasswordRequest;
 import dev.guilhermesebastiao.authenticationapi.adapter.in.dto.request.ResendForgotPasswordRequest;
 import dev.guilhermesebastiao.authenticationapi.adapter.in.dto.request.ValidateForgotPasswordRequest;
@@ -24,25 +23,38 @@ import org.springframework.web.bind.annotation.*;
 public class ForgotPasswordController implements ForgotPasswordApi {
     private final ValidateForgotPasswordUseCase validateForgotPasswordUseCase;
     private final ResendForgotPasswordUseCase resendForgotPasswordUseCase;
+    private final GetForgotPasswordUseCase getForgotPasswordUseCase;
     private final ForgotPasswordUseCase forgotPasswordUseCase;
     private final ForgotPasswordMapper mapper;
 
     @Override
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public ApiBody<ForgotPasswordResponse> forgot(
+    public ForgotPasswordResponse forgot(
             HttpServletRequest request,
             @RequestBody @Valid ForgotPasswordRequest dto
     ) {
         ForgotPasswordOutput output = forgotPasswordUseCase.execute(dto.email());
 
-        return ApiBody.of(mapper.toResponse(output));
+        return mapper.toResponse(output);
+    }
+
+    @Override
+    @GetMapping("/{forgotToken}")
+    @ResponseStatus(HttpStatus.OK)
+    public ForgotPasswordResponse getForgotPassword(
+            HttpServletRequest request,
+            @PathVariable("forgotToken") String forgotToken
+    ) {
+        ForgotPasswordOutput output = getForgotPasswordUseCase.execute(forgotToken);
+
+        return mapper.toResponse(output);
     }
 
     @Override
     @PostMapping("/validate")
     @ResponseStatus(HttpStatus.OK)
-    public ApiBody<RecoveryPasswordResponse> validate(
+    public RecoveryPasswordResponse validate(
             HttpServletRequest request,
             @RequestBody @Valid ValidateForgotPasswordRequest dto
     ) {
@@ -50,18 +62,18 @@ public class ForgotPasswordController implements ForgotPasswordApi {
 
         RecoveryPasswordOutput output = validateForgotPasswordUseCase.execute(input);
 
-        return ApiBody.of(mapper.toResponse(output));
+        return mapper.toResponse(output);
     }
 
     @Override
     @PostMapping("/resend")
     @ResponseStatus(HttpStatus.OK)
-    public ApiBody<ForgotPasswordResponse> resend(
+    public ForgotPasswordResponse resend(
             HttpServletRequest request,
             @RequestBody @Valid ResendForgotPasswordRequest dto
     ) {
         ForgotPasswordOutput output = resendForgotPasswordUseCase.execute(dto.forgotToken());
 
-        return ApiBody.of(mapper.toResponse(output));
+        return mapper.toResponse(output);
     }
 }

@@ -5,11 +5,46 @@ import dev.guilhermesebastiao.authenticationapi.domain.enums.DomainErrorCode;
 public class ForgotPasswordNotFoundException extends DomainException {
     public ForgotPasswordNotFoundException() {
         super(
-                "Forgot Password Not Found",
+                "Solicitação de recuperação de senha não encontrada",
+                "A solicitação de recuperação de senha não foi encontrada.",
                 404,
-                "The forgot password request could not be found.",
-                "ForgotPasswordNotFoundException: The forgot recovery request could not be found.",
-                DomainErrorCode.FORGOT_PASSWORD_NOT_FOUND
+                "ForgotPasswordNotFoundException: The password recovery request could not be found.",
+                DomainErrorCode.FORGOT_PASSWORD_NOT_FOUND,
+                null,
+                null
+        );
+    }
+    public ForgotPasswordNotFoundException(Object details) {
+        super(
+                "Solicitação de recuperação de senha não encontrada",
+                "A solicitação de recuperação de senha não foi encontrada.",
+                404,
+                "ForgotPasswordNotFoundException: The password recovery request could not be found.",
+                DomainErrorCode.FORGOT_PASSWORD_NOT_FOUND,
+                details,
+                null
+        );
+    }
+    public ForgotPasswordNotFoundException(Throwable cause) {
+        super(
+                "Solicitação de recuperação de senha não encontrada",
+                "A solicitação de recuperação de senha não foi encontrada.",
+                404,
+                "ForgotPasswordNotFoundException: The password recovery request could not be found.",
+                DomainErrorCode.FORGOT_PASSWORD_NOT_FOUND,
+                null,
+                cause
+        );
+    }
+    public ForgotPasswordNotFoundException(Object details, Throwable cause) {
+        super(
+                "Solicitação de recuperação de senha não encontrada",
+                "A solicitação de recuperação de senha não foi encontrada.",
+                404,
+                "ForgotPasswordNotFoundException: The password recovery request could not be found.",
+                DomainErrorCode.FORGOT_PASSWORD_NOT_FOUND,
+                details,
+                cause
         );
     }
 }

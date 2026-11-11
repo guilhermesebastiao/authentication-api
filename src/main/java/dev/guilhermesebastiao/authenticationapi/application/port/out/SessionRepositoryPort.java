@@ -14,9 +14,11 @@ public interface SessionRepositoryPort {
 
     void save(List<Session> sessions);
 
+    Optional<Session> findById(UUID id);
+
     Optional<Session> findBySessionTokenHash(String sessionTokenHash);
 
-    PageResult<Session> findAllByAccountIdAndNotRevoked(UUID accountId, PageQuery pagination);
+    PageResult<Session> findAllByAccountIdAndNotRevoked(UUID accountId,  String sessionTokenHash, PageQuery pagination);
 
     List<Session> findAllByAccountIdAndNotRevoked(UUID accountId);
 
@@ -24,5 +26,5 @@ public interface SessionRepositoryPort {
 
     List<Session> findAllByAccountIdAndSessionIdsAndNotRevoked(UUID accountId, List<UUID> sessionIds);
 
-    int deleteAllRevoked(Instant now);
+    long deleteAllExpiredOrUsed(Instant now);
 }

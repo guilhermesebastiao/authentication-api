@@ -1,7 +1,6 @@
 package dev.guilhermesebastiao.authenticationapi.domain.enums;
 
 public enum DomainErrorCode {
-    ACCESS_DENIED,
     UNAUTHORIZED,
     VALIDATION_ERROR,
     ROUTE_NOT_FOUND,
@@ -11,6 +10,9 @@ public enum DomainErrorCode {
     SAME_PASSWORD,
     INCORRECT_OTP,
     RESEND_NOT_AVAILABLE,
+
+    CHANGE_PASSWORD_INVALID_CREDENTIAL,
+    DISABLE_ACCOUNT_INVALID_CREDENTIAL,
 
     GOOGLE_TOKEN_INVALID,
     GOOGLE_AUTHENTICATION_FAILED,

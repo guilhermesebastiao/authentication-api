@@ -97,6 +97,33 @@ public class TransactionConfiguration {
 
     @Bean
     @Primary
+    public DeleteAccountActivationScheduleUseCase transactionalDeleteAccountActivationScheduleUseCase(
+            DeleteAccountActivationScheduleService delegate,
+            @Qualifier("transactionTemplate") TransactionTemplate transactionTemplate
+    ) {
+        return transactional(DeleteAccountActivationScheduleUseCase.class, delegate, transactionTemplate);
+    }
+
+    @Bean
+    @Primary
+    public DeleteForgotPasswordScheduleUseCase transactionalDeleteForgotPasswordScheduleUseCase(
+            DeleteForgotPasswordScheduleService delegate,
+            @Qualifier("transactionTemplate") TransactionTemplate transactionTemplate
+    ) {
+        return transactional(DeleteForgotPasswordScheduleUseCase.class, delegate, transactionTemplate);
+    }
+
+    @Bean
+    @Primary
+    public DeleteSessionScheduleUseCase transactionalDeleteSessionScheduleUseCase(
+            DeleteSessionScheduleService delegate,
+            @Qualifier("transactionTemplate") TransactionTemplate transactionTemplate
+    ) {
+        return transactional(DeleteSessionScheduleUseCase.class, delegate, transactionTemplate);
+    }
+
+    @Bean
+    @Primary
     public DisableAccountUseCase transactionalDisableAccountUseCase(
             DisableAccountService delegate,
             @Qualifier("transactionTemplate") TransactionTemplate transactionTemplate
@@ -120,6 +147,15 @@ public class TransactionConfiguration {
             @Qualifier("readOnlyTransactionTemplate") TransactionTemplate transactionTemplate
     ) {
         return transactional(GetCurrentSessionUseCase.class, delegate, transactionTemplate);
+    }
+
+    @Bean
+    @Primary
+    public GetForgotPasswordUseCase transactionalGetForgotPasswordUseCase(
+            GetForgotPasswordService delegate,
+            @Qualifier("readOnlyTransactionTemplate") TransactionTemplate transactionTemplate
+    ) {
+        return transactional(GetForgotPasswordUseCase.class, delegate, transactionTemplate);
     }
 
     @Bean

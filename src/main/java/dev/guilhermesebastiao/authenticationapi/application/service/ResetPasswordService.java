@@ -3,6 +3,7 @@ package dev.guilhermesebastiao.authenticationapi.application.service;
 import dev.guilhermesebastiao.authenticationapi.application.dto.input.ResetPasswordInput;
 import dev.guilhermesebastiao.authenticationapi.application.port.in.ResetPasswordUseCase;
 import dev.guilhermesebastiao.authenticationapi.application.port.in.RevokeAllSessionsUseCase;
+import dev.guilhermesebastiao.authenticationapi.application.port.in.SendPasswordChangedUseCase;
 import dev.guilhermesebastiao.authenticationapi.application.port.out.AccountRepositoryPort;
 import dev.guilhermesebastiao.authenticationapi.application.port.out.PasswordEncoderPort;
 import dev.guilhermesebastiao.authenticationapi.application.port.out.RecoveryPasswordRepositoryPort;
@@ -15,21 +16,24 @@ import java.time.Instant;
 
 public class ResetPasswordService implements ResetPasswordUseCase {
     private final RecoveryPasswordRepositoryPort recoveryPasswordRepository;
+    private final SendPasswordChangedUseCase sendPasswordChangedUseCase;
+    private final RevokeAllSessionsUseCase revokeAllSessionsUseCase;
     private final AccountRepositoryPort accountRepository;
     private final PasswordEncoderPort passwordEncoder;
-    private final RevokeAllSessionsUseCase revokeAllSessionsUseCase;
     private final SecureHasherPort secureHasher;
 
     public ResetPasswordService(
             RecoveryPasswordRepositoryPort recoveryPasswordRepository,
-            AccountRepositoryPort accountRepository,
+            SendPasswordChangedUseCase sendPasswordChangedUseCase,
             RevokeAllSessionsUseCase revokeAllSessionsUseCase,
+            AccountRepositoryPort accountRepository,
             PasswordEncoderPort passwordEncoder,
             SecureHasherPort secureHasher
     ) {
         this.recoveryPasswordRepository = recoveryPasswordRepository;
-        this.accountRepository = accountRepository;
+        this.sendPasswordChangedUseCase = sendPasswordChangedUseCase;
         this.revokeAllSessionsUseCase = revokeAllSessionsUseCase;
+        this.accountRepository = accountRepository;
         this.passwordEncoder = passwordEncoder;
         this.secureHasher = secureHasher;
     }
@@ -57,6 +61,8 @@ public class ResetPasswordService implements ResetPasswordUseCase {
         revokeAllSessionsUseCase.execute(account);
 
         recoveryPasswordRepository.save(recoveryPassword);
+
+        sendPasswordChangedUseCase.execute(account.getEmail());
     }
 
     private void validateRecoverPassword(RecoveryPassword recoveryPassword, Instant now) {

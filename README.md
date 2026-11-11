@@ -1,4 +1,4 @@
-# authentication-api
+# Authentication API
 
 API REST para autenticação, gerenciamento de contas e controle de sessões.
 
@@ -63,16 +63,20 @@ Os use cases são expostos por interfaces em `application/port/in` e dependem de
 ```text
 src/
 ├── main/
-│   ├── java/br/com/guisebastiao/authenticationapi/
-│   │   ├── domain/
-│   │   ├── application/
-│   │   │   ├── command/
-│   │   │   ├── port/
-│   │   │   ├── result/
-│   │   │   └── service/
+│   ├── java/dev/guilhermesebastiao/authenticationapi/
 │   │   ├── adapter/
 │   │   │   ├── in/
 │   │   │   └── out/
+│   │   ├── application/
+│   │   │   ├── dto/
+│   │   │   │   ├── input
+│   │   │   │   └── output
+│   │   │   ├── port/
+│   │   │   └── service/
+│   │   ├── domain/
+│   │   │   ├── enums
+│   │   │   ├── exception
+│   │   │   └── model
 │   │   └── infrastructure/
 │   │       ├── config/
 │   │       ├── properties/
@@ -81,10 +85,14 @@ src/
 │       ├── db/migration/
 │       ├── templates/
 │       ├── application.yaml
-│       ├── application-dev.yml
 │       └── application-prod.yml
 └── test/
-    └── java/br/com/guisebastiao/authenticationapi/
+    └── java/dev/guilhermesebastiao/authenticationapi/
+        ├── adapter/
+        │   ├── in/
+        │   ├── out/
+        └── application/
+            └── service/
 ```
 
 ## Requisitos

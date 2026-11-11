@@ -1,5 +1,6 @@
-package dev.guilhermesebastiao.authenticationapi.adapter.out.logger;
+package dev.guilhermesebastiao.authenticationapi.adapter.out.logger.adapter;
 
+import dev.guilhermesebastiao.authenticationapi.adapter.out.logger.payload.*;
 import dev.guilhermesebastiao.authenticationapi.application.port.out.LoggerPort;
 import dev.guilhermesebastiao.authenticationapi.infrastructure.config.LoggerConfig;
 import org.slf4j.Logger;

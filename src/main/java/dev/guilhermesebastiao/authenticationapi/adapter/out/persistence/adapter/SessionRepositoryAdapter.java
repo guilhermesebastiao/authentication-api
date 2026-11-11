@@ -11,7 +11,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Component;
 
 import java.time.Instant;
@@ -42,19 +41,31 @@ public class SessionRepositoryAdapter implements SessionRepositoryPort {
     }
 
     @Override
+    public Optional<Session> findById(UUID id) {
+        return repository.findById(id).map(mapper::toDomain);
+    }
+
+    @Override
     public Optional<Session> findBySessionTokenHash(String sessionTokenHash) {
         return repository.findBySessionTokenHash(sessionTokenHash).map(mapper::toDomain);
     }
 
     @Override
-    public PageResult<Session> findAllByAccountIdAndNotRevoked(UUID accountId, PageQuery pagination) {
+    public PageResult<Session> findAllByAccountIdAndNotRevoked(
+            UUID accountId,
+            String sessionTokenHash,
+            PageQuery pagination
+    ) {
         Pageable pageable = PageRequest.of(
                 pagination.zeroBasedPage(),
-                pagination.size(),
-                Sort.by(Sort.Direction.DESC, "lastSeenAt")
+                pagination.size()
         );
 
-        Page<SessionEntity> result = repository.findAllByAccountIdAndNotRevoked(accountId, pageable);
+        Page<SessionEntity> result = repository.findAllByAccountIdAndNotRevoked(
+                accountId,
+                sessionTokenHash,
+                pageable
+        );
 
         List<Session> sessions = result.getContent()
                 .stream()
@@ -91,7 +102,7 @@ public class SessionRepositoryAdapter implements SessionRepositoryPort {
     }
 
     @Override
-    public int deleteAllRevoked(Instant now) {
-        return repository.deleteAllRevokedOrExpired(now);
+    public long deleteAllExpiredOrUsed(Instant now) {
+        return repository.deleteAllExpiredOrUsed(now);
     }
 }

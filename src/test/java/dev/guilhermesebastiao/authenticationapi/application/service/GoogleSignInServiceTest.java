@@ -154,7 +154,7 @@ class GoogleSignInServiceTest {
                 () -> service.execute(code, "Mozilla/5.0", "192.168.0.10")
         );
 
-        assertEquals("The account has not been activated.", exception.getDetail());
+        assertEquals("A conta ainda não foi ativada.", exception.getMessage());
         then(createAccountActivationUseCase).should().execute(account);
         then(createSessionUseCase).shouldHaveNoInteractions();
         then(createRefreshUseCase).shouldHaveNoInteractions();

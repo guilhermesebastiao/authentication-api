@@ -17,8 +17,9 @@ public interface JpaAccountActivationRepository extends JpaRepository<AccountAct
 
     @Modifying
     @Query("""
-        DELETE FROM AccountActivationEntity aa
-        WHERE aa.expiresAt < :now
+        DELETE FROM AccountActivationEntity ac
+            WHERE ac.expiresAt <= :now 
+                OR ac.activatedAt IS NOT NULL
     """)
-    int deleteAllExpired(@Param("now") Instant now);
+    int deleteAllExpiredOrUsed(@Param("now") Instant now);
 }

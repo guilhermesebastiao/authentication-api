@@ -1,6 +1,5 @@
 package dev.guilhermesebastiao.authenticationapi.adapter.in.contract;
 
-import dev.guilhermesebastiao.authenticationapi.adapter.in.dto.common.ApiBody;
 import dev.guilhermesebastiao.authenticationapi.adapter.in.dto.request.GoogleSignInRequest;
 import dev.guilhermesebastiao.authenticationapi.adapter.in.dto.request.RefreshTokenRequest;
 import dev.guilhermesebastiao.authenticationapi.adapter.in.dto.request.SignInRequest;
@@ -24,7 +23,7 @@ public interface AuthApi {
             summary = "Sign in",
             description = "Authenticates an account using its email and password."
     )
-    ApiBody<AuthResponse> signIn(
+    AuthResponse signIn(
             HttpServletRequest request,
             SignInRequest dto
     );
@@ -33,7 +32,7 @@ public interface AuthApi {
             summary = "Sign in with Google",
             description = "Authenticates an account using a Google credential."
     )
-    ApiBody<AuthResponse> googleSignIn(
+    AuthResponse googleSignIn(
             HttpServletRequest request,
             GoogleSignInRequest dto
     );
@@ -42,7 +41,7 @@ public interface AuthApi {
             summary = "Create account",
             description = "Creates a pending account and starts its activation flow."
     )
-    ApiBody<AccountActivationResponse> signUp(SignUpRequest dto);
+    AccountActivationResponse signUp(SignUpRequest dto);
 
     @Operation(
             summary = "Sign out",
@@ -52,7 +51,7 @@ public interface AuthApi {
             @SecurityRequirement(name = "bearerAuth"),
             @SecurityRequirement(name = "sessionAuth")
     })
-    ApiBody<Void> signOut(
+    void signOut(
             HttpServletRequest request,
             SecurityAccount securityAccount
     );
@@ -61,7 +60,7 @@ public interface AuthApi {
             summary = "Refresh authentication tokens",
             description = "Refreshes the authentication tokens using a valid refresh token."
     )
-    ApiBody<AuthResponse> refresh(
+    AuthResponse refresh(
             HttpServletRequest request,
             RefreshTokenRequest dto
     );

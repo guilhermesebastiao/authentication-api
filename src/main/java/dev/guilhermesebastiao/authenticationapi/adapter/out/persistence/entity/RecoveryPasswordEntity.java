@@ -14,7 +14,7 @@ import java.util.UUID;
 @Getter
 @Setter
 @Entity
-@Table(name = "recovery_passwords")
+@Table(name = "password_recovery")
 @RequiredArgsConstructor
 @EntityListeners(AuditingEntityListener.class)
 public class RecoveryPasswordEntity {

@@ -1,7 +1,6 @@
 package dev.guilhermesebastiao.authenticationapi.adapter.in.controller;
 
 import dev.guilhermesebastiao.authenticationapi.adapter.in.contract.RecoveryPasswordApi;
-import dev.guilhermesebastiao.authenticationapi.adapter.in.dto.common.ApiBody;
 import dev.guilhermesebastiao.authenticationapi.adapter.in.dto.request.ResetPasswordRequest;
 import dev.guilhermesebastiao.authenticationapi.adapter.in.dto.response.RecoveryPasswordResponse;
 import dev.guilhermesebastiao.authenticationapi.adapter.in.mapper.RecoveryPasswordMapper;
@@ -26,25 +25,21 @@ public class RecoveryPasswordController implements RecoveryPasswordApi {
     @Override
     @GetMapping("/{recoveryToken}")
     @ResponseStatus(HttpStatus.OK)
-    public ApiBody<RecoveryPasswordResponse> getRecoverPassword(
+    public RecoveryPasswordResponse getRecoverPassword(
             HttpServletRequest request,
-            @PathVariable("recoverToken") String recoveryToken
+            @PathVariable("recoveryToken") String recoveryToken
     ) {
         RecoveryPasswordOutput output = getRecoveryPasswordUseCase.execute(recoveryToken);
 
-        return ApiBody.of(mapper.toResponse(output));
+        return mapper.toResponse(output);
     }
 
     @Override
     @PatchMapping("/reset")
-    @ResponseStatus(HttpStatus.OK)
-    public ApiBody<Void> reset(
-            @RequestBody @Valid ResetPasswordRequest dto
-    ) {
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void reset(@RequestBody @Valid ResetPasswordRequest dto) {
         ResetPasswordInput input = mapper.toInput(dto);
 
         resetPasswordUseCase.execute(input);
-
-        return ApiBody.of();
     }
 }

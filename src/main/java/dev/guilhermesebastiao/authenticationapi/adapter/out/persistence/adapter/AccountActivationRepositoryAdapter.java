@@ -40,7 +40,7 @@ public class AccountActivationRepositoryAdapter implements AccountActivationRepo
     }
 
     @Override
-    public int deleteAllExpired(Instant now) {
-        return repository.deleteAllExpired(now);
+    public long deleteAllExpiredOrUsed(Instant now) {
+        return repository.deleteAllExpiredOrUsed(now);
     }
 }

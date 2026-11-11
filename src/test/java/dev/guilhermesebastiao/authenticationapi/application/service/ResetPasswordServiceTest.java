@@ -4,6 +4,7 @@ import dev.guilhermesebastiao.authenticationapi.application.port.out.RecoveryPas
 
 import dev.guilhermesebastiao.authenticationapi.application.dto.input.ResetPasswordInput;
 import dev.guilhermesebastiao.authenticationapi.application.port.in.RevokeAllSessionsUseCase;
+import dev.guilhermesebastiao.authenticationapi.application.port.in.SendPasswordChangedUseCase;
 import dev.guilhermesebastiao.authenticationapi.application.port.out.AccountRepositoryPort;
 import dev.guilhermesebastiao.authenticationapi.application.port.out.PasswordEncoderPort;
 import dev.guilhermesebastiao.authenticationapi.application.port.out.SecureHasherPort;
@@ -46,6 +47,9 @@ class ResetPasswordServiceTest {
 
     @Mock
     private SecureHasherPort secureHasher;
+
+    @Mock
+    private SendPasswordChangedUseCase sendPasswordChangedUseCase;
 
     @InjectMocks
     private ResetPasswordService service;

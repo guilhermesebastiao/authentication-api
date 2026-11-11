@@ -1,6 +1,5 @@
 package dev.guilhermesebastiao.authenticationapi.adapter.in.contract;
 
-import dev.guilhermesebastiao.authenticationapi.adapter.in.dto.common.ApiBody;
 import dev.guilhermesebastiao.authenticationapi.adapter.in.dto.request.ResetPasswordRequest;
 import dev.guilhermesebastiao.authenticationapi.adapter.in.dto.response.RecoveryPasswordResponse;
 import io.swagger.v3.oas.annotations.Operation;
@@ -15,9 +14,9 @@ public interface RecoveryPasswordApi {
 
     @Operation(
             summary = "Get recovery password",
-            description = "Get recovery password using recover token."
+            description = "Get recovery password using recovery token."
     )
-    ApiBody<RecoveryPasswordResponse> getRecoverPassword(
+    RecoveryPasswordResponse getRecoverPassword(
             HttpServletRequest request,
             String recoverToken
     );
@@ -26,7 +25,5 @@ public interface RecoveryPasswordApi {
             summary = "Reset password",
             description = "Changes the account password using a verified recovery token."
     )
-    ApiBody<Void> reset(
-            ResetPasswordRequest dto
-    );
+    void reset(ResetPasswordRequest dto);
 }

@@ -8,6 +8,7 @@ import dev.guilhermesebastiao.authenticationapi.domain.model.ForgotPassword;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
+import java.time.Instant;
 import java.util.Optional;
 
 @Component
@@ -26,5 +27,10 @@ public class ForgotPasswordRepositoryAdapter implements ForgotPasswordRepository
     @Override
     public Optional<ForgotPassword> findByForgotTokenHash(String forgotTokenHash) {
         return repository.findByForgotTokenHash(forgotTokenHash).map(mapper::toDomain);
+    }
+
+    @Override
+    public long deleteAllExpiredOrUsed(Instant now) {
+        return repository.deleteAllExpiredOrUsed(now);
     }
 }

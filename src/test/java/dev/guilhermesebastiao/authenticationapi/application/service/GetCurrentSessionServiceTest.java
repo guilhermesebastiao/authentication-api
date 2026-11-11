@@ -1,6 +1,7 @@
 package dev.guilhermesebastiao.authenticationapi.application.service;
 
 import dev.guilhermesebastiao.authenticationapi.application.port.out.SecureHasherPort;
+import dev.guilhermesebastiao.authenticationapi.application.port.in.GetDeviceNameUseCase;
 import dev.guilhermesebastiao.authenticationapi.application.port.out.SessionRepositoryPort;
 import dev.guilhermesebastiao.authenticationapi.application.dto.output.SessionOutput;
 import dev.guilhermesebastiao.authenticationapi.domain.enums.DeviceType;
@@ -34,6 +35,9 @@ class GetCurrentSessionServiceTest {
     @Mock
     private SecureHasherPort secureHasher;
 
+    @Mock
+    private GetDeviceNameUseCase getDeviceNameUseCase;
+
     @InjectMocks
     private GetCurrentSessionService service;
 
@@ -61,6 +65,7 @@ class GetCurrentSessionServiceTest {
 
         given(sessionRepository.findBySessionTokenHash(currentSessionTokenHash))
                 .willReturn(Optional.of(session));
+        given(getDeviceNameUseCase.execute(null)).willReturn("Dispositivo desconhecido");
 
         SessionOutput result = service.execute(account, currentSessionToken);
 

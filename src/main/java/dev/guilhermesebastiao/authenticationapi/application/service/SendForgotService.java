@@ -8,7 +8,7 @@ import java.time.Instant;
 import java.util.Map;
 
 public class SendForgotService implements SendForgotUseCase {
-    private static final String TEMPLATE = "recover-password-template";
+    private static final String TEMPLATE = "recover-password";
 
     private final EmailSenderPort emailSender;
 
