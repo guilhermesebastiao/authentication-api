@@ -1,19 +1,21 @@
-
 name: Build Validation
 
 on:
-  push:
-    branches: [main]
   pull_request:
     branches: [main]
 
 permissions:
   contents: read
 
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
 jobs:
   build:
     name: Build Validation
     runs-on: ubuntu-latest
+    timeout-minutes: 15
 
     steps:
       - name: Checkout

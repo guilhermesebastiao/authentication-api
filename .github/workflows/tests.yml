@@ -1,19 +1,21 @@
-
 name: Unit Tests
 
 on:
-  push:
-    branches: [main]
   pull_request:
     branches: [main]
 
 permissions:
   contents: read
 
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
 jobs:
   tests:
     name: Unit Tests
     runs-on: ubuntu-latest
+    timeout-minutes: 15
 
     steps:
       - name: Checkout
@@ -23,7 +25,7 @@ jobs:
         uses: actions/setup-java@v4
         with:
           distribution: temurin
-          java-version: '26'
+          java-version: '25'
           cache: maven
 
       - name: Run tests
@@ -36,3 +38,4 @@ jobs:
           name: unit-test-reports
           path: target/surefire-reports/
           if-no-files-found: ignore
+          retention-days: 7
