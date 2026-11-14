@@ -1,4 +1,4 @@
-name:   authentication-api
+name: authentication-api
 
 services:
   postgres:
