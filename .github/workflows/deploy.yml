@@ -1,0 +1,65 @@
+name: CD - Connection Test
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: production-deploy
+  cancel-in-progress: false
+
+jobs:
+  connection:
+    name: Test SSH Connection
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    environment: production
+
+    env:
+      TUNNEL_SERVICE_TOKEN_ID: ${{ secrets.CF_ACCESS_CLIENT_ID }}
+      TUNNEL_SERVICE_TOKEN_SECRET: ${{ secrets.CF_ACCESS_CLIENT_SECRET }}
+
+    steps:
+      - name: Install cloudflared
+        run: |
+          curl -fL \
+            https://github.com/cloudflare/cloudflared/releases/download/2026.5.1/cloudflared-linux-amd64.deb \
+            -o cloudflared.deb
+
+          sudo dpkg -i cloudflared.deb
+          cloudflared --version
+
+      - name: Configure SSH
+        env:
+          DEPLOY_SSH_KEY: ${{ secrets.DEPLOY_SSH_KEY }}
+          SSH_KNOWN_HOSTS: ${{ secrets.SSH_KNOWN_HOSTS }}
+        run: |
+          install -d -m 700 ~/.ssh
+
+          printf '%s\n' "$DEPLOY_SSH_KEY" > ~/.ssh/id_ed25519_deploy
+          chmod 600 ~/.ssh/id_ed25519_deploy
+
+          printf '%s\n' "$SSH_KNOWN_HOSTS" > ~/.ssh/known_hosts
+          chmod 600 ~/.ssh/known_hosts
+
+          cat > ~/.ssh/config <<'EOF'
+          Host debian-deploy
+              HostName deploy.guilhermesebastiao.dev
+              User deploy
+              IdentityFile ~/.ssh/id_ed25519_deploy
+              IdentitiesOnly yes
+              StrictHostKeyChecking yes
+              ProxyCommand cloudflared access ssh --hostname %h
+          EOF
+
+          chmod 600 ~/.ssh/config
+
+      - name: Test connection
+        run: |
+          ssh \
+            -o BatchMode=yes \
+            -o ConnectTimeout=30 \
+            debian-deploy \
+            'echo "SSH connection successful"; whoami; hostname'
