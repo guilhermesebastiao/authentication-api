@@ -6,6 +6,7 @@ spring:
           auth: true
           starttls:
             enable: true
+            required: true
 
   jpa:
     show-sql: false
@@ -13,12 +14,12 @@ spring:
       ddl-auto: validate
 
   flyway:
+    enabled: true
     baseline-on-migrate: true
     clean-disabled: true
 
 springdoc:
   api-docs:
     enabled: false
-
   swagger-ui:
     enabled: false
