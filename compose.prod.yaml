@@ -16,7 +16,7 @@ services:
       REDIS_PORT: 6379
       TZ: UTC
     ports:
-      - "127.0.0.1:${API_PORT:-8080}:8080"
+      - "0.0.0.0:${API_PORT:-8080}:8080"
     depends_on:
       postgres:
         condition: service_healthy
