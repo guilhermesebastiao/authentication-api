@@ -1,4 +1,3 @@
-
 name: CD - Deploy
 
 on:
@@ -26,6 +25,9 @@ jobs:
       TUNNEL_SERVICE_TOKEN_ID: ${{ secrets.CF_ACCESS_CLIENT_ID }}
       TUNNEL_SERVICE_TOKEN_SECRET: ${{ secrets.CF_ACCESS_CLIENT_SECRET }}
       IMAGE_TAG: ${{ github.event.workflow_run.head_sha }}
+      DEPLOY_HOST: ${{ vars.DEPLOY_HOST }}
+      DEPLOY_USER: ${{ vars.DEPLOY_USER }}
+      DEPLOY_PATH: ${{ vars.DEPLOY_PATH }}
 
     steps:
       - name: Install cloudflared
@@ -50,10 +52,10 @@ jobs:
           printf '%s\n' "$SSH_KNOWN_HOSTS" > ~/.ssh/known_hosts
           chmod 600 ~/.ssh/known_hosts
 
-          cat > ~/.ssh/config <<'EOF'
+          cat > ~/.ssh/config <<EOF
           Host debian-deploy
-              HostName deploy.guilhermesebastiao.dev
-              User deploy
+              HostName $DEPLOY_HOST
+              User $DEPLOY_USER
               IdentityFile ~/.ssh/id_ed25519_deploy
               IdentitiesOnly yes
               StrictHostKeyChecking yes
@@ -62,20 +64,41 @@ jobs:
 
           chmod 600 ~/.ssh/config
 
+      - name: Test Cloudflare Access
+        run: |
+          status=$(curl \
+            --silent \
+            --show-error \
+            --output /dev/null \
+            --write-out '%{http_code}' \
+            --header "CF-Access-Client-Id: $TUNNEL_SERVICE_TOKEN_ID" \
+            --header "CF-Access-Client-Secret: $TUNNEL_SERVICE_TOKEN_SECRET" \
+            "https://$DEPLOY_HOST/")
+
+          echo "Cloudflare Access HTTP status: $status"
+
+      - name: Test SSH Connection
+        run: |
+          ssh -vv \
+            -o BatchMode=yes \
+            -o ConnectTimeout=30 \
+            debian-deploy "echo 'SSH connection successful'"
+
       - name: Deploy API
         run: |
           ssh -o BatchMode=yes -o ConnectTimeout=30 \
-            debian-deploy "bash -s -- '$IMAGE_TAG'" <<'REMOTE'
+            debian-deploy "bash -s -- '$IMAGE_TAG' '$DEPLOY_PATH'" <<'REMOTE'
           set -euo pipefail
 
           TAG="$1"
-          cd /srv/apps/authentication-api
-
-          echo "Updating repository..."
-          git pull --ff-only origin main
+          DEPLOY_DIR="$2"
 
           echo "Validating image tag..."
           [[ "$TAG" =~ ^[a-f0-9]{40}$ ]]
+
+          echo "Updating repository..."
+          cd "$DEPLOY_DIR"
+          git pull --ff-only origin main
 
           echo "Pulling image $TAG..."
           API_IMAGE_TAG="$TAG" \
@@ -87,7 +110,11 @@ jobs:
             up -d --no-deps --no-build api
 
           echo "Checking container status..."
-          CONTAINER_ID=$(docker compose -f compose.prod.yaml ps -q api)
+          CONTAINER_ID=$(
+            API_IMAGE_TAG="$TAG" \
+              docker compose -f compose.prod.yaml ps -q api
+          )
+
           test -n "$CONTAINER_ID"
           test "$(docker inspect -f '{{.State.Running}}' "$CONTAINER_ID")" = "true"
 
