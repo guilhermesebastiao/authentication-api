@@ -13,7 +13,6 @@ import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
@@ -27,17 +26,27 @@ import org.springframework.web.servlet.HandlerExceptionResolver;
 import java.io.IOException;
 
 @Component
-@RequiredArgsConstructor
 public class SecurityFilter extends OncePerRequestFilter {
     private static final String SESSION_TOKEN_HEADER = "X-Session";
     private static final String BEARER_PREFIX = "Bearer ";
 
-    @Qualifier("handlerExceptionResolver")
     private final HandlerExceptionResolver exceptionResolver;
-
     private final ValidateSessionUseCase validateSessionUseCase;
     private final SecurityAccountService userDetailsService;
     private final JwtTokenPort jwtToken;
+
+    public SecurityFilter(
+            @Qualifier("handlerExceptionResolver")
+            HandlerExceptionResolver exceptionResolver,
+            ValidateSessionUseCase validateSessionUseCase,
+            SecurityAccountService userDetailsService,
+            JwtTokenPort jwtToken
+    ) {
+        this.exceptionResolver = exceptionResolver;
+        this.validateSessionUseCase = validateSessionUseCase;
+        this.userDetailsService = userDetailsService;
+        this.jwtToken = jwtToken;
+    }
 
     @Override
     protected boolean shouldNotFilter(HttpServletRequest request) {
