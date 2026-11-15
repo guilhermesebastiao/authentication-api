@@ -1,7 +1,11 @@
-name: CD - Connection Test
+
+name: CD - Deploy
 
 on:
-  workflow_dispatch:
+  workflow_run:
+    workflows: ["CD - Publish Image"]
+    types: [completed]
+    branches: [main]
 
 permissions:
   contents: read
@@ -11,15 +15,17 @@ concurrency:
   cancel-in-progress: false
 
 jobs:
-  connection:
-    name: Test SSH Connection
+  deploy:
+    name: Deploy Production
+    if: ${{ github.event.workflow_run.conclusion == 'success' }}
     runs-on: ubuntu-latest
-    timeout-minutes: 10
+    timeout-minutes: 15
     environment: production
 
     env:
       TUNNEL_SERVICE_TOKEN_ID: ${{ secrets.CF_ACCESS_CLIENT_ID }}
       TUNNEL_SERVICE_TOKEN_SECRET: ${{ secrets.CF_ACCESS_CLIENT_SECRET }}
+      IMAGE_TAG: ${{ github.event.workflow_run.head_sha }}
 
     steps:
       - name: Install cloudflared
@@ -56,26 +62,38 @@ jobs:
 
           chmod 600 ~/.ssh/config
 
-      - name: Diagnose Cloudflare Access
-        env:
-          CF_ACCESS_CLIENT_ID: ${{ secrets.CF_ACCESS_CLIENT_ID }}
-          CF_ACCESS_CLIENT_SECRET: ${{ secrets.CF_ACCESS_CLIENT_SECRET }}
+      - name: Deploy API
         run: |
-          status=$(curl \
-            --silent \
-            --show-error \
-            --output /dev/null \
-            --write-out '%{http_code}' \
-            --header "CF-Access-Client-Id: $CF_ACCESS_CLIENT_ID" \
-            --header "CF-Access-Client-Secret: $CF_ACCESS_CLIENT_SECRET" \
-            https://deploy.guilhermesebastiao.dev/)
+          ssh -o BatchMode=yes -o ConnectTimeout=30 \
+            debian-deploy "bash -s -- '$IMAGE_TAG'" <<'REMOTE'
+          set -euo pipefail
 
-          echo "Cloudflare HTTP status: $status"
+          TAG="$1"
+          cd /srv/apps/authentication-api
 
-      - name: Test connection
-        run: |
-          ssh \
-            -o BatchMode=yes \
-            -o ConnectTimeout=30 \
-            debian-deploy \
-            'echo "SSH connection successful"; whoami; hostname'
+          echo "Updating repository..."
+          git pull --ff-only origin main
+
+          echo "Validating image tag..."
+          [[ "$TAG" =~ ^[a-f0-9]{40}$ ]]
+
+          echo "Pulling image $TAG..."
+          API_IMAGE_TAG="$TAG" \
+            docker compose -f compose.prod.yaml pull api
+
+          echo "Recreating API..."
+          API_IMAGE_TAG="$TAG" \
+            docker compose -f compose.prod.yaml \
+            up -d --no-deps --no-build api
+
+          echo "Checking container status..."
+          CONTAINER_ID=$(docker compose -f compose.prod.yaml ps -q api)
+          test -n "$CONTAINER_ID"
+          test "$(docker inspect -f '{{.State.Running}}' "$CONTAINER_ID")" = "true"
+
+          echo "Saving deployed image tag..."
+          umask 077
+          printf 'API_IMAGE_TAG=%s\n' "$TAG" > .deploy.env
+
+          echo "Deployment completed: $TAG"
+          REMOTE
