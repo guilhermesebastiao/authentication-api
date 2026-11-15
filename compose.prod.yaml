@@ -5,7 +5,7 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
-    image: authentication-api:latest
+    image: ghcr.io/guilhermesebastiao/authentication-api:${API_IMAGE_TAG:-latest}
     restart: unless-stopped
     init: true
     env_file:
