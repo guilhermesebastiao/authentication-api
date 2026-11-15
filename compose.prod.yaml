@@ -2,9 +2,6 @@ name: authentication-api
 
 services:
   api:
-    build:
-      context: .
-      dockerfile: Dockerfile
     image: ghcr.io/guilhermesebastiao/authentication-api:${API_IMAGE_TAG:-latest}
     restart: unless-stopped
     init: true
