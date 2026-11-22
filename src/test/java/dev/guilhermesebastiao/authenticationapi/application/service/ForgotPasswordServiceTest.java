@@ -8,7 +8,6 @@ import dev.guilhermesebastiao.authenticationapi.application.port.out.PasswordEnc
 import dev.guilhermesebastiao.authenticationapi.application.port.out.SecureHasherPort;
 import dev.guilhermesebastiao.authenticationapi.application.port.out.SecureRandomGeneratorPort;
 import dev.guilhermesebastiao.authenticationapi.application.dto.output.ForgotPasswordOutput;
-import dev.guilhermesebastiao.authenticationapi.domain.exception.AccountNotFoundException;
 import dev.guilhermesebastiao.authenticationapi.domain.model.Account;
 import dev.guilhermesebastiao.authenticationapi.domain.model.ForgotPassword;
 import org.junit.jupiter.api.DisplayName;
@@ -26,7 +25,6 @@ import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
@@ -110,18 +108,37 @@ class ForgotPasswordServiceTest {
     }
 
     @Test
-    @DisplayName("Should reject recovery creation when the account does not exist")
-    void givenUnknownAccountEmail_whenCreateForgotPassword_thenAccountNotFoundExceptionIsThrown() {
+    @DisplayName("Should not persist or send a recovery request when the account does not exist")
+    void givenUnknownAccountEmail_whenCreateForgotPassword_thenRecoveryIsNotSavedOrSent() {
         String email = "unknown@example.com";
+        Instant beforeExecution = Instant.now();
 
+        given(secureRandom.nextInt(1_000_000)).willReturn(1234);
+        given(secureRandomGenerator.generate(32)).willReturn("recover-token");
         given(accountRepository.findByEmail(email))
-                .willReturn(java.util.Optional.empty());
+                .willReturn(Optional.empty());
 
-        assertThrows(AccountNotFoundException.class, () -> service.execute(email));
+        given(secureHasher.hash("recover-token"))
+                .willReturn("recover-token-hash");
+
+        given(passwordEncoder.hash("001234"))
+                .willReturn("otp-hash");
+
+        ForgotPasswordOutput result = service.execute(email);
+        Instant afterExecution = Instant.now();
+
+        assertEquals(email, result.email());
+        assertEquals("recover-token", result.forgotToken());
+        assertNotNull(result.resendAvailableAt());
+        assertNotNull(result.expiresAt());
+        assertTrue(result.resendAvailableAt().isAfter(beforeExecution.plus(30, ChronoUnit.SECONDS)));
+        assertTrue(result.resendAvailableAt().isBefore(afterExecution.plus(90, ChronoUnit.SECONDS)));
+        assertTrue(result.expiresAt().isAfter(beforeExecution.plus(14, ChronoUnit.MINUTES)));
+        assertTrue(result.expiresAt().isBefore(afterExecution.plus(16, ChronoUnit.MINUTES)));
 
         then(accountRepository).should().findByEmail(email);
-        then(secureHasher).shouldHaveNoInteractions();
-        then(passwordEncoder).shouldHaveNoInteractions();
+        then(secureHasher).should().hash("recover-token");
+        then(passwordEncoder).should().hash("001234");
         then(recoverPasswordRepository).should(never()).save(any(ForgotPassword.class));
         then(sendForgotUseCase).shouldHaveNoInteractions();
     }
