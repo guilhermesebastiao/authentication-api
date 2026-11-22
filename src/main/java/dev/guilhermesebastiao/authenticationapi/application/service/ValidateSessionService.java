@@ -7,9 +7,12 @@ import dev.guilhermesebastiao.authenticationapi.domain.exception.SessionExpiredE
 import dev.guilhermesebastiao.authenticationapi.domain.exception.SessionNotFoundException;
 import dev.guilhermesebastiao.authenticationapi.domain.exception.SessionRevokedException;
 import dev.guilhermesebastiao.authenticationapi.domain.model.Session;
+import jakarta.transaction.Transactional;
+import org.springframework.stereotype.Service;
 
 import java.time.Instant;
 
+@Service
 public class ValidateSessionService implements ValidateSessionUseCase {
     private final SessionRepositoryPort sessionRepository;
     private final SecureHasherPort secureHasher;
@@ -23,6 +26,7 @@ public class ValidateSessionService implements ValidateSessionUseCase {
     }
 
     @Override
+    @Transactional
     public Session execute(String sessionToken) {
         String sessionTokenHash = secureHasher.hash(sessionToken);
 

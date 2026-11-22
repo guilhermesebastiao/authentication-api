@@ -16,7 +16,9 @@ import dev.guilhermesebastiao.authenticationapi.domain.enums.AccountStatus;
 import dev.guilhermesebastiao.authenticationapi.domain.exception.AccountInvalidCredentialsException;
 import dev.guilhermesebastiao.authenticationapi.domain.exception.AccountNotActivatedException;
 import dev.guilhermesebastiao.authenticationapi.domain.model.Account;
+import org.springframework.stereotype.Service;
 
+@Service
 public class SignInService implements SignInUseCase {
     private final CreateAccountActivationUseCase createAccountActivationUseCase;
     private final CreateSessionUseCase createSessionUseCase;

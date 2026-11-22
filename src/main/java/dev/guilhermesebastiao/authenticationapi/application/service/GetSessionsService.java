@@ -1,7 +1,7 @@
 package dev.guilhermesebastiao.authenticationapi.application.service;
 
-import dev.guilhermesebastiao.authenticationapi.application.dto.common.PageResult;
-import dev.guilhermesebastiao.authenticationapi.application.dto.common.PageQuery;
+import dev.guilhermesebastiao.authenticationapi.application.dto.common.PageBody;
+import dev.guilhermesebastiao.authenticationapi.application.dto.query.PagingParam;
 import dev.guilhermesebastiao.authenticationapi.application.port.in.GetDeviceNameUseCase;
 import dev.guilhermesebastiao.authenticationapi.application.port.in.GetSessionsUseCase;
 import dev.guilhermesebastiao.authenticationapi.application.port.out.SecureHasherPort;
@@ -10,10 +10,11 @@ import dev.guilhermesebastiao.authenticationapi.application.dto.output.SessionOu
 import dev.guilhermesebastiao.authenticationapi.domain.exception.SessionNotFoundException;
 import dev.guilhermesebastiao.authenticationapi.domain.model.Account;
 import dev.guilhermesebastiao.authenticationapi.domain.model.Session;
+import org.springframework.stereotype.Service;
 
-import java.util.Comparator;
 import java.util.List;
 
+@Service
 public class GetSessionsService implements GetSessionsUseCase {
     private final GetDeviceNameUseCase getDeviceNameUseCase;
     private final SessionRepositoryPort sessionRepository;
@@ -30,7 +31,7 @@ public class GetSessionsService implements GetSessionsUseCase {
     }
 
     @Override
-    public PageResult<SessionOutput> execute(Account account, String currentSession, PageQuery paging) {
+    public PageBody<SessionOutput> execute(Account account, String currentSession, PagingParam paging) {
         if (currentSession.isBlank()) {
             throw new SessionNotFoundException();
         }
@@ -38,7 +39,7 @@ public class GetSessionsService implements GetSessionsUseCase {
 
         String sessionTokenHash = secureHasher.hash(currentSession);
 
-        PageResult<Session> sessions = sessionRepository.findAllByAccountIdAndNotRevoked(
+        PageBody<Session> sessions = sessionRepository.findAllByAccountIdAndNotRevoked(
                 account.getId(),
                 sessionTokenHash,
                 paging
@@ -59,12 +60,12 @@ public class GetSessionsService implements GetSessionsUseCase {
                 ))
                 .toList();
 
-        return new PageResult<>(
+        return new PageBody<>(
                 content,
                 sessions.totalItems(),
                 sessions.totalPages(),
-                paging.page(),
-                paging.size()
+                paging.getPage(),
+                paging.getSize()
         );
     }
 }

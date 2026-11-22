@@ -1,7 +1,7 @@
 package dev.guilhermesebastiao.authenticationapi.adapter.in.contract;
 
 import dev.guilhermesebastiao.authenticationapi.adapter.in.dto.common.ApiPageBody;
-import dev.guilhermesebastiao.authenticationapi.adapter.in.dto.common.PaginationParams;
+import dev.guilhermesebastiao.authenticationapi.adapter.in.dto.query.PagingQuery;
 import dev.guilhermesebastiao.authenticationapi.adapter.in.dto.response.SessionResponse;
 import dev.guilhermesebastiao.authenticationapi.adapter.out.security.context.SecurityAccount;
 import io.swagger.v3.oas.annotations.Operation;
@@ -26,7 +26,7 @@ public interface SessionApi {
     ApiPageBody<SessionResponse> findAllSessions(
             SecurityAccount securityAccount,
             String sessionToken,
-            PaginationParams pagination
+            PagingQuery paging
     );
 
     @Operation(

@@ -1,7 +1,6 @@
 package dev.guilhermesebastiao.authenticationapi.adapter.out.smtp;
 
-import dev.guilhermesebastiao.authenticationapi.adapter.out.smtp.adapter.JavaMailSenderAdapter;
-import dev.guilhermesebastiao.authenticationapi.adapter.out.smtp.payload.EmailSendPaylod;
+import dev.guilhermesebastiao.authenticationapi.application.dto.payload.EmailSendPayload;
 import dev.guilhermesebastiao.authenticationapi.infrastructure.properties.AppProperties;
 import jakarta.mail.BodyPart;
 import jakarta.mail.Message;
@@ -46,7 +45,7 @@ class JavaMailSenderAdapterTest {
     @Test
     @DisplayName("Should render the selected template and send the generated HTML")
     void givenEmailPayload_whenSend_thenRenderedHtmlIsSent() throws Exception {
-        EmailSendPaylod payload = new EmailSendPaylod(
+        EmailSendPayload payload = new EmailSendPayload(
                 "account-activation-template",
                 "user@example.com",
                 "Activate account",
@@ -83,7 +82,7 @@ class JavaMailSenderAdapterTest {
                 "otpCode", "123456"
         );
 
-        EmailSendPaylod payload = new EmailSendPaylod(
+        EmailSendPayload payload = new EmailSendPayload(
                 "account-activation-template",
                 "user@example.com",
                 "Activate account",
@@ -111,7 +110,7 @@ class JavaMailSenderAdapterTest {
     @Test
     @DisplayName("Should configure the sender, recipient and subject")
     void givenEmailPayload_whenSend_thenMessageMetadataIsConfigured() throws Exception {
-        EmailSendPaylod payload = new EmailSendPaylod(
+        EmailSendPayload payload = new EmailSendPayload(
                 "recover-password-template",
                 "user@example.com",
                 "Recover password",

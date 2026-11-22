@@ -6,11 +6,14 @@ import dev.guilhermesebastiao.authenticationapi.application.port.out.SessionRepo
 import dev.guilhermesebastiao.authenticationapi.domain.model.Account;
 import dev.guilhermesebastiao.authenticationapi.domain.model.Refresh;
 import dev.guilhermesebastiao.authenticationapi.domain.model.Session;
+import jakarta.transaction.Transactional;
+import org.springframework.stereotype.Service;
 
 import java.time.Instant;
 import java.util.List;
 import java.util.UUID;
 
+@Service
 public class RevokeAllSessionsService implements RevokeAllSessionsUseCase {
     private final SessionRepositoryPort sessionRepository;
     private final RefreshRepositoryPort refreshRepository;
@@ -24,6 +27,7 @@ public class RevokeAllSessionsService implements RevokeAllSessionsUseCase {
     }
 
     @Override
+    @Transactional
     public void execute(Account account) {
         Instant revokedAt = Instant.now();
 

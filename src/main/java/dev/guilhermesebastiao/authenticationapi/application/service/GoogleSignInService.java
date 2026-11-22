@@ -13,9 +13,11 @@ import dev.guilhermesebastiao.authenticationapi.domain.exception.AccountDisabled
 import dev.guilhermesebastiao.authenticationapi.domain.exception.AccountNotActivatedException;
 import dev.guilhermesebastiao.authenticationapi.domain.exception.AccountNotFoundException;
 import dev.guilhermesebastiao.authenticationapi.domain.model.Account;
+import org.springframework.stereotype.Service;
 
 import java.util.Map;
 
+@Service
 public class GoogleSignInService implements GoogleSignInUseCase {
     private final CreateAccountActivationUseCase createAccountActivationUseCase;
     private final GoogleAuthorizationPort googleAuthorization;

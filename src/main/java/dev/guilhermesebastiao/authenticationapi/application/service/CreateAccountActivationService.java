@@ -11,11 +11,14 @@ import dev.guilhermesebastiao.authenticationapi.domain.enums.AccountStatus;
 import dev.guilhermesebastiao.authenticationapi.domain.exception.AccountAlreadyActivatedException;
 import dev.guilhermesebastiao.authenticationapi.domain.model.Account;
 import dev.guilhermesebastiao.authenticationapi.domain.model.AccountActivation;
+import jakarta.transaction.Transactional;
+import org.springframework.stereotype.Service;
 
 import java.security.SecureRandom;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 
+@Service
 public class CreateAccountActivationService implements CreateAccountActivationUseCase {
     private static final int ACCOUNT_ACTIVATION_EXPIRES_MINUTES = 15;
     private static final int RESEND_EMAIL_AVAILABLE_MINUTES = 1;
@@ -45,6 +48,7 @@ public class CreateAccountActivationService implements CreateAccountActivationUs
     }
 
     @Override
+    @Transactional
     public AccountActivationOutput execute(Account account) {
         if (account.getStatus() == AccountStatus.ACTIVATED) {
             throw new AccountAlreadyActivatedException();

@@ -7,7 +7,10 @@ import dev.guilhermesebastiao.authenticationapi.application.port.out.SecureRando
 import dev.guilhermesebastiao.authenticationapi.application.dto.output.CreateRefreshOutput;
 import dev.guilhermesebastiao.authenticationapi.domain.model.Refresh;
 import dev.guilhermesebastiao.authenticationapi.domain.model.Session;
+import jakarta.transaction.Transactional;
+import org.springframework.stereotype.Service;
 
+@Service
 public class CreateRefreshService implements CreateRefreshUseCase {
     private static final int REFRESH_TOKEN_SIZE = 32;
 
@@ -26,6 +29,7 @@ public class CreateRefreshService implements CreateRefreshUseCase {
     }
 
     @Override
+    @Transactional
     public CreateRefreshOutput execute(Session session) {
         String refreshToken = secureRandomGenerator.generate(REFRESH_TOKEN_SIZE);
 

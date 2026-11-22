@@ -7,8 +7,9 @@ import dev.guilhermesebastiao.authenticationapi.application.dto.input.ValidateFo
 import dev.guilhermesebastiao.authenticationapi.application.dto.output.ForgotPasswordOutput;
 import dev.guilhermesebastiao.authenticationapi.application.dto.output.RecoveryPasswordOutput;
 import org.mapstruct.Mapper;
+import org.mapstruct.MappingConstants;
 
-@Mapper(componentModel = "spring")
+@Mapper(componentModel = MappingConstants.ComponentModel.SPRING)
 public interface ForgotPasswordMapper {
     ValidateForgotPasswordInput toInput(ValidateForgotPasswordRequest request);
 

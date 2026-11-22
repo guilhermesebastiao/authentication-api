@@ -1,11 +1,13 @@
 package dev.guilhermesebastiao.authenticationapi.application.service;
 
-import dev.guilhermesebastiao.authenticationapi.adapter.out.smtp.payload.EmailSendPaylod;
+import dev.guilhermesebastiao.authenticationapi.application.dto.payload.EmailSendPayload;
 import dev.guilhermesebastiao.authenticationapi.application.port.in.SendAccountDisabledUseCase;
 import dev.guilhermesebastiao.authenticationapi.application.port.out.EmailSenderPort;
+import org.springframework.stereotype.Service;
 
 import java.util.Map;
 
+@Service
 public class SendAccountDisabledService implements SendAccountDisabledUseCase {
     private static final String TEMPLATE = "account-disabled";
 
@@ -23,6 +25,6 @@ public class SendAccountDisabledService implements SendAccountDisabledUseCase {
 
         Map<String, Object> variables = Map.of("email", email);
 
-        emailSender.send(new EmailSendPaylod(TEMPLATE, email, subject, variables));
+        emailSender.send(EmailSendPayload.of(TEMPLATE, email, subject, variables));
     }
 }

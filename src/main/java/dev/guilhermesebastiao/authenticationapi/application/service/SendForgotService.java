@@ -1,12 +1,14 @@
 package dev.guilhermesebastiao.authenticationapi.application.service;
 
-import dev.guilhermesebastiao.authenticationapi.adapter.out.smtp.payload.EmailSendPaylod;
+import dev.guilhermesebastiao.authenticationapi.application.dto.payload.EmailSendPayload;
 import dev.guilhermesebastiao.authenticationapi.application.port.in.SendForgotUseCase;
 import dev.guilhermesebastiao.authenticationapi.application.port.out.EmailSenderPort;
+import org.springframework.stereotype.Service;
 
 import java.time.Instant;
 import java.util.Map;
 
+@Service
 public class SendForgotService implements SendForgotUseCase {
     private static final String TEMPLATE = "recover-password";
 
@@ -25,6 +27,6 @@ public class SendForgotService implements SendForgotUseCase {
                 "otp", otp
         );
 
-        emailSender.send(new EmailSendPaylod(TEMPLATE, email, subject, variables));
+        emailSender.send(EmailSendPayload.of(TEMPLATE, email, subject, variables));
     }
 }

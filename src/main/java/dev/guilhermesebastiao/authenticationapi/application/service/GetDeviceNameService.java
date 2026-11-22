@@ -2,10 +2,12 @@
 package dev.guilhermesebastiao.authenticationapi.application.service;
 
 import dev.guilhermesebastiao.authenticationapi.application.port.in.GetDeviceNameUseCase;
+import org.springframework.stereotype.Service;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+@Service
 public class GetDeviceNameService implements GetDeviceNameUseCase {
 
     private static final String UNKNOWN = "Desconhecido";

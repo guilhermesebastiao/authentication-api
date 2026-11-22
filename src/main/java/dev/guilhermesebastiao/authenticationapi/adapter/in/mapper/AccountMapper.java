@@ -7,8 +7,9 @@ import dev.guilhermesebastiao.authenticationapi.application.dto.input.ChangePass
 import dev.guilhermesebastiao.authenticationapi.application.dto.input.DisableAccountInput;
 import dev.guilhermesebastiao.authenticationapi.application.dto.output.AccountOutput;
 import org.mapstruct.Mapper;
+import org.mapstruct.MappingConstants;
 
-@Mapper(componentModel = "spring")
+@Mapper(componentModel = MappingConstants.ComponentModel.SPRING)
 public interface AccountMapper {
     AccountResponse toResponse(AccountOutput output);
 
