@@ -8,11 +8,14 @@ import dev.guilhermesebastiao.authenticationapi.domain.exception.AccountDisabled
 import dev.guilhermesebastiao.authenticationapi.domain.exception.AccountNotFoundException;
 import dev.guilhermesebastiao.authenticationapi.domain.model.Account;
 import dev.guilhermesebastiao.authenticationapi.domain.model.ForgotPassword;
+import jakarta.transaction.Transactional;
+import org.springframework.stereotype.Service;
 
 import java.security.SecureRandom;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 
+@Service
 public class ForgotPasswordService implements ForgotPasswordUseCase {
     private static final int RESEND_EMAIL_AVAILABLE_MINUTES = 1;
     private static final int FORGOT_EXPIRES_MINUTES = 15;
@@ -45,6 +48,7 @@ public class ForgotPasswordService implements ForgotPasswordUseCase {
     }
 
     @Override
+    @Transactional
     public ForgotPasswordOutput execute(String email) {
         Account account = accountRepository.findByEmail(email)
                 .orElseThrow(AccountNotFoundException::new);

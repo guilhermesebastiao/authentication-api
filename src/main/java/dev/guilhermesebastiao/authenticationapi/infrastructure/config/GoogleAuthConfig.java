@@ -28,8 +28,7 @@ public class GoogleAuthConfig {
     }
 
     @Bean
-    public HttpTransport googleHttpTransport()
-            throws GeneralSecurityException, IOException {
+    public HttpTransport googleHttpTransport() throws GeneralSecurityException, IOException {
         return GoogleNetHttpTransport.newTrustedTransport();
     }
 

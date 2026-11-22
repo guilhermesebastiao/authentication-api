@@ -11,11 +11,14 @@ import dev.guilhermesebastiao.authenticationapi.domain.exception.AccountActivati
 import dev.guilhermesebastiao.authenticationapi.domain.exception.AccountActivationResendNotAvailableException;
 import dev.guilhermesebastiao.authenticationapi.domain.exception.AccountAlreadyActivatedException;
 import dev.guilhermesebastiao.authenticationapi.domain.model.AccountActivation;
+import jakarta.transaction.Transactional;
+import org.springframework.stereotype.Service;
 
 import java.security.SecureRandom;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 
+@Service
 public class ResendAccountActivationService implements ResendAccountActivationUseCase {
     private static final int RESEND_EMAIL_AVAILABLE_MINUTES = 1;
 
@@ -40,6 +43,7 @@ public class ResendAccountActivationService implements ResendAccountActivationUs
     }
 
     @Override
+    @Transactional
     public AccountActivationOutput execute(String activationToken) {
         Instant now = Instant.now();
 

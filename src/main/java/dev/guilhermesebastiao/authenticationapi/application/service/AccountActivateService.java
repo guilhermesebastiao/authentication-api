@@ -14,9 +14,12 @@ import dev.guilhermesebastiao.authenticationapi.domain.exception.AccountAlreadyA
 import dev.guilhermesebastiao.authenticationapi.domain.exception.IncorrectOtpException;
 import dev.guilhermesebastiao.authenticationapi.domain.model.Account;
 import dev.guilhermesebastiao.authenticationapi.domain.model.AccountActivation;
+import jakarta.transaction.Transactional;
+import org.springframework.stereotype.Service;
 
 import java.time.Instant;
 
+@Service
 public class AccountActivateService implements AccountActivateUseCase {
     private final AccountActivationRepositoryPort accountActivationRepository;
     private final SendAccountWelcomeUseCase sendAccountWelcomeUseCase;
@@ -39,6 +42,7 @@ public class AccountActivateService implements AccountActivateUseCase {
     }
 
     @Override
+    @Transactional
     public void execute(AccountActivationInput input) {
         String activationTokenHash = secureHasher.hash(input.activationToken());
 

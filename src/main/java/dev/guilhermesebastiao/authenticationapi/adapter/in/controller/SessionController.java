@@ -2,14 +2,14 @@ package dev.guilhermesebastiao.authenticationapi.adapter.in.controller;
 
 import dev.guilhermesebastiao.authenticationapi.adapter.in.contract.SessionApi;
 import dev.guilhermesebastiao.authenticationapi.adapter.in.dto.common.ApiPageBody;
-import dev.guilhermesebastiao.authenticationapi.adapter.in.dto.common.PaginationParams;
+import dev.guilhermesebastiao.authenticationapi.adapter.in.dto.query.PaginationParams;
 import dev.guilhermesebastiao.authenticationapi.adapter.in.dto.response.SessionResponse;
 import dev.guilhermesebastiao.authenticationapi.adapter.in.mapper.SessionMapper;
 import dev.guilhermesebastiao.authenticationapi.adapter.out.security.context.SecurityAccount;
 import dev.guilhermesebastiao.authenticationapi.application.port.in.GetCurrentSessionUseCase;
 import dev.guilhermesebastiao.authenticationapi.application.port.in.GetSessionsUseCase;
 import dev.guilhermesebastiao.authenticationapi.application.port.in.RevokeAllSessionsUseCase;
-import dev.guilhermesebastiao.authenticationapi.application.dto.common.PageResult;
+import dev.guilhermesebastiao.authenticationapi.application.dto.common.PageBody;
 import dev.guilhermesebastiao.authenticationapi.application.dto.output.SessionOutput;
 import dev.guilhermesebastiao.authenticationapi.application.port.in.RevokeSessionUseCase;
 import jakarta.validation.Valid;
@@ -40,7 +40,7 @@ public class SessionController implements SessionApi {
             @RequestHeader("X-Session") String sessionToken,
             @Valid PaginationParams pagination
     ) {
-        PageResult<SessionOutput> output = getSessionsUseCase.execute(
+        PageBody<SessionOutput> output = getSessionsUseCase.execute(
                 securityAccount.account(),
                 sessionToken,
                 mapper.toPaging(pagination)

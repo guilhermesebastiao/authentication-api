@@ -4,9 +4,12 @@ import dev.guilhermesebastiao.authenticationapi.adapter.out.logger.payload.Sched
 import dev.guilhermesebastiao.authenticationapi.application.port.in.DeleteAccountActivationScheduleUseCase;
 import dev.guilhermesebastiao.authenticationapi.application.port.out.AccountActivationRepositoryPort;
 import dev.guilhermesebastiao.authenticationapi.application.port.out.LoggerPort;
+import jakarta.transaction.Transactional;
+import org.springframework.stereotype.Service;
 
 import java.time.Instant;
 
+@Service
 public class DeleteAccountActivationScheduleService implements DeleteAccountActivationScheduleUseCase {
     private final static String JOB_NAME = "DELETE_ACCOUNT_ACTIVATION";
 
@@ -22,6 +25,7 @@ public class DeleteAccountActivationScheduleService implements DeleteAccountActi
     }
 
     @Override
+    @Transactional
     public void execute() {
         Instant now = Instant.now();
 

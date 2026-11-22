@@ -8,11 +8,14 @@ import dev.guilhermesebastiao.authenticationapi.application.port.out.SecureHashe
 import dev.guilhermesebastiao.authenticationapi.application.dto.output.ForgotPasswordOutput;
 import dev.guilhermesebastiao.authenticationapi.domain.exception.*;
 import dev.guilhermesebastiao.authenticationapi.domain.model.ForgotPassword;
+import jakarta.transaction.Transactional;
+import org.springframework.stereotype.Service;
 
 import java.security.SecureRandom;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 
+@Service
 public class ResendForgotPasswordService implements ResendForgotPasswordUseCase {
     private static final int RESEND_EMAIL_AVAILABLE_MINUTES = 1;
 
@@ -37,6 +40,7 @@ public class ResendForgotPasswordService implements ResendForgotPasswordUseCase 
     }
 
     @Override
+    @Transactional
     public ForgotPasswordOutput execute(String forgotToken) {
         String forgotTokenHash = secureHasher.hash(forgotToken);
 

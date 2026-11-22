@@ -9,10 +9,13 @@ import dev.guilhermesebastiao.authenticationapi.domain.exception.SessionNotFound
 import dev.guilhermesebastiao.authenticationapi.domain.model.Account;
 import dev.guilhermesebastiao.authenticationapi.domain.model.Refresh;
 import dev.guilhermesebastiao.authenticationapi.domain.model.Session;
+import jakarta.transaction.Transactional;
+import org.springframework.stereotype.Service;
 
 import java.time.Instant;
 import java.util.UUID;
 
+@Service
 public class RevokeSessionService implements RevokeSessionUseCase {
     private final SessionRepositoryPort sessionRepository;
     private final RefreshRepositoryPort refreshRepository;
@@ -29,6 +32,7 @@ public class RevokeSessionService implements RevokeSessionUseCase {
     }
 
     @Override
+    @Transactional
     public void execute(Account account, String sessionToken) {
         String sessionTokenHash = secureHasher.hash(sessionToken);
 

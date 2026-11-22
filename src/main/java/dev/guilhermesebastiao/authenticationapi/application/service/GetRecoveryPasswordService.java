@@ -8,9 +8,11 @@ import dev.guilhermesebastiao.authenticationapi.domain.exception.RecoveryPasswor
 import dev.guilhermesebastiao.authenticationapi.domain.exception.ForgotPasswordExpiredException;
 import dev.guilhermesebastiao.authenticationapi.domain.exception.RecoveryPasswordNotFoundException;
 import dev.guilhermesebastiao.authenticationapi.domain.model.RecoveryPassword;
+import org.springframework.stereotype.Service;
 
 import java.time.Instant;
 
+@Service
 public class GetRecoveryPasswordService implements GetRecoveryPasswordUseCase {
     private final RecoveryPasswordRepositoryPort recoveryPasswordRepository;
     private final SecureHasherPort secureHasher;

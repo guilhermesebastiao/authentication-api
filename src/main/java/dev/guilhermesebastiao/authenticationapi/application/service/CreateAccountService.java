@@ -12,10 +12,13 @@ import dev.guilhermesebastiao.authenticationapi.domain.exception.AccountAlreadyE
 import dev.guilhermesebastiao.authenticationapi.domain.exception.RoleNotFoundException;
 import dev.guilhermesebastiao.authenticationapi.domain.model.Account;
 import dev.guilhermesebastiao.authenticationapi.domain.model.Role;
+import jakarta.transaction.Transactional;
+import org.springframework.stereotype.Service;
 
 import java.util.Optional;
 import java.util.Set;
 
+@Service
 public class CreateAccountService implements CreateAccountUseCase {
     private static final String DEFAULT_ROLE_NAME = "ROLE_USER";
 
@@ -37,6 +40,7 @@ public class CreateAccountService implements CreateAccountUseCase {
     }
 
     @Override
+    @Transactional
     public AccountActivationOutput execute(CreateAccountInput input) {
         Optional<Account> existsAccount = accountRepository.findByEmail(input.email());
 

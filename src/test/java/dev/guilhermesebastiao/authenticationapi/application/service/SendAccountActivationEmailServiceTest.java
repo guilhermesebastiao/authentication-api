@@ -1,6 +1,6 @@
 package dev.guilhermesebastiao.authenticationapi.application.service;
 
-import dev.guilhermesebastiao.authenticationapi.adapter.out.smtp.payload.EmailSendPaylod;
+import dev.guilhermesebastiao.authenticationapi.adapter.out.smtp.payload.EmailSendPayload;
 import dev.guilhermesebastiao.authenticationapi.application.port.out.EmailSenderPort;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -34,10 +34,10 @@ class SendAccountActivationEmailServiceTest {
 
         service.execute(email, otpCode, expiresAt);
 
-        ArgumentCaptor<EmailSendPaylod> payloadCaptor = ArgumentCaptor.forClass(EmailSendPaylod.class);
+        ArgumentCaptor<EmailSendPayload> payloadCaptor = ArgumentCaptor.forClass(EmailSendPayload.class);
         then(emailSender).should().send(payloadCaptor.capture());
 
-        EmailSendPaylod payload = payloadCaptor.getValue();
+        EmailSendPayload payload = payloadCaptor.getValue();
         assertEquals("account-activation", payload.template());
         assertEquals(email, payload.recipient());
         assertEquals("Confirme seu e-mail para ativar sua conta", payload.subject());

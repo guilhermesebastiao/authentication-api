@@ -1,11 +1,13 @@
 package dev.guilhermesebastiao.authenticationapi.application.service;
 
-import dev.guilhermesebastiao.authenticationapi.adapter.out.smtp.payload.EmailSendPaylod;
+import dev.guilhermesebastiao.authenticationapi.adapter.out.smtp.payload.EmailSendPayload;
 import dev.guilhermesebastiao.authenticationapi.application.port.in.SendAccountWelcomeUseCase;
 import dev.guilhermesebastiao.authenticationapi.application.port.out.EmailSenderPort;
+import org.springframework.stereotype.Service;
 
 import java.util.Map;
 
+@Service
 public class SendAccountWelcomeService implements SendAccountWelcomeUseCase {
     private static final String TEMPLATE = "account-welcome";
 
@@ -23,6 +25,6 @@ public class SendAccountWelcomeService implements SendAccountWelcomeUseCase {
 
         Map<String, Object> variables = Map.of("email", email);
 
-        emailSender.send(new EmailSendPaylod(TEMPLATE, email, subject, variables));
+        emailSender.send(new EmailSendPayload(TEMPLATE, email, subject, variables));
     }
 }

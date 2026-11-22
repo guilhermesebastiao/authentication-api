@@ -1,6 +1,6 @@
 package dev.guilhermesebastiao.authenticationapi.adapter.out.smtp.adapter;
 
-import dev.guilhermesebastiao.authenticationapi.adapter.out.smtp.payload.EmailSendPaylod;
+import dev.guilhermesebastiao.authenticationapi.adapter.out.smtp.payload.EmailSendPayload;
 import dev.guilhermesebastiao.authenticationapi.infrastructure.properties.AppProperties;
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
@@ -20,7 +20,7 @@ public class JavaMailSenderAdapter {
     private final JavaMailSender mailSender;
     private final AppProperties properties;
 
-    public void send(EmailSendPaylod payload) throws MessagingException {
+    public void send(EmailSendPayload payload) throws MessagingException {
         MimeMessage mimeMessage = mailSender.createMimeMessage();
         MimeMessageHelper helper = new MimeMessageHelper(mimeMessage, true, "UTF-8");
 

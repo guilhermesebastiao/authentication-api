@@ -8,9 +8,12 @@ import dev.guilhermesebastiao.authenticationapi.domain.exception.AccountActivati
 import dev.guilhermesebastiao.authenticationapi.domain.exception.AccountActivationNotFoundException;
 import dev.guilhermesebastiao.authenticationapi.domain.exception.AccountAlreadyActivatedException;
 import dev.guilhermesebastiao.authenticationapi.domain.model.AccountActivation;
+import jakarta.transaction.Transactional;
+import org.springframework.stereotype.Service;
 
 import java.time.Instant;
 
+@Service
 public class GetAccountActivationService implements GetAccountActivationUseCase {
     private final AccountActivationRepositoryPort accountActivationRepository;
     private final SecureHasherPort secureHasher;

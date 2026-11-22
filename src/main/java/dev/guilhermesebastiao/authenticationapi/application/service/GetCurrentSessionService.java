@@ -9,7 +9,9 @@ import dev.guilhermesebastiao.authenticationapi.domain.exception.SessionNotBelon
 import dev.guilhermesebastiao.authenticationapi.domain.exception.SessionNotFoundException;
 import dev.guilhermesebastiao.authenticationapi.domain.model.Account;
 import dev.guilhermesebastiao.authenticationapi.domain.model.Session;
+import org.springframework.stereotype.Service;
 
+@Service
 public class GetCurrentSessionService implements GetCurrentSessionUseCase {
     private final GetDeviceNameUseCase getDeviceNameUseCase;
     private final SessionRepositoryPort sessionRepository;

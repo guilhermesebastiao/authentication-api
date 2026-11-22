@@ -10,6 +10,8 @@ import dev.guilhermesebastiao.authenticationapi.application.dto.output.IpLocatio
 import dev.guilhermesebastiao.authenticationapi.domain.enums.DeviceType;
 import dev.guilhermesebastiao.authenticationapi.domain.model.Account;
 import dev.guilhermesebastiao.authenticationapi.domain.model.Session;
+import jakarta.transaction.Transactional;
+import org.springframework.stereotype.Service;
 
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
@@ -19,6 +21,7 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+@Service
 public class CreateSessionService implements CreateSessionUseCase {
     private static final int SESSION_TOKEN_SIZE = 32;
 
@@ -40,6 +43,7 @@ public class CreateSessionService implements CreateSessionUseCase {
     }
 
     @Override
+    @Transactional
     public CreateSessionOutput execute(Account account, String userAgent, String ipAddress) {
         String sessionToken = secureRandomGenerator.generate(SESSION_TOKEN_SIZE);
         String sessionTokenHash = secureHasher.hash(sessionToken);

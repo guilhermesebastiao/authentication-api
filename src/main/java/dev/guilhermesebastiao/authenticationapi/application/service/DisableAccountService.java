@@ -8,9 +8,12 @@ import dev.guilhermesebastiao.authenticationapi.application.port.out.AccountRepo
 import dev.guilhermesebastiao.authenticationapi.application.port.out.PasswordEncoderPort;
 import dev.guilhermesebastiao.authenticationapi.domain.exception.DisableAccountInvalidCredentialsException;
 import dev.guilhermesebastiao.authenticationapi.domain.model.Account;
+import jakarta.transaction.Transactional;
+import org.springframework.stereotype.Service;
 
 import java.time.Instant;
 
+@Service
 public class DisableAccountService implements DisableAccountUseCase {
     private final SendAccountDisabledUseCase sendAccountDisabledUseCase;
     private final RevokeAllSessionsUseCase revokeAllSessionsUseCase;
@@ -30,6 +33,7 @@ public class DisableAccountService implements DisableAccountUseCase {
     }
 
     @Override
+    @Transactional
     public void execute(Account account, DisableAccountInput input) {
         boolean isMatch = passwordEncoder.matches(input.password(), account.getPasswordHash());
 

@@ -3,8 +3,8 @@ package dev.guilhermesebastiao.authenticationapi.adapter.out.persistence.adapter
 import dev.guilhermesebastiao.authenticationapi.adapter.out.persistence.entity.SessionEntity;
 import dev.guilhermesebastiao.authenticationapi.adapter.out.persistence.mapper.JpaSessionMapper;
 import dev.guilhermesebastiao.authenticationapi.adapter.out.persistence.repository.JpaSessionRepository;
-import dev.guilhermesebastiao.authenticationapi.application.dto.common.PageQuery;
-import dev.guilhermesebastiao.authenticationapi.application.dto.common.PageResult;
+import dev.guilhermesebastiao.authenticationapi.application.dto.query.PagingParam;
+import dev.guilhermesebastiao.authenticationapi.application.dto.common.PageBody;
 import dev.guilhermesebastiao.authenticationapi.domain.model.Session;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -130,7 +130,7 @@ class SessionRepositoryAdapterTest {
     @DisplayName("Should convert the page query and map the paginated sessions")
     void givenPagedSessionEntities_whenFindAllByAccountIdAndNotRevoked_thenReturnMappedPage() {
         UUID accountId = UUID.randomUUID();
-        PageQuery pagination = new PageQuery(2, 2);
+        PagingParam pagination = new PagingParam(2, 2);
         SessionEntity firstEntity = new SessionEntity();
         SessionEntity secondEntity = new SessionEntity();
         Session firstSession = new Session();
@@ -155,7 +155,7 @@ class SessionRepositoryAdapterTest {
         given(mapper.toDomain(secondEntity))
                 .willReturn(secondSession);
 
-        PageResult<Session> result = adapter.findAllByAccountIdAndNotRevoked(accountId, sessionTokenHash, pagination);
+        PageBody<Session> result = adapter.findAllByAccountIdAndNotRevoked(accountId, sessionTokenHash, pagination);
 
         verify(repository).findAllByAccountIdAndNotRevoked(eq(accountId), eq(sessionTokenHash), pageableCaptor.capture());
         Pageable pageable = pageableCaptor.getValue();

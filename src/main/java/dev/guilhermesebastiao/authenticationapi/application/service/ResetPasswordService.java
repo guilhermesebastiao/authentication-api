@@ -11,9 +11,12 @@ import dev.guilhermesebastiao.authenticationapi.application.port.out.SecureHashe
 import dev.guilhermesebastiao.authenticationapi.domain.exception.*;
 import dev.guilhermesebastiao.authenticationapi.domain.model.Account;
 import dev.guilhermesebastiao.authenticationapi.domain.model.RecoveryPassword;
+import jakarta.transaction.Transactional;
+import org.springframework.stereotype.Service;
 
 import java.time.Instant;
 
+@Service
 public class ResetPasswordService implements ResetPasswordUseCase {
     private final RecoveryPasswordRepositoryPort recoveryPasswordRepository;
     private final SendPasswordChangedUseCase sendPasswordChangedUseCase;
@@ -39,6 +42,7 @@ public class ResetPasswordService implements ResetPasswordUseCase {
     }
 
     @Override
+    @Transactional
     public void execute(ResetPasswordInput input) {
         Instant now = Instant.now();
 

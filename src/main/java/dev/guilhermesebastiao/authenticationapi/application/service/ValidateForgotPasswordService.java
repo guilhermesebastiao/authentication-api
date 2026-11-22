@@ -7,10 +7,13 @@ import dev.guilhermesebastiao.authenticationapi.application.port.out.*;
 import dev.guilhermesebastiao.authenticationapi.domain.exception.*;
 import dev.guilhermesebastiao.authenticationapi.domain.model.ForgotPassword;
 import dev.guilhermesebastiao.authenticationapi.domain.model.RecoveryPassword;
+import jakarta.transaction.Transactional;
+import org.springframework.stereotype.Service;
 
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 
+@Service
 public class ValidateForgotPasswordService implements ValidateForgotPasswordUseCase {
     private static final int RECOVERY_EXPIRES_MINUTES = 5;
     private static final int RECOVERY_TOKEN_SIZE = 32;
@@ -37,6 +40,7 @@ public class ValidateForgotPasswordService implements ValidateForgotPasswordUseC
     }
 
     @Override
+    @Transactional
     public RecoveryPasswordOutput execute(ValidateForgotPasswordInput input) {
         String forgotTokenHash = secureHasher.hash(input.forgotToken());
 

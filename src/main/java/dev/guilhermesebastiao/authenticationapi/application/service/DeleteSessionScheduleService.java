@@ -4,9 +4,12 @@ import dev.guilhermesebastiao.authenticationapi.adapter.out.logger.payload.Sched
 import dev.guilhermesebastiao.authenticationapi.application.port.in.DeleteSessionScheduleUseCase;
 import dev.guilhermesebastiao.authenticationapi.application.port.out.LoggerPort;
 import dev.guilhermesebastiao.authenticationapi.application.port.out.SessionRepositoryPort;
+import jakarta.transaction.Transactional;
+import org.springframework.stereotype.Service;
 
 import java.time.Instant;
 
+@Service
 public class DeleteSessionScheduleService implements DeleteSessionScheduleUseCase {
     private final static String JOB_NAME = "DELETE_SESSIONS";
 
@@ -22,6 +25,7 @@ public class DeleteSessionScheduleService implements DeleteSessionScheduleUseCas
     }
 
     @Override
+    @Transactional
     public void execute() {
         Instant now = Instant.now();
 

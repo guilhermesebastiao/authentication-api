@@ -1,7 +1,7 @@
 package dev.guilhermesebastiao.authenticationapi.adapter.in.contract;
 
 import dev.guilhermesebastiao.authenticationapi.adapter.in.dto.common.ApiPageBody;
-import dev.guilhermesebastiao.authenticationapi.adapter.in.dto.common.PaginationParams;
+import dev.guilhermesebastiao.authenticationapi.adapter.in.dto.query.PaginationParams;
 import dev.guilhermesebastiao.authenticationapi.adapter.in.dto.response.SessionResponse;
 import dev.guilhermesebastiao.authenticationapi.adapter.out.security.context.SecurityAccount;
 import io.swagger.v3.oas.annotations.Operation;

@@ -18,12 +18,15 @@ import dev.guilhermesebastiao.authenticationapi.domain.exception.RefreshTokenRev
 import dev.guilhermesebastiao.authenticationapi.domain.exception.UnauthorizedException;
 import dev.guilhermesebastiao.authenticationapi.domain.model.Refresh;
 import dev.guilhermesebastiao.authenticationapi.domain.model.Session;
+import jakarta.transaction.Transactional;
+import org.springframework.stereotype.Service;
 
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.EnumSet;
 import java.util.Set;
 
+@Service
 public class RefreshTokenService implements RefreshTokenUseCase {
     private final ValidateSessionUseCase validateSessionUseCase;
     private final CreateRefreshUseCase createRefreshUseCase;
@@ -49,6 +52,7 @@ public class RefreshTokenService implements RefreshTokenUseCase {
     }
 
     @Override
+    @Transactional
     public AuthOutput execute(RefreshTokenInput input) {
         Session session = validateSessionUseCase.execute(input.sessionToken());
 

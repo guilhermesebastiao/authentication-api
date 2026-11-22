@@ -21,18 +21,19 @@ public class RateLimitFilter extends OncePerRequestFilter {
     private static final String GLOBAL_KEY_PREFIX = "rate-limit:global:";
     private static final String POLICY_KEY_PREFIX = "rate-limit:";
 
-    private final ProxyManager<String> proxyManager;
-    private final RateLimitConfiguration rateLimitConfiguration;
     private final HandlerExceptionResolver exceptionResolver;
+    private final RateLimitConfiguration rateLimitConfiguration;
+    private final ProxyManager<String> proxyManager;
 
     public RateLimitFilter(
-            ProxyManager<String> proxyManager,
+            @Qualifier("handlerExceptionResolver")
+            HandlerExceptionResolver exceptionResolver,
             RateLimitConfiguration rateLimitConfiguration,
-            @Qualifier("handlerExceptionResolver") HandlerExceptionResolver exceptionResolver
+            ProxyManager<String> proxyManager
     ) {
-        this.proxyManager = proxyManager;
-        this.rateLimitConfiguration = rateLimitConfiguration;
         this.exceptionResolver = exceptionResolver;
+        this.rateLimitConfiguration = rateLimitConfiguration;
+        this.proxyManager = proxyManager;
     }
 
     @Override

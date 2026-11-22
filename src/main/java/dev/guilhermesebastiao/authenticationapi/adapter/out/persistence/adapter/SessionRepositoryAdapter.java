@@ -3,8 +3,8 @@ package dev.guilhermesebastiao.authenticationapi.adapter.out.persistence.adapter
 import dev.guilhermesebastiao.authenticationapi.adapter.out.persistence.entity.SessionEntity;
 import dev.guilhermesebastiao.authenticationapi.adapter.out.persistence.mapper.JpaSessionMapper;
 import dev.guilhermesebastiao.authenticationapi.adapter.out.persistence.repository.JpaSessionRepository;
-import dev.guilhermesebastiao.authenticationapi.application.dto.common.PageResult;
-import dev.guilhermesebastiao.authenticationapi.application.dto.common.PageQuery;
+import dev.guilhermesebastiao.authenticationapi.application.dto.common.PageBody;
+import dev.guilhermesebastiao.authenticationapi.application.dto.query.PagingParam;
 import dev.guilhermesebastiao.authenticationapi.application.port.out.SessionRepositoryPort;
 import dev.guilhermesebastiao.authenticationapi.domain.model.Session;
 import lombok.RequiredArgsConstructor;
@@ -51,10 +51,10 @@ public class SessionRepositoryAdapter implements SessionRepositoryPort {
     }
 
     @Override
-    public PageResult<Session> findAllByAccountIdAndNotRevoked(
+    public PageBody<Session> findAllByAccountIdAndNotRevoked(
             UUID accountId,
             String sessionTokenHash,
-            PageQuery pagination
+            PagingParam pagination
     ) {
         Pageable pageable = PageRequest.of(
                 pagination.zeroBasedPage(),
@@ -72,7 +72,7 @@ public class SessionRepositoryAdapter implements SessionRepositoryPort {
                 .map(mapper::toDomain)
                 .toList();
 
-        return new PageResult<>(
+        return new PageBody<>(
                 sessions,
                 result.getTotalElements(),
                 result.getTotalPages(),

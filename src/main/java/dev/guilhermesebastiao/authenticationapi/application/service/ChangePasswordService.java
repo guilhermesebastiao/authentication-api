@@ -9,7 +9,10 @@ import dev.guilhermesebastiao.authenticationapi.application.port.out.PasswordEnc
 import dev.guilhermesebastiao.authenticationapi.domain.exception.ChangePasswordInvalidCredentialsException;
 import dev.guilhermesebastiao.authenticationapi.domain.exception.PasswordSameAsCurrentException;
 import dev.guilhermesebastiao.authenticationapi.domain.model.Account;
+import jakarta.transaction.Transactional;
+import org.springframework.stereotype.Service;
 
+@Service
 public class ChangePasswordService implements ChangePasswordUseCase {
     private final SendPasswordChangedUseCase sendPasswordChangedUseCase;
     private final RevokeAllSessionsUseCase revokeAllSessionsUseCase;
@@ -29,6 +32,7 @@ public class ChangePasswordService implements ChangePasswordUseCase {
     }
 
     @Override
+    @Transactional
     public void execute(Account account, ChangePasswordInput input) {
         boolean isMatch = passwordEncoder.matches(input.currentPassword(), account.getPasswordHash());
 
