@@ -51,7 +51,7 @@ public class ForgotPasswordService implements ForgotPasswordUseCase {
     @Transactional
     public ForgotPasswordOutput execute(String email) {
         Account account = accountRepository.findByEmail(email)
-                .orElseThrow(AccountNotFoundException::new);
+                .orElseGet(Account::new);
 
         if (account.getDisabledAt() != null) {
             throw new AccountDisabledException();
@@ -60,6 +60,10 @@ public class ForgotPasswordService implements ForgotPasswordUseCase {
         String otp = String.format("%06d", secureRandom.nextInt(1_000_000));
 
         String forgotToken = secureRandomGenerator.generate(FORGOT_TOKEN_SIZE);
+
+        if (account.getEmail() == null) {
+            return preventPasswordRecovery(email, forgotToken, otp);
+        }
 
         ForgotPassword forgotPassword = createForgotPassword(account, forgotToken, otp);
 
@@ -73,6 +77,34 @@ public class ForgotPasswordService implements ForgotPasswordUseCase {
                 forgotPassword.getResendAvailableAt(),
                 forgotPassword.getExpiresAt()
         );
+    }
+
+    private ForgotPasswordOutput preventPasswordRecovery(String email, String forgotToken, String otp) {
+        ForgotPassword forgotPassword = createForgotPassword(forgotToken, otp);
+
+        return new ForgotPasswordOutput(
+                email,
+                forgotToken,
+                forgotPassword.getResendAvailableAt(),
+                forgotPassword.getExpiresAt()
+        );
+    }
+
+    private ForgotPassword createForgotPassword(String forgotToken, String otp) {
+        Instant resendAvailableAt = Instant.now().plus(RESEND_EMAIL_AVAILABLE_MINUTES, ChronoUnit.MINUTES);
+        Instant expiresAt = Instant.now().plus(FORGOT_EXPIRES_MINUTES, ChronoUnit.MINUTES);
+
+        String recoverTokenHash = secureHasher.hash(forgotToken);
+        String otpHash = passwordEncoder.hash(otp);
+
+        ForgotPassword entity = new ForgotPassword();
+
+        entity.setForgotTokenHash(recoverTokenHash);
+        entity.setOtpHash(otpHash);
+        entity.setExpiresAt(expiresAt);
+        entity.setResendAvailableAt(resendAvailableAt);
+
+        return entity;
     }
 
     private ForgotPassword createForgotPassword(Account account, String forgotToken, String otp) {
