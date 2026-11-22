@@ -11,8 +11,9 @@ import dev.guilhermesebastiao.authenticationapi.application.dto.input.SignInInpu
 import dev.guilhermesebastiao.authenticationapi.application.dto.output.AccountActivationOutput;
 import dev.guilhermesebastiao.authenticationapi.application.dto.output.AuthOutput;
 import org.mapstruct.Mapper;
+import org.mapstruct.MappingConstants;
 
-@Mapper(componentModel = "spring")
+@Mapper(componentModel = MappingConstants.ComponentModel.SPRING)
 public interface AuthMapper {
     AuthResponse toResponse(AuthOutput output);
 

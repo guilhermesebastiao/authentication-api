@@ -1,6 +1,6 @@
 package dev.guilhermesebastiao.authenticationapi.adapter.out.publisher;
 
-import dev.guilhermesebastiao.authenticationapi.adapter.out.smtp.payload.EmailSendPayload;
+import dev.guilhermesebastiao.authenticationapi.application.dto.payload.EmailSendPayload;
 import dev.guilhermesebastiao.authenticationapi.infrastructure.messaging.EmailMessagingConfig;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;

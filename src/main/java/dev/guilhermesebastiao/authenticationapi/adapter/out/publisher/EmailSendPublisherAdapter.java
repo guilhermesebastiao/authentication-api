@@ -1,6 +1,6 @@
 package dev.guilhermesebastiao.authenticationapi.adapter.out.publisher;
 
-import dev.guilhermesebastiao.authenticationapi.adapter.out.smtp.payload.EmailSendPayload;
+import dev.guilhermesebastiao.authenticationapi.application.dto.payload.EmailSendPayload;
 import dev.guilhermesebastiao.authenticationapi.application.port.out.EmailSenderPort;
 import dev.guilhermesebastiao.authenticationapi.infrastructure.messaging.EmailMessagingConfig;
 import lombok.AllArgsConstructor;
@@ -15,6 +15,10 @@ public class EmailSendPublisherAdapter implements EmailSenderPort {
 
     @Override
     public void send(EmailSendPayload payload) {
-        rabbitTemplate.convertAndSend(EmailMessagingConfig.EMAIL_EXCHANGE, EmailMessagingConfig.EMAIL_ROUTING_KEY, payload);
+        rabbitTemplate.convertAndSend(
+                EmailMessagingConfig.EMAIL_EXCHANGE,
+                EmailMessagingConfig.EMAIL_ROUTING_KEY,
+                payload
+        );
     }
 }

@@ -1,6 +1,6 @@
 package dev.guilhermesebastiao.authenticationapi.application.service;
 
-import dev.guilhermesebastiao.authenticationapi.adapter.out.smtp.payload.EmailSendPayload;
+import dev.guilhermesebastiao.authenticationapi.application.dto.payload.EmailSendPayload;
 import dev.guilhermesebastiao.authenticationapi.application.port.in.SendAccountActivationUseCase;
 import dev.guilhermesebastiao.authenticationapi.application.port.out.EmailSenderPort;
 import org.springframework.stereotype.Service;
@@ -29,6 +29,6 @@ public class SendAccountActivationService implements SendAccountActivationUseCas
                 "otp", otp
         );
 
-        emailSender.send(new EmailSendPayload(TEMPLATE, email, subject, variables));
+        emailSender.send(EmailSendPayload.of(TEMPLATE, email, subject, variables));
     }
 }

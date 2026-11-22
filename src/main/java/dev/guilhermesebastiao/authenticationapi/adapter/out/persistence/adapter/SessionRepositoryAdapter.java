@@ -58,7 +58,7 @@ public class SessionRepositoryAdapter implements SessionRepositoryPort {
     ) {
         Pageable pageable = PageRequest.of(
                 pagination.zeroBasedPage(),
-                pagination.size()
+                pagination.getSize()
         );
 
         Page<SessionEntity> result = repository.findAllByAccountIdAndNotRevoked(

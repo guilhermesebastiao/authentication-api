@@ -1,6 +1,6 @@
 package dev.guilhermesebastiao.authenticationapi.application.service;
 
-import dev.guilhermesebastiao.authenticationapi.adapter.out.smtp.payload.EmailSendPayload;
+import dev.guilhermesebastiao.authenticationapi.application.dto.payload.EmailSendPayload;
 import dev.guilhermesebastiao.authenticationapi.application.port.in.SendPasswordChangedUseCase;
 import dev.guilhermesebastiao.authenticationapi.application.port.out.EmailSenderPort;
 import org.springframework.stereotype.Service;
@@ -25,6 +25,6 @@ public class SendPasswordChangedService implements SendPasswordChangedUseCase {
 
         Map<String, Object> variables = Map.of("email", email);
 
-        emailSender.send(new EmailSendPayload(TEMPLATE, email, subject, variables));
+        emailSender.send(EmailSendPayload.of(TEMPLATE, email, subject, variables));
     }
 }

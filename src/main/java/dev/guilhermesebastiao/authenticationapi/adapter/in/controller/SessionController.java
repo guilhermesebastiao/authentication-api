@@ -2,8 +2,9 @@ package dev.guilhermesebastiao.authenticationapi.adapter.in.controller;
 
 import dev.guilhermesebastiao.authenticationapi.adapter.in.contract.SessionApi;
 import dev.guilhermesebastiao.authenticationapi.adapter.in.dto.common.ApiPageBody;
-import dev.guilhermesebastiao.authenticationapi.adapter.in.dto.query.PaginationParams;
+import dev.guilhermesebastiao.authenticationapi.adapter.in.dto.query.PagingQuery;
 import dev.guilhermesebastiao.authenticationapi.adapter.in.dto.response.SessionResponse;
+import dev.guilhermesebastiao.authenticationapi.adapter.in.mapper.PagingMapper;
 import dev.guilhermesebastiao.authenticationapi.adapter.in.mapper.SessionMapper;
 import dev.guilhermesebastiao.authenticationapi.adapter.out.security.context.SecurityAccount;
 import dev.guilhermesebastiao.authenticationapi.application.port.in.GetCurrentSessionUseCase;
@@ -28,7 +29,8 @@ public class SessionController implements SessionApi {
     private final GetCurrentSessionUseCase getCurrentSessionUseCase;
     private final RevokeAllSessionsUseCase revokeAllSessionsUseCase;
     private final RevokeSessionUseCase revokeSessionUseCase;
-    private final GetSessionsUseCase  getSessionsUseCase;
+    private final GetSessionsUseCase getSessionsUseCase;
+    private final PagingMapper pagingMapper;
     private final SessionMapper mapper;
 
 
@@ -38,12 +40,12 @@ public class SessionController implements SessionApi {
     public ApiPageBody<SessionResponse> findAllSessions(
             @AuthenticationPrincipal SecurityAccount securityAccount,
             @RequestHeader("X-Session") String sessionToken,
-            @Valid PaginationParams pagination
+            @Valid PagingQuery paging
     ) {
         PageBody<SessionOutput> output = getSessionsUseCase.execute(
                 securityAccount.account(),
                 sessionToken,
-                mapper.toPaging(pagination)
+                pagingMapper.toPaging(paging)
         );
 
         List<SessionResponse> sessions = output.content().stream()

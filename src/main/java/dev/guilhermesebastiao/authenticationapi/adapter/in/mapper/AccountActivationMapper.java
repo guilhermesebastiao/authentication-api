@@ -5,8 +5,9 @@ import dev.guilhermesebastiao.authenticationapi.adapter.in.dto.response.AccountA
 import dev.guilhermesebastiao.authenticationapi.application.dto.input.AccountActivationInput;
 import dev.guilhermesebastiao.authenticationapi.application.dto.output.AccountActivationOutput;
 import org.mapstruct.Mapper;
+import org.mapstruct.MappingConstants;
 
-@Mapper(componentModel = "spring")
+@Mapper(componentModel = MappingConstants.ComponentModel.SPRING)
 public interface AccountActivationMapper {
     AccountActivationInput toInput(AccountActivateRequest request);
 

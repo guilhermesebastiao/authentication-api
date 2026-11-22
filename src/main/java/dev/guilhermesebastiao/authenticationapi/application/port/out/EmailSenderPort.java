@@ -1,6 +1,6 @@
 package dev.guilhermesebastiao.authenticationapi.application.port.out;
 
-import dev.guilhermesebastiao.authenticationapi.adapter.out.smtp.payload.EmailSendPayload;
+import dev.guilhermesebastiao.authenticationapi.application.dto.payload.EmailSendPayload;
 
 public interface EmailSenderPort {
     void send(EmailSendPayload payload);
