@@ -29,7 +29,7 @@ A aplicação é executada como um serviço Spring Boot stateless. O estado nece
 
 ## Tecnologias
 
-- Java 26.
+- Java 25.
 - Spring Boot 4.1.1.
 - Spring MVC, Spring Security, Spring Data JPA e Hibernate.
 - PostgreSQL 18.4.
@@ -79,8 +79,7 @@ src/
 │   │   │   └── model
 │   │   └── infrastructure/
 │   │       ├── config/
-│   │       ├── properties/
-│   │       └── transaction/
+│   │       └── properties/
 │   └── resources/
 │       ├── db/migration/
 │       ├── templates/
@@ -97,7 +96,7 @@ src/
 
 ## Requisitos
 
-- Java 26.
+- Java 25.
 - Docker e Docker Compose.
 - Acesso à internet para baixar dependências Maven e, quando utilizado, validar credenciais Google e consultar a geolocalização de IP.
 
@@ -137,31 +136,24 @@ Preencha o `.env` com os valores do ambiente local. Os hosts devem apontar para 
 | `MQ_PASS` | Senha do RabbitMQ. |
 | `REDIS_HOST` | Host do Redis. |
 | `REDIS_PORT` | Porta local publicada para o Redis. |
+| `REDIS_PASS` | Senha do Redis. |
+| `MAIL_FROM` | Endereço usado como remetente dos e-mails. |
 | `MAIL_HOST` | Host do servidor SMTP. |
 | `MAIL_PORT` | Porta SMTP publicada. Também é usada pelo Mailpit no ambiente local. |
 | `MAIL_UI_PORT` | Porta da interface web do Mailpit. |
-| `MAIL_USER` | Usuário do servidor SMTP. Essa variável é referenciada por `application.yaml`, embora não esteja declarada no `.env.example`. |
-| `MAIL_FROM` | Endereço usado como remetente dos e-mails. |
+| `MAIL_USER` | Usuário do servidor SMTP. |
 | `MAIL_PASS` | Senha do servidor SMTP. |
 | `GOOGLE_CLIENT_ID` | Client ID usado para validar credenciais Google. |
+| `GOOGLE_CLIENT_SECRET` | Client Secret usado também para validar credenciais Google. |
 | `FRONTEND_URL` | Origem permitida pela configuração de CORS. |
 | `ACCESS_TOKEN_SECRET` | Chave usada para assinar e validar access tokens JWT. |
 | `HMAC_SECRET` | Chave usada para gerar hashes determinísticos de tokens persistidos. |
-| `ACCOUNT_ACTIVATION_CLEANUP_RATE` | Intervalo do scheduler de limpeza de ativações expiradas. |
-| `RECOVER_PASSWORD_CLEANUP_RATE` | Intervalo do scheduler de limpeza de recuperações expiradas. |
-| `SESSION_CLEANUP_RATE` | Intervalo do scheduler de limpeza de sessões expiradas ou revogadas. |
+| `ACCOUNT_ACTIVATION_DELAY` | Intervalo do scheduler de limpeza de ativações expiradas. |
+| `RECOVER_PASSWORD_DELAY` | Intervalo do scheduler de limpeza de recuperações expiradas. |
+| `SESSION_DELAY` | Intervalo do scheduler de limpeza de sessões expiradas ou revogadas. |
 | `RATE_LIMIT_GLOBAL_CAPACITY` | Capacidade do rate limit global. |
 | `RATE_LIMIT_GLOBAL_REFILL_TOKENS` | Quantidade de tokens reposta pelo rate limit global. |
 | `RATE_LIMIT_GLOBAL_DURATION` | Duração da reposição do rate limit global. |
-| `RATE_LIMIT_AUTH_CAPACITY` | Capacidade do rate limit aplicado a `/auth/**`. |
-| `RATE_LIMIT_AUTH_REFILL_TOKENS` | Quantidade de tokens reposta para `/auth/**`. |
-| `RATE_LIMIT_AUTH_DURATION` | Duração da reposição para `/auth/**`. |
-| `RATE_LIMIT_RECOVER_PASSWORD_CAPACITY` | Capacidade do rate limit aplicado a `/password-recovery/**`. |
-| `RATE_LIMIT_RECOVER_PASSWORD_REFILL_TOKENS` | Quantidade de tokens reposta para `/password-recovery/**`. |
-| `RATE_LIMIT_RECOVER_PASSWORD_DURATION` | Duração da reposição para `/password-recovery/**`. |
-| `RATE_LIMIT_ACTIVATION_ACCOUNT_CAPACITY` | Capacidade do rate limit aplicado a `/activation-account/**`. |
-| `RATE_LIMIT_ACTIVATION_ACCOUNT_REFILL_TOKENS` | Quantidade de tokens reposta para `/activation-account/**`. |
-| `RATE_LIMIT_ACTIVATION_ACCOUNT_DURATION` | Duração da reposição para `/activation-account/**`. |
 
 Os valores das chaves, senhas, tokens e demais credenciais devem ser definidos somente no ambiente local ou no mecanismo de secrets utilizado pelo ambiente de execução.
 
@@ -202,7 +194,7 @@ No Windows PowerShell:
 .\mvnw.cmd spring-boot:run
 ```
 
-A aplicação escuta em `0.0.0.0:8080`.
+A aplicação escuta em `http://localhost:8080`.
 
 Para produção no Windows, configure o `.env` com um servidor SMTP acessível
 pela rede e execute:
